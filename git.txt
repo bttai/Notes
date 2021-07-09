@@ -12,3 +12,12 @@ git push -u origin main
 git remote add origin git@github.com:bttai/Notes.git
 git branch -M main
 git push -u origin main
+
+
+git checkout main
+git fetch origin main
+git commit
+git fetch origin main
+git push -u origin main
+
+ --allow-unrelated-histories
