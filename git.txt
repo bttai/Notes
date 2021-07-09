@@ -16,6 +16,8 @@ git push -u origin main
 
 git checkout main
 git fetch origin main
+git merge origin/master
+
 git commit
 git fetch origin main
 git pull origin main
