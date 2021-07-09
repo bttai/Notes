@@ -1,0 +1,49 @@
+https://firefart.at/post/vulnhub_dc416_baffle/
+https://github.com/Hamza-Megahed/CTFs/tree/master/DC416-baffle
+└─$ sudo nmap -sT -A -Pn -n -p- 192.168.110.33                                                                 
+Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-06-28 16:43 CEST
+Nmap scan report for 192.168.110.33
+Host is up (0.00017s latency).
+Not shown: 65532 closed ports
+PORT     STATE SERVICE  VERSION
+22/tcp   open  ssh      OpenSSH 6.7p1 Debian 5+deb8u3 (protocol 2.0)
+| ssh-hostkey: 
+|   1024 34:b3:3e:f7:50:91:51:6f:0b:e2:35:7b:d1:34:a1:eb (DSA)
+|   2048 b9:a9:a8:bc:db:7d:77:e4:ae:31:1c:16:4f:3b:8b:de (RSA)
+|   256 88:3f:60:bb:9e:49:53:e3:f7:bb:30:84:7f:a8:f0:17 (ECDSA)
+|_  256 a4:61:7a:0a:a4:d8:6c:a8:10:c3:bd:09:8f:9e:c1:95 (ED25519)
+80/tcp   open  http     nginx 1.6.2
+| http-git: 
+|   192.168.110.33:80/.git/
+|     Git repository found!
+|     Repository description: Unnamed repository; edit this file 'description' to name the...
+|_    Last commit message: Trashed my code, but deployed the product anyway. 
+|_http-server-header: nginx/1.6.2
+|_http-title: baffle
+6969/tcp open  acmsoda?
+MAC Address: 08:00:27:84:83:C3 (Oracle VirtualBox virtual NIC)
+Device type: general purpose
+Running: Linux 3.X|4.X
+OS CPE: cpe:/o:linux:linux_kernel:3 cpe:/o:linux:linux_kernel:4
+OS details: Linux 3.2 - 4.9
+Network Distance: 1 hop
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+TRACEROUTE
+HOP RTT     ADDRESS
+1   0.17 ms 192.168.110.33
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 8.70 seconds
+
+
+
+└─$ git log --oneline
+8bde724 (HEAD -> master) Trashed my code, but deployed the product anyway.
+d38ce2e Some assembly required
+9b5c226 Made it into a write-type-thing instead
+0648334 My cat danced on the keyboard
+7edc47a This coder turned coffee into code. You won't believe how she did it!
+d7a1f06 Hello, friend...
+                        

