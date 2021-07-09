@@ -1,6 +1,6 @@
 
 
-
+```shell
 echo "# Notes" >> README.md
 git init
 git add README.md
@@ -8,14 +8,16 @@ git commit -m "first commit"
 git branch -M main
 git remote add origin git@github.com:bttai/Notes.git
 git push -u origin main
-
+```
 
 #
+```shell
 git init
 git remote add origin git@github.com:bttai/Notes.git
 git branch -M main
+```
 
-
+```shell
 git checkout main
 git fetch origin main
 git merge origin/main
@@ -24,9 +26,11 @@ git commit
 git fetch origin main
 git pull origin main
 git push -u origin main
+```
 
+```shell
 --allow-unrelated-histories
-
+```
 
 # git config
 
