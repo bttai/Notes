@@ -1,0 +1,37 @@
+└─$ sudo nmap -sT -A -Pn -n -p- 192.168.110.25
+Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-04-28 13:41 CEST
+Nmap scan report for 192.168.110.25
+Host is up (0.000096s latency).
+Not shown: 65533 closed ports
+PORT   STATE SERVICE VERSION
+21/tcp open  ftp     ProFTPD 1.3.3d
+80/tcp open  http    Apache httpd 2.2.17 ((PCLinuxOS 2011/PREFORK-1pclos2011))
+| http-robots.txt: 8 disallowed entries 
+| /manual/ /manual-2.2/ /addon-modules/ /doc/ /images/ 
+|_/all_our_e-mail_addresses /admin/ /
+|_http-server-header: Apache/2.2.17 (PCLinuxOS 2011/PREFORK-1pclos2011)
+|_http-title: Coming Soon 2
+MAC Address: 08:00:27:85:91:E5 (Oracle VirtualBox virtual NIC)
+No exact OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
+TCP/IP fingerprint:
+OS:SCAN(V=7.91%E=4%D=4/28%OT=21%CT=1%CU=35658%PV=Y%DS=1%DC=D%G=Y%M=080027%T
+OS:M=60894A06%P=x86_64-pc-linux-gnu)SEQ(SP=CA%GCD=1%ISR=D2%TI=Z%CI=Z%II=I%T
+OS:S=A)OPS(O1=M5B4ST11NW6%O2=M5B4ST11NW6%O3=M5B4NNT11NW6%O4=M5B4ST11NW6%O5=
+OS:M5B4ST11NW6%O6=M5B4ST11)WIN(W1=3890%W2=3890%W3=3890%W4=3890%W5=3890%W6=3
+OS:890)ECN(R=Y%DF=Y%T=40%W=3908%O=M5B4NNSNW6%CC=N%Q=)T1(R=Y%DF=Y%T=40%S=O%A
+OS:=S+%F=AS%RD=0%Q=)T2(R=N)T3(R=Y%DF=Y%T=40%W=3890%S=O%A=S+%F=AS%O=M5B4ST11
+OS:NW6%RD=0%Q=)T4(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T5(R=Y%DF=Y%T=40
+OS:%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)T6(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0%Q
+OS:=)T7(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)U1(R=Y%DF=N%T=40%IPL=164
+OS:%UN=0%RIPL=G%RID=G%RIPCK=G%RUCK=G%RUD=G)IE(R=Y%DFI=N%T=40%CD=S)
+
+Network Distance: 1 hop
+Service Info: OS: Unix
+
+TRACEROUTE
+HOP RTT     ADDRESS
+1   0.10 ms 192.168.110.25
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 19.73 seconds

