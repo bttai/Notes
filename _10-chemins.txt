@@ -1,8 +1,11 @@
 = Chemins 1
 
 	- ROP Primer : https://g0blin.co.uk/rop-primer-0-2-vulnhub-writeup/
-	- Lord of the root : https://kooksec.blogspot.com/2015/09/i-tried-harder-oscp-edition.html
-						https://pfarrside.com/write-ups/lord-of-the-root/
+	- Lord of the root : 
+		- https://kooksec.blogspot.com/2015/09/i-tried-harder-oscp-edition.html
+		- https://pfarrside.com/write-ups/lord-of-the-root/
+		- http://barrebas.github.io/blog/2015/10/04/lord-of-the-root/
+
 	- Pegagus : https://www.vulnhub.com/author/knapsy,105/
 		- PwnLab
 		- Stapler 1
