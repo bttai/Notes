@@ -26,7 +26,7 @@ for port in $(seq 0 9000); do
 	#ls -al > /dev/null 2>&1 &
 	nc_pid=$!
 	echo $port
-	cmd="nc -z -w 1 192.168.158.1 $port && echo '$port connextion successful'
+	cmd="nc -z -w 1 192.168.158.1 $port && echo '$port connexion successful'
        #	|| echo '$port connexion failed'"
 	#echo $cmd
 	

