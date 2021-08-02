@@ -592,6 +592,15 @@ int main(int argc, char ** argv) {
 // Detected functions: 2
 
 ```
+```php
+<?php 
+//debug.php
+if (isset($_POST["addr"]))
+{
+    exec("/bin/ping -c 4 ".$_POST["addr"]);
+}
+?>
+```
 
 
 

