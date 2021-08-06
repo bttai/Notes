@@ -378,8 +378,10 @@ reponse = client.recv(27)
 reponse = client.recv(9)
 client.close()
 
+```
 
-bash-4.1$ cat launcher.c
+```c
+// cat launcher.c
 #include <stdio.h>
 #include <stdlib.h>
 int main() {

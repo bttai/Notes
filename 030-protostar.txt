@@ -1568,7 +1568,23 @@ print buffer
 
 
 
+# https://stackoverflow.com/questions/17775186/buffer-overflow-works-in-gdb-but-not-without-it/17775966#17775966
+
+```bash
+env - /path/to/stack
 
 
+env - gdb /path/to/stack
+($) show env
+LINES=24
+COLUMNS=80
+
+
+unset env LINES
+unset env COLUMNS
+show env
+
+
+```
 
 

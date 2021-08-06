@@ -391,6 +391,7 @@ while True:
 == Extract code in html code
 sed -n '/<xxxxx/,/<\/xxxxx/p'
 sed -n '/<div id="footer"/,/<\/div/p'
+sed 's/^@\(.*\)/\1/' # delete @ at the begining of lines
 
 
 ==nmap
@@ -521,7 +522,6 @@ export SHELL=/bin/bash
 
 == Desactive ASLR
 
-
 maximize the stack 
 
 ```console
@@ -553,6 +553,7 @@ addr1 +  addr3 + "%48871x%11$hn%8126x%12$hn"
 
 
 ```py
+
 import struct
 
 def p(x):
@@ -595,5 +596,18 @@ print input11
 ```
 
 
+= GIT
 == List of current files on git directory
 git ls-tree -r master --name-only
+
+
+= Buffers overflow
+
+https://guif.re/bo
+
+1- Identification fuzz
+2- Finding EIP : pattern_create
+3- Finding JMP ESP
+4- Finding bad characters
+5- Injecting a shellcode
+
