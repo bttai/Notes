@@ -1,6 +1,14 @@
+https://g0blin.co.uk/devrandom-sleepy-vulnhub-writeup/
+http://devloop.users.sourceforge.net/index.php?article138/solution-du-ctf-dev-random-sleepy-de-vulnhub
+
+https://highon.coffee/blog/sleepy-ctf-walkthrough/
+
 https://www.serma-safety-security.com/vulnerabilite-critique-sur-bash-cve-2014-6271-shellshock/
+
 https://www.minttm.com/takeover-shellshocker-net
 
+
+Machines : shellshock, symfonos 2, sleepy
 
 └─$ sudo nmap -sT -A -T4 -Pn -n -p- 10.0.1.46 
 Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.

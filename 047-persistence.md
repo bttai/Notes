@@ -40,7 +40,7 @@ http://blog.commandlinekungfu.com/2012/01/episode-164-exfiltration-nation.html
 + 1 host(s) tested
 ```
 
-```bash
+```console
 sudo tcpdump host 192.168.110.38 -i vboxnet0 and icmp
 ```
 
@@ -291,7 +291,6 @@ bash-4.1$ /tmp/chroot/bin/launcher
 bash-4.1# id
 uid=0(root) gid=0(root) groups=0(root),500(avida) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
 ```
-
 
 
 

