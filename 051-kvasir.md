@@ -539,24 +539,9 @@ stepic --help
 
 
 for ip in $(seq 1 254); do
-ping -c 1 192.168.3.$ip | grep "bytes from" | cut -d " " -f 4 | cut -d ":" -f 1 &
+ping -c 1 192.168.110.$ip | grep "bytes from" | cut -d " " -f 4 | cut -d ":" -f 1 &
 done
 
-for ip in $(seq 1 254); do
-ping -c 1 192.168.3.$ip > /dev/null &
-[ $? -eq 0 ] && echo Node with IP: $i is up.
-done
-
-
-for ip in $(seq 1 254); do
-ping -c 1 192.168.0.$ip > /dev/null &
-[ $? -eq 0 ] && echo Node with IP: $i is up.
-done
-
-for ip in $(seq 10 15); do
-ping -c 1 192.168.0.$ip > /dev/null
-[ $? -eq 0 ] && echo Node with IP: 192.168.0.$ip is up.
-done
 
 
 for ip in 1 192.168.3.{1..254}; do ping -c 1 -t 1 $ip > /dev/null && echo "${ip} is up"; done

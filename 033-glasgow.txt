@@ -1,3 +1,7 @@
+
+Joomla --> Found password --> upload shell --> Access mysqldb --> found password -> found pinguin password --> found cron task --> modify cron task --> install reverse  shell --> obtient root shell
+
+
 https://www.hackingarticles.in/glasgow-smile-1-1-vulnhub-walkthrough/
 https://nmap.org/nsedoc/scripts/http-joomla-brute.html
 

