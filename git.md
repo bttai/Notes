@@ -112,7 +112,7 @@ git add .
 git commit -m "first modification"
 
 # modifier dernier commit
-git commit --amande - "first modification"
+git commit --amend -m "first modification"
 
 ```
 
