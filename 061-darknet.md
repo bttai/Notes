@@ -21,6 +21,7 @@ https://jessgallante.blogspot.com/2015/06/mon-tout-premier-challenge-ever.html
 https://repository.root-me.org/Exploitation%20-%20Web/EN%20-%20Blind%20Xpath%20injection.pdf
 
 
+https://unlogic.co.uk/posts/2015-06-08-vulnhub-darknet1-dot-0-write-up/
 
 https://github.com/tennc/webshell/tree/master/php/wso
 

