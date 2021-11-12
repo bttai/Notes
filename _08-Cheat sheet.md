@@ -287,8 +287,7 @@ passwords reuse
 sudo nmap -n -Pn -p- -O 192.168.110.54
 sudo nmap -n -Pn -sV -p21,22,80 -O 192.168.110.54
 sudo nmap -n -Pn -sV --script default -p21,22,80 -O 192.168.110.54
-sudo nmap -p 22 --script ssh-brute --script-args userdb=users.lst,passdb=pass.lst \
-      --script-args ssh-brute.timeout=4s <target>
+sudo nmap -p 22 --script ssh-brute --script-args userdb=users.lst,passdb=pass.lst,ssh-brute.timeout=4s <target>
 $ nmap -p25 --script smtp-enum-users --script-args smtp-enum-users.methods={VRFY,EXPN,RCPT} <target>
 $ nmap -p25 --script smtp-enum-users --script-args smtp-enum-users.domain=<domain> $ip  
 $ nmap -p25 --script smtp-enum-users --script-args userdb=users.txt smtp-enum-users.domain=TORMENT.localdomain smtp-enum-users.methods=VRFY $ip
@@ -1697,7 +1696,9 @@ gdb-peda$ find "\xff\xe4" binary
 objdump -d tfc |grep ".plt" 
 
 
-
+## dd
+    sudo fdisk -l
+    sudo dd bs=1M if=image.iso of=/dev/sdf status=progress conv=fsync
 
 
 
