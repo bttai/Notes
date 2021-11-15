@@ -680,10 +680,10 @@ pspy : https://github.com/DominicBreuker/pspy it allows you to see commands run 
 
 ```bash
 
-find / -perm -u=s -type f -ls 2>/dev/null
+find / -perm -u=s -type f  2>/dev/null | xargs ls -l
+find / -perm -g=s -type f 2>/dev/null| xargs ls -l
 
-find / -perm -g=s -type f 2>/dev/null
-find / -type f -writable 2>/dev/null | grep -v '^/proc'| grep -v '^/sys'
+find / -type f -writable 2>/dev/null | grep -v '^/proc'| grep -v '^/sys' | xargs ls -l
 find / -user root -writable 2>/dev/null | grep -v '/proc' | grep -v '/dev'
 
 find  /home -name ".bash_history" 2>/dev/null -exec cat {} \;
