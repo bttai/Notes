@@ -1,7 +1,7 @@
-https://twitter.com/trbughunters/status/1279768631845494787
-https://book.hacktricks.xyz/pentesting-web/file-inclusion
-https://blog.clever-age.com/fr/2014/10/21/owasp-local-remote-file-inclusion-lfi-rfi/
-https://blog.stalkr.net/2010/06/unrealircd-3281-backdoored.html
+<https://twitter.com/trbughunters/status/1279768631845494787>
+<https://book.hacktricks.xyz/pentesting-web/file-inclusion>
+<https://blog.clever-age.com/fr/2014/10/21/owasp-local-remote-file-inclusion-lfi-rfi/>
+<https://blog.stalkr.net/2010/06/unrealircd-3281-backdoored.html>
 
 ProFTPD 1.2.8 - 1.2.9 mod_sql, php wrappers data://text/plain;base64, UnrealIRCd
 
