@@ -202,6 +202,12 @@ for i in $(seq 1 65535); do nc -nvz -w 1 192.168.212.4 $i 2>&1; done | grep -v "
     curl -X OPTIONS http://example.org -i
 
 
+## HTTP Basic Authentication
+
+
+    hydra -L users.txt -P words.txt www.site.com http-head /private/
+    
+
 ### WordPress
 
     wpscan --url http://192.168.110.54/wp

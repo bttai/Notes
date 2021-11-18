@@ -8,13 +8,13 @@ https://www.aptive.co.uk/blog/local-file-inclusion-lfi-testing/
 
     <?php
 
-    $file = $_GET[‘file’];
+    $file = $_GET['file'];
 
     if(isset($file))
 
     {
 
-    include(“pages/$file”);
+    include("pages/$file");
 
     }
 
@@ -22,7 +22,7 @@ https://www.aptive.co.uk/blog/local-file-inclusion-lfi-testing/
 
     {
 
-    include(“index.php”);
+    include("index.php");
 
     }
 
