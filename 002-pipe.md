@@ -260,5 +260,10 @@ echo serialize($obj);
 	</Limit>
 
 
+Modify .htpasswd
 
-htpasswd /home/pwww/.htpasswd-users tom
+	$ cd /var/www/html
+	$ htpasswd .htpasswd rene
+	New password: happy
+	Re-type new password: happy
+
