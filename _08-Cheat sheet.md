@@ -617,6 +617,24 @@ Logic&&
     2. Reverse
     3. Self increasing
 
+# upgrade shell
+
+    python -c 'import pty;pty.spawn("/bin/bash")'
+    $ ^Z
+    debian@debian:~$ echo $TERM
+    xterm-256color
+    debian@debian:~$ stty -a
+    ...rows 27; columns 105; ...
+    debian@debian:~$ stty raw -echo
+    debian@debian:~$ fg
+    debian@debian:~$ nc -lvp 1234
+                                 reset
+    reset: unknown terminal type unknown
+    Terminal type? xterm-256color
+    bash-4.2$ export TERM=xterm-256color
+    bash-4.2$ export SHELL=bash
+    bash-4.2$ stty rows 27 columns 105
+
 # Exploit - Remote Commande execution (RCE)
 
     ;
