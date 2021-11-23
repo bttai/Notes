@@ -235,7 +235,7 @@ void main() {
     uid=0(root) gid=0(root) groups=0(root)
 
 
-# Secret
+# Box's configuration
 
 ```php
 

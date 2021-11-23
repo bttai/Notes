@@ -1,3 +1,19 @@
+# hydra
+
+## Basic authentification
+
+	$ hydra -l admin  -p darkweb2017-top100.txt  192.168.56.5 http-get
+
+# dirsearch
+
+	$ dirsearch -u http://192.168.56.5 -w directory-list-2.3-medium.txt
+
+# wfuzz
+
+	$ wfuzz  -c -z file,directory-list-2.3-medium.txt --sc 200 http://192.168.56.5/FUZZ/
+
+
+
 # iptables
 
 ## reset

@@ -6,7 +6,7 @@
 <https://www.hackingarticles.in/exploiting-wildcard-for-privilege-escalation/>
 
 
-Keys : .htaccess <Limit></Limit>, php serialization, php destructor, exploiting wildcard, tar Wildcard Injection
+Keys : method http, .htaccess <Limit></Limit>, php serialization, php destructor, exploiting wildcard, tar Wildcard Injection
 
 # Nmap
 
@@ -224,7 +224,7 @@ echo serialize($obj);
 	whoami
 	root
 
-# Secret
+# Box's configuration
 
 ## Script backup
 
