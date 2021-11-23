@@ -14,9 +14,21 @@
 	$ iptables -F OUTPUT
 	$ iptables -F FORWARD
 
-	#Or you can do it in single command
-	$ iptables -F
+
 
 	# Save 
 	$ iptables-save > /etc/sysconfig/iptables
 	$ iptables-save > /etc/iptables/rules.v4
+
+
+# tcpdump
+
+	sudo tcpdump host 192.168.56.8 -i vboxnet0 and icmp -X
+ 
+# dd
+    sudo fdisk -l
+    sudo dd bs=1M if=image.iso of=/dev/sdf status=progress conv=fsync
+
+
+
+
