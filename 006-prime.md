@@ -4,7 +4,7 @@
 
 <https://lifesfun101.github.io/2019/09/15/Prime_1-walkthrough.html>
 
-Keys : php://filter/, wordpress, md5sum, od, AES encryption, ubuntu 16.04
+Keys : wfuzz, php://filter/, wordpress, md5sum, od, AES encryption, ubuntu 16.04
 
 
 # Scan ports

@@ -62,7 +62,7 @@ Keys : ping exfiltration,  escaping from limited bash (ftp, nano), escaping a ch
 
 # Prime
 
-Keys : php://filter/, wordpress, md5sum, od, AES encryption, ubuntu 16.04
+Keys : wfuzz, php://filter/, wordpress, md5sum, od, AES encryption, ubuntu 16.04
 
 - Scan directory web service
 - Enumerate parameter for pages web
