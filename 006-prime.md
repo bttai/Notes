@@ -1,9 +1,8 @@
+<https://www.vulnhub.com/entry/prime-1,358/>
 
+<https://blog.clever-age.com/fr/2014/10/21/owasp-local-remote-file-inclusion-lfi-rfi/>
 
-
-
-https://blog.clever-age.com/fr/2014/10/21/owasp-local-remote-file-inclusion-lfi-rfi/
-https://lifesfun101.github.io/2019/09/15/Prime_1-walkthrough.html
+<https://lifesfun101.github.io/2019/09/15/Prime_1-walkthrough.html>
 
 Keys : php://filter/, wordpress, md5sum, od, AES encryption, ubuntu 16.04
 
@@ -349,15 +348,3 @@ Appearance --> Theme Editor --> Only secret.php page is modifiable --> change th
     /tmp/challenge
 
 
-
-
-
-
-
-
-
-The MD5 hash of:
-ippsec
-is:
-366a74cb3c959de17d61db30591c39d1
-3336366137346362336339353964653137643631646233303539316333396431
