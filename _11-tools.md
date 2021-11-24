@@ -11,8 +11,10 @@
 # wfuzz
 
 	$ wfuzz  -c -z file,directory-list-2.3-medium.txt --sc 200 http://192.168.56.5/FUZZ/
+	$ wfuzz -c -w /usr/share/wfuzz/wordlist/general/common.txt  --hc 404 http://website.com/secret.php?FUZZ=something
 
-
+# dirb
+	$ dirb http://192.168.53.128 -X .php,.txt
 
 # iptables
 

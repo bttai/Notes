@@ -60,3 +60,18 @@ Keys : ping exfiltration,  escaping from limited bash (ftp, nano), escaping a ch
 - Exploit worp game : use buffer overflow 
 
 
+# Prime
+
+Keys : php://filter/, wordpress, md5sum, od, AES encryption, ubuntu 16.04
+
+- Scan directory web service
+- Enumerate parameter for pages web
+- Discovery LFI on a web page
+- Found a password
+- Scan wordpress with wpscan found username
+- Login wordpress with account : victor/follow_the_ippsec
+- Upload php reverse shell
+- Found saket's password
+- Get root with sudo -l
+- Get with exploit kenel version Ubuntu 16.04.4
+
