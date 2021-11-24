@@ -75,3 +75,12 @@ Keys : wfuzz, php://filter/, wordpress, md5sum, od, AES encryption, ubuntu 16.04
 - Get root with sudo -l
 - Get with exploit kenel version Ubuntu 16.04.4
 
+# EVM
+
+Keys : wordpress, 4.4.0-87-generic, eBPF_verifier
+
+- Scan and brute force _wordpress_ with wpscan and _rockyou.txt_
+- Upload shell
+- Found root password on a text file
+- Exploit kernel te gain root
+
