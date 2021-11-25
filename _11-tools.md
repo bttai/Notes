@@ -41,7 +41,16 @@
 
 # tcpdump
 
+- -i : interface
+- -A : print in ASCII
+- -w : write output  pcap file
+- -r : read pcap file
+
 	sudo tcpdump host 192.168.56.8 -i vboxnet0 and icmp -X
+	tcpdump -nt -r derpissues.pcap -A 2>/dev/null | grep -P 'pwd='
+
+
+
  
 # dd
     sudo fdisk -l
@@ -49,4 +58,10 @@
 
 
 
+# WordPress
+
+    wpscan --url http://192.168.110.54/wp
+    wpscan --url http://192.168.110.54/wp --enumerate u
+    wpscan --url http://192.168.110.54/wp --usernames users.txt --passwords passwords.txt --password-attack xmlrpc
+    wpscan --url http://192.168.110.54/wp --plugins-version-detection aggressive --plugins-detection aggressive  --detection-mode aggressive
 

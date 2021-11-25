@@ -84,3 +84,16 @@ Keys : wordpress, 4.4.0-87-generic, eBPF_verifier
 - Found root password on a text file
 - Exploit kernel te gain root
 
+# DeRPnStiNK
+
+Keys : wordpress, slideshow gallery, john, tcpdump, modify suid script
+
+- Scan web service with dirsearch ==> wordpress installed in a directory
+- wpscan ==> plugin slideshow-gallery is vulnerable
+- Upload php web shell
+- Found hash in wordpress db
+- Crack password with _john_
+- Gain stinky's access
+- Found mrderp's password in a pcap file
+- Login with mrderp account, sudo -l
+- Modify the script and get root with sudo command
