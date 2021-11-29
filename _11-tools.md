@@ -65,3 +65,7 @@
     wpscan --url http://192.168.110.54/wp --usernames users.txt --passwords passwords.txt --password-attack xmlrpc
     wpscan --url http://192.168.110.54/wp --plugins-version-detection aggressive --plugins-detection aggressive  --detection-mode aggressive
 
+#  crunch
+
+	crunch 10 10 -t ,%Curtains -O >> dict.txt
+	crunch 7 7 -t ,%Flesh -O >> dict.txt

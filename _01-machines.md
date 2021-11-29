@@ -97,3 +97,19 @@ Keys : wordpress, slideshow gallery, john, tcpdump, modify suid script
 - Found mrderp's password in a pcap file
 - Login with mrderp account, sudo -l
 - Modify the script and get root with sudo command
+
+
+# Breach-1
+
+Keys: impresscms, Java KeyStore, keytool, openssl, burp suite, tomcat, sudo -l, decrypting https traffic, wireshark, portspoof
+
+- Found an account hidden in a web page
+- Found a password hidden in an image
+- Found a keystore in the portail with the pass
+- Found a pcap file in the portail
+- Decrypt https traffic with wireshark ==> Found the path and account to access tomcat application manager
+- Upload a web shell
+- Gain to access local with the password found
+- Gain root with sudo -l script
+
+
