@@ -1,4 +1,6 @@
-https://hackso.me/derpnstink-1-walkthrough/
+<https://www.vulnhub.com/entry/derpnstink-1,221/>
+
+<https://hackso.me/derpnstink-1-walkthrough/>
 
 Keys : wordpress, slideshow gallery, john, tcpdump, modify suid script
 
