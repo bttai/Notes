@@ -8,9 +8,6 @@
 <https://github.com/drk1wi/portspoof>
     
 
-# Web service on port 80
-
-
 Keys: impresscms, Java KeyStore, keytool, openssl, burp suite, tomcat, sudo -l, decrypting https traffic, wireshark, portspoof
 
 # Web service on port 80
@@ -112,42 +109,6 @@ Keys: impresscms, Java KeyStore, keytool, openssl, burp suite, tomcat, sudo -l, 
 
 ### inbox
 
-
-> Posting sensitive content
-> 
-> Peter, yeahhh, I'm going to have to go ahead and ask you to have your team only post any sensitive artifacts to the admin portal. My password is extremely secure. If you could go ahead and tell them all that'd be great. -Bill
-> 
-> -- 
-> 
-> IDS/IPS system
-> 
-> Hey Peter,
-> 
-> I got a really good deal on an IDS/IPS system from a vendor I met at that happy hour at Chotchkie's last week!
-> 
-> -Michael
-> 
-> --
-> 
-> FWD: Thank you for your purchase of Super Secret Cert Pro!
-> 
-> Peter, I am not sure what this is. I saved the file here: 192.168.110.140/.keystore Bob 
-> 
-> 
-> SSL implementation test capture
-> Published by Peter Gibbons on 2016/6/4 21:37:05. (0 reads)
-> Team - I have uploaded a pcap file of our red team's re-production of the attack. I am not sure what trickery they were using but I cannot read the file. I tried every nmap switch from my C|EH studies and just cannot figure it out. http://192.168.110.140/impresscms/_SSL_test_phase1.pcap They told me the alias, storepassword and keypassword are all set to 'tomcat'. Is that useful?? Does anyone know what this is? I guess we are securely encrypted now? -Peter p.s. I'm going fishing for the next 2 days and will not have access to email or phone.
-
-
-==> Found keystore at http://192.168.56.140/.keystore
-
-==> Found pcap file at http://192.168.56.140/impresscms/_SSL_test_phase1.pcap
-
-# Keytool
-
-## Extract the certificate from the keystore.
-
-    $ keytool -list -keystore keystore                                                                                          
 
 > Posting sensitive content
 > 
