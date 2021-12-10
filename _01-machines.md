@@ -113,3 +113,9 @@ Keys: impresscms, Java KeyStore, keytool, openssl, burp suite, tomcat, sudo -l, 
 - Gain root with sudo -l script
 
 
+# Breach-2
+
+Keyswords: firefox 15, blogphp, os commerce, beef-xss, sshd_config, SSH ForceCommand, .bashrc, .profile , sudoers, telnet, xss attack
+
+
+# Breach-3

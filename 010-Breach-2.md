@@ -10,7 +10,7 @@
 > A hint: Imagine this as a production environment during a busy work day.
 
 
-Keyswords: sstd_config, SSH ForceCommand, .bashrc, .profile , sudoers, telnet
+Keyswords: firefox 15, blogphp, os commerce, beef-xss, sshd_config, SSH ForceCommand, .bashrc, .profile , sudoers, telnet, xss attack
 
 
 # nmap

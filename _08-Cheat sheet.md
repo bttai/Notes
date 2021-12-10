@@ -1,5 +1,12 @@
 # Links
 
+https://lzone.de/
+
+
+https://github.com/Ignitetechnologies/Vulnhub-CTF-Writeups
+
+https://www.mrb3n.com
+
 https://emaragkos.gr/recommended-machines/
 
 
