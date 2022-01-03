@@ -5,7 +5,7 @@
 
 # Keysword
 
-
+joomla, brute force python; curl, wfuzz
 
 
 # nmap
