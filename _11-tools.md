@@ -2,19 +2,178 @@
 
 ## Basic authentification
 
-	$ hydra -l admin  -p darkweb2017-top100.txt  192.168.56.5 http-get
+	hydra -l admin  -p darkweb2017-top100.txt  192.168.56.5 http-get
 
 # dirsearch
 
 	$ dirsearch -u http://192.168.56.5 -w directory-list-2.3-medium.txt
 
-# wfuzz
 
-	$ wfuzz  -c -z file,directory-list-2.3-medium.txt --sc 200 http://192.168.56.5/FUZZ/
-	$ wfuzz -c -w /usr/share/wfuzz/wordlist/general/common.txt  --hc 404 http://website.com/secret.php?FUZZ=something
+# Web Tool - WFuzz
+
+<https://book.hacktricks.xyz/pentesting-web/web-tool-wfuzz>
+
+A tool to FUZZ web applications anywhere.
+
+> Wfuzz has been created to facilitate the task in web applications assessments and it is based on a simple concept: it replaces any reference to the FUZZ keyword by the value of a given payload.
+
+## Installation
+
+Installed in Kali
+
+Github: [https://github.com/xmendez/wfuzz](https://github.com/xmendez/wfuzz)
+
+```text
+pip install wfuzz
+```
+
+## Filtering options
+
+```bash
+--hs/ss "regex" #Hide/Show
+#Simple example, match a string: "Invalid username"
+#Regex example: "Invalid *"
+
+--hc/sc CODE #Hide/Show by code in response
+--hl/sl NUM #ide/Show by number of lines in response
+--hw/sw NUM #ide/Show by number of words in response
+--hc/sc NUM #ide/Show by number of chars in response
+```
+
+## Output options
+
+```bash
+wfuzz -e printers #Prints the available output formats
+-f /tmp/output,csv #Saves the output in that location in csv format
+```
+
+### Encoders options
+
+```bash
+wfuzz -e encoders #Prints the available encoders
+#Examples: urlencode, md5, base64, hexlify, uri_hex, doble urlencode
+```
+
+In order to use a encoder, you have to indicate it in the **"-w"** or **"-z"** option.
+
+Examples:
+
+```bash
+-z file,/path/to/file,md5 #Will use a list inside the file, and will transform each value into its md5 hash before sending it
+-w /path/to/file,base64 #Will use a list, and transforms to base64
+-z list,each-element-here,hexlify #Inline list and to hex before sending values
+```
+
+## CheetSheet
+
+### Login Form bruteforce
+
+#### **POST, Single list, filter string \(hide\)**
+
+```bash
+wfuzz -c -w users.txt --hs "Login name" -d "name=FUZZ&password=FUZZ&autologin=1&enter=Sign+in" http://zipper.htb/zabbix/index.php
+#Here we have filtered by line
+```
+
+#### **POST, 2 lists, filder code \(show\)**
+
+```bash
+wfuzz.py -c -z file,users.txt -z file,pass.txt --sc 200 -d "name=FUZZ&password=FUZ2Z&autologin=1&enter=Sign+in" http://zipper.htb/zabbix/index.php
+#Here we have filtered by code
+```
+
+#### **GET, 2 lists, filter string \(show\), proxy, cookies**
+
+```bash
+wfuzz -c -w users.txt -w pass.txt --ss "Welcome " -p 127.0.0.1:8080:HTTP -b "PHPSESSIONID=1234567890abcdef;customcookie=hey" "http://example.com/index.php?username=FUZZ&password=FUZ2Z&action=sign+in"
+```
+
+### Bruteforce Dicrectory/RESTful bruteforce
+
+[Arjun parameters wordlist](https://raw.githubusercontent.com/s0md3v/Arjun/master/arjun/db/params.txt)
+
+```text
+wfuzz -c -w /tmp/tmp/params.txt --hc 404 https://domain.com/api/FUZZ
+```
+
+### Path Parameters BF
+
+```bash
+wfuzz -c -w ~/git/Arjun/db/params.txt --hw 11 'http://example.com/path%3BFUZZ=FUZZ'
+```
+
+### Header Authentication
+
+#### **Basic, 2 lists, filter string \(show\), proxy**
+
+```bash
+wfuzz -c -w users.txt -w pass.txt -p 127.0.0.1:8080:HTTP --ss "Welcome" --basic FUZZ:FUZ2Z "http://example.com/index.php"
+```
+
+#### **NTLM, 2 lists, filter string \(show\), proxy**
+
+```bash
+wfuzz -c -w users.txt -w pass.txt -p 127.0.0.1:8080:HTTP --ss "Welcome" --ntlm 'domain\FUZZ:FUZ2Z' "http://example.com/index.php"
+```
+
+### Cookie/Header bruteforce \(vhost brute\)
+
+#### **Cookie, filter code \(show\), proxy**
+
+```bash
+wfuzz -c -w users.txt -p 127.0.0.1:8080:HTTP --ss "Welcome " -H "Cookie:id=1312321&user=FUZZ"  "http://example.com/index.php"
+```
+
+#### **User-Agent, filter code \(hide\), proxy**
+
+```bash
+wfuzz -c -w user-agents.txt -p 127.0.0.1:8080:HTTP --ss "Welcome " -H "User-Agent: FUZZ"  "http://example.com/index.php"
+```
+
+#### **Host**
+
+```bash
+wfuzz -c -w /usr/share/wordlists/SecLists/Discovery/DNS/subdomains-
+top1million-20000.txt --hc 400,404,403 -H "Host: FUZZ.example.com" -u 
+http://example.com -t 100
+```
+
+### HTTP Verbs \(methods\) bruteforce
+
+#### **Using file**
+
+```bash
+wfuzz -c -w methods.txt -p 127.0.0.1:8080:HTTP --sc 200 -X FUZZ "http://example.com/index.php"
+```
+
+#### **Using inline list**
+
+```bash
+$ wfuzz -z list,GET-HEAD-POST-TRACE-OPTIONS -X FUZZ http://testphp.vulnweb.com/
+```
+
+### Directory & Files Bruteforce
+
+```bash
+#Filter by whitelisting codes
+wfuzz -c -z file,/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --sc 200,202,204,301,302,307,403 http://example.com/uploads/FUZZ
+```
+
+
+
+	wfuzz  -c -z file,directory-list-2.3-medium.txt --sc 200 http://192.168.56.5/FUZZ/
+	wfuzz -c -w /usr/share/wfuzz/wordlist/general/common.txt  --hc 404 http://website.com/secret.php?FUZZ=something
+	wfuzz -w passwords.txt -d "password=FUZZ" -t 100 --hh 803 http://192.168.110.5/index.php
 
 # dirb
-	$ dirb http://192.168.53.128 -X .php,.txt
+
+	dirb http://192.168.53.128 -X .php,.txt
+
+
+# gobuster
+
+	gobuster dir -u http://192.168.110.6 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x php,txt
+
 
 # iptables
 
@@ -97,6 +256,31 @@
 Example
 
 	grep -n -C 2 --color 2323 /etc/services
+
+## sed
+
+
+```bash
+# Replace
+sed 's/<pre>/<pre>\n/g' 
+# garder seulement le texte entre <pre> text </pre>
+sed -n '/<pre/,/<\/pre/p'
+sed -n '/<div id="footer"/,/<\/div/p'
+# delete @ at the begining of lines
+sed 's/^@\(.*\)/\1/' 
+# Supprimer toutes les balises
+sed -e 's/<[^>]*>//g'
+sed 's/<\/\?[^>]\+>//g'
+# Supprimer la première ligne et la dernière ligne
+sed -r -e '1d' -e '$d' -e 's/^\s+//'
+# Supprimer tout sauf entre 2 balises
+sed '/<div class="content">/,/<\/div>/!d'
+sed -n '/<div class="content">/,/<\/div/p'
+
+cat cap.txt  | sed 's/([^)]*)//g'| sed '/^[[:space:]]*$/d' |  iconv -f utf8 -t ascii//TRANSLIT | tr '[:upper:]' '[:lower:]' | sort | uniq > cap_finish.txt
+
+```
+
 
 # nftables
 
@@ -204,6 +388,44 @@ Des pense-bêtes pour des milliers de commandes. Pour apprendre rapidement et si
 
 	tldr tar
 
+# Crypt - decrypt
+
+## CyberChef
+
+# Docker
+
+
+## Numeration docker
+
+- deepce github
+
+## Configuation
+
+- docker-compose.yml
+- gitlab-secrets.json
+- gitlab.rb
+
+
+# Generate dictionaries
+
+## CUPP
+
+> cupp : generate dictionaries for attacks from personal data
+
+Configuration file : `/etc/cupp.cfg`
+
+
+## john
+
+## cewl
+
+## crunch
+       -t @,%^
+              Specifies a pattern, eg: @@god@@@@ where the only the @'s, ,'s, %'s, and ^'s will change.
+              @ will insert lower case characters
+              , will insert upper case characters
+              % will insert numbers
+              ^ will insert symbols
 
 
 
@@ -213,5 +435,31 @@ Des pense-bêtes pour des milliers de commandes. Pour apprendre rapidement et si
 
 
 
+crunch 3 3 abc + 123 !@# -t @%^
+crunch 3 3 abc 123 !@# -t @%^
 
+
+
+# wodim
+
+Graver des CD/DVD
+
+```bash
+# lister les graveurs
+wodim --devices
+wodim --checkdrive
+# caracteristiques du graveur
+wodim -prcap
+# information sur le media optique
+wodim -atip
+# effacer rapidement le disque
+wodim -v blank=fast
+# effacer entirement le disque
+wodim -v blank=all
+# graver une image iso
+wodim -v -eject image.iso
+wodim -v speed=4 -eject image.iso
+# CD audio
+wodim -v -eject speed=4 -pad -audio *.wav
+```
 
