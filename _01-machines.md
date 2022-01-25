@@ -155,3 +155,20 @@ Keywords : web cookies, Caesar cipher, morse code, wfuzz, knock port
 - Get `zeus`'s' password,
 - Get root with sudo command
 
+# Born2root-1
+
+Keysword : impresscms, Java KeyStore, keytool, openssl, burp suite, tomcat, sudo -l, decrypting https traffic, wireshark, portspoof
+
+
+# Born2root-2
+
+Keysword : joomla, brute force, python, curl, wfuzz
+
+- Brute force joomla `admin:travel`, script python, bash, wfuzz
+- Upload reverse shell
+- Found tim's password in `/opt/scripts/fileshare.py`
+- sudo -l with tim'a account
+
+
+
+

@@ -5,7 +5,7 @@
 
 # Keysword
 
-joomla, brute force python; curl, wfuzz
+joomla, brute force, python, curl, wfuzz
 
 
 # nmap
@@ -78,45 +78,13 @@ WORDLIST_FILES: /usr/share/dirb/wordlists/common.txt
 GENERATED WORDS: 4612                                                          
 
 ---- Scanning URL: http://192.168.110.7/ ----
-==> DIRECTORY: http://192.168.110.7/css/                                                 
-==> DIRECTORY: http://192.168.110.7/img/                                                 
-+ http://192.168.110.7/index.html (CODE:200|SIZE:8454)                                   
-==> DIRECTORY: http://192.168.110.7/javascript/                                          
-==> DIRECTORY: http://192.168.110.7/joomla/                                              
-==> DIRECTORY: http://192.168.110.7/js/                                                  
-+ http://192.168.110.7/LICENSE (CODE:200|SIZE:1093)                                      
-==> DIRECTORY: http://192.168.110.7/manual/                                              
-+ http://192.168.110.7/server-status (CODE:403|SIZE:302)                                 
-==> DIRECTORY: http://192.168.110.7/vendor/                                              
-                                                                                          
----- Entering directory: http://192.168.110.7/css/ ----
-(!) WARNING: Directory IS LISTABLE. No need to scan it.                        
-    (Use mode '-w' if you want to scan it anyway)
-                                                                                          
----- Entering directory: http://192.168.110.7/img/ ----
-(!) WARNING: Directory IS LISTABLE. No need to scan it.                        
-    (Use mode '-w' if you want to scan it anyway)
-                                                                                          
----- Entering directory: http://192.168.110.7/javascript/ ----
-==> DIRECTORY: http://192.168.110.7/javascript/jquery/                                   
-                                                                                          
+...                        
 ---- Entering directory: http://192.168.110.7/joomla/ ----
 ==> DIRECTORY: http://192.168.110.7/joomla/administrator/                                
 ==> DIRECTORY: http://192.168.110.7/joomla/bin/                                          
 ==> DIRECTORY: http://192.168.110.7/joomla/cache/                                        
 ==> DIRECTORY: http://192.168.110.7/joomla/components/                                   
-==> DIRECTORY: http://192.168.110.7/joomla/images/                                       
-==> DIRECTORY: http://192.168.110.7/joomla/includes/                                     
-+ http://192.168.110.7/joomla/index.php (CODE:200|SIZE:8504)                             
-==> DIRECTORY: http://192.168.110.7/joomla/language/                                     
-==> DIRECTORY: http://192.168.110.7/joomla/layouts/                                      
-==> DIRECTORY: http://192.168.110.7/joomla/libraries/                                    
-==> DIRECTORY: http://192.168.110.7/joomla/media/                                        
-==> DIRECTORY: http://192.168.110.7/joomla/modules/                                      
-==> DIRECTORY: http://192.168.110.7/joomla/plugins/                                      
-==> DIRECTORY: http://192.168.110.7/joomla/templates/                                    
-==> DIRECTORY: http://192.168.110.7/joomla/tmp/     
-
+...
 ```
 
 # Brute force `admin`
@@ -163,11 +131,11 @@ if len(sys.argv) < 5:
     sys.exit(1)
 
 hostname = "localhost"
-password = "lulzlol"
+password = "lulzlol"        <== HERE
 source = "/var/www/html/joomla"
 dest = "/tmp/backup/joomla"
 
-username = "tim"
+username = "tim"            <== HERE
 port = 22
 
 try:
@@ -201,9 +169,11 @@ uid=0(root) gid=0(root) groups=0(root)
 ```
 
 
-# Script to brute force
+# Scripts to brute force
 
 ## python
+
+<https://github.com/ajnik/joomla-bruteforce>
 
 ```py
 #!/usr/bin/python3

