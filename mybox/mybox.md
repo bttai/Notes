@@ -192,3 +192,8 @@ $query  = "SELECT first_name, last_name FROM users WHERE user_id = $id;";
 1000 union select user, password FROM users where user='admin' and length(password)=32 -- -
 1000 union select user, password FROM users where length(password)=32 -- -
 select user, password from users where user_id=1000 union select user, password from users where user_id=1 -- -
+
+
+
+
+dvwaSession

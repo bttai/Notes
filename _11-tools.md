@@ -272,6 +272,7 @@ wfuzz -c -z file,/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --
 Example
 
 	grep -n -C 2 --color 2323 /etc/services
+	grep -rl pass /var/www/html
 
 ## sed
 
@@ -438,24 +439,20 @@ Configuration file : `/etc/cupp.cfg`
 ## cewl
 
 ## crunch
-       -t @,%^
-              Specifies a pattern, eg: @@god@@@@ where the only the @'s, ,'s, %'s, and ^'s will change.
-              @ will insert lower case characters
-              , will insert upper case characters
-              % will insert numbers
-              ^ will insert symbols
+
+   -t @,%^
+	Specifies a pattern, eg: @@god@@@@ where the only the @'s, ,'s, %'s, and ^'s will change.
+	@ will insert lower case characters
+	, will insert upper case characters
+	% will insert numbers
+	^ will insert symbols
 
 
-
-
-
-
-
-
-
+```bash
 crunch 3 3 abc + 123 !@# -t @%^
 crunch 3 3 abc 123 !@# -t @%^
 
+```
 
 
 # wodim
@@ -485,13 +482,31 @@ wodim -v -eject speed=4 -pad -audio *.wav
 # ffmpeg
 
 ffmpeg -i input.mp4 -vcodec libx265 -crf 18 -tag:v hvc1 -preset veryslow -an output.mp4
-ffmpeg -i big_buck_bunny.y4m -vcodec libx265 -crf 28 fps-fps=30 big_buck_bunny.mp4
 
 ffmpeg -i MVI_6150.MOV -vcodec libx265 -crf 18 -tag:v hvc1 -preset medium -an MVI_6150.mp4
 ffmpeg -i MVI_6151.MOV -vcodec libx265 -crf 28 -tag:v hvc1 -preset medium -an MVI_6151.mp4
 
+```bash
+for file in ./*.MOV; do
+	if [[ -f $file ]]; then
+		filename=$(basename -- "$file")
+		extension="${filename##*.}"
+		filename="${filename%.*}"
 
-#exiftool
+		# no sound
+		ffmpeg -i ${file} -vcodec libx265 -crf 28 -tag:v hvc1 -preset medium -an ${filename}.mp4
+		
+		# with sound
+		# ffmpeg -i ${file} -preset medium -codec:a aac -b:a 128k -codec:v libx264 -pix_fmt yuv420p -b:v 4500k -minrate 4500k -maxrate 9000k -bufsize 9000k -vf scale=-1:1080 ${filename}.mp4
+		touch ${filename}.mp4 -r ${file}
+		rm ${file}
+	fi
+done
+```
+
+
+# exiftool
+
 #On kali$ apt-get install exiftool
 #Change image filename to include .php before image extension: image.php.jpeg (works with png etc etc)
 #Upload, execute image location adding ?cmd=command-here example: www.site.com/image.php.jpeg?cmd=ls

