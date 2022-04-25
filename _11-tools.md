@@ -193,7 +193,10 @@ wfuzz -c -z file,/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --
 
 # iptables
 
+<https://doc.ubuntu-fr.org/iptables>
+
 ## reset
+
 
 <https://kerneltalks.com/virtualization/how-to-reset-iptables-to-default-settings/>
 
@@ -208,10 +211,15 @@ wfuzz -c -z file,/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt --
 	$ iptables -F FORWARD
 
 
+	iptables -A INPUT -p tcp -s 192.168.56.1 --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+	iptables -A OUTPUT -p tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
 	# Save 
 	$ iptables-save > /etc/sysconfig/iptables
 	$ iptables-save > /etc/iptables/rules.v4
+	# iptables-persistent
+	service iptables-persistent save
+
 
 
 # tcpdump
@@ -451,6 +459,22 @@ Configuration file : `/etc/cupp.cfg`
 
 
 ## john
+### Cracking Linux User Password
+
+	john /etc/shadow
+
+### Cracking Password Protected ZIP/RAR Files
+
+	zip2john file.zip > hash.txt
+	john --format=zip hash.txt
+
+### Decrypting MD5 Hash
+
+	john --format=raw-md5 hash.txt
+
+### Using Wordlists To Crack Passwords
+
+	john --format=raw-shal --wordlist crunch.txt
 
 ## cewl
 

