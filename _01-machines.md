@@ -1,4 +1,4 @@
-# Relativity
+# Relativity ***
 
 Keys : ProFTPD 1.2.8 - 1.2.9 mod_sql, php wrappers data://text/plain;base64, UnrealIRCd, sudo -l
 
@@ -9,7 +9,7 @@ Keys : ProFTPD 1.2.8 - 1.2.9 mod_sql, php wrappers data://text/plain;base64, Unr
 - Modify script execute with root privilege to gain root shell
 
 
-# Pipe
+# Pipe *****
 
 Keys : method http, .htaccess <Limit></Limit>, php serialization, php destructor, exploiting wildcard, tar Wildcard Injection
 
@@ -22,7 +22,7 @@ Keys : method http, .htaccess <Limit></Limit>, php serialization, php destructor
 - Exploit tar wildcard to get root
 
 
-# Sleepy
+# Sleepy *****
 
 Keys : Java Debug Wire Protocol (JDWP) version 1.6 1.7.0_71, tomcat, Apache Tomcat Proxy, shellshock, bash-4.2
 
@@ -33,7 +33,7 @@ Keys : Java Debug Wire Protocol (JDWP) version 1.6 1.7.0_71, tomcat, Apache Tomc
 - Upgrade shell
 - Exploit shellshock to gain root shell
 
-# K2
+# K2 *****
 
 
 Keys: shared libraries, cat -v, bash -p, ruby gem which, sudo 1.8.6p7, privilege increase with SHELLOPTS and PS4
@@ -46,7 +46,7 @@ Keys: shared libraries, cat -v, bash -p, ruby gem which, sudo 1.8.6p7, privilege
 
 
 
-# Persistence
+# Persistence *****
 
 
 Keys : ping exfiltration,  escaping from limited bash (ftp, nano), escaping a chroot jail, buffer overflow, canary protection
@@ -60,7 +60,7 @@ Keys : ping exfiltration,  escaping from limited bash (ftp, nano), escaping a ch
 - Exploit worp game : use buffer overflow 
 
 
-# Prime
+# Prime *****
 
 Keys : wfuzz, php://filter/, wordpress, md5sum, od, AES encryption, ubuntu 16.04
 
@@ -97,3 +97,78 @@ Keys : wordpress, slideshow gallery, john, tcpdump, modify suid script
 - Found mrderp's password in a pcap file
 - Login with mrderp account, sudo -l
 - Modify the script and get root with sudo command
+
+
+# Breach-1
+
+Keywords: impresscms, Java KeyStore, keytool, openssl, burp suite, tomcat, sudo -l, decrypting https traffic, wireshark, portspoof
+
+- Found an account hidden in a web page
+- Found a password hidden in an image
+- Found a keystore in the portail with the pass
+- Found a pcap file in the portail
+- Decrypt https traffic with wireshark ==> Found the path and account to access tomcat application manager
+- Upload a web shell
+- Gain to access local with the password found
+- Gain root with sudo -l script
+
+
+# Breach-2
+
+Keywords: firefox 15, blogphp, os commerce, beef-xss, sshd_config, SSH ForceCommand, .bashrc, .profile , sudoers, telnet, xss attack
+
+
+# Breach-3
+
+
+
+# Bob ***
+
+Keywords : bash_aliases, web shell, command injection, gpg, AES encrypted data
+
+- Found a web shell with posibility of command injection,
+- Found password in `.old_passwordfile.html`,
+- Decode a file encrypted with a password `ARPOCRATES` found from `notes.sh`,
+- Get root shell from sudo command from user `bob`
+
+# Replay ****
+
+Keywords: python programmation, nuitka, python compiler, hardcoded, backdoor, modify hard code in a binary
+
+- File `client.bin` found on the web service,
+- A backdoor, hardcode is included in it,
+- Modify the code, gain shell,
+- Found the bob's password on a text file `notes.txt`,
+- Get root with `sudo -l`
+
+# Rotating *****
+
+Keywords : web cookies, Caesar cipher, morse code, wfuzz, knock port
+
+- Flag 1 : change value of `isAdmin` in cookie,
+- Flag 2 : found password in `loki.bin`,
+- Decoded messges with Caesar cipher and found the value of `wheel_code`,
+- Turned the wheel by changing the value of `wheel_code`,
+- Found others indices and knock port at a serials of ports,
+- Get a one-way shell,
+- Upload a reverse shell or meterpreter shell,
+- Get `zeus`'s' password,
+- Get root with sudo command
+
+# Born2root-1
+
+Keysword : impresscms, Java KeyStore, keytool, openssl, burp suite, tomcat, sudo -l, decrypting https traffic, wireshark, portspoof
+
+
+# Born2root-2
+
+Keysword : joomla, brute force, python, curl, wfuzz
+
+- Brute force joomla `admin:travel`, script python, bash, wfuzz
+- Upload reverse shell
+- Found tim's password in `/opt/scripts/fileshare.py`
+- sudo -l with tim'a account
+
+
+
+

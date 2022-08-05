@@ -41,8 +41,8 @@ Keys : wfuzz, php://filter/, wordpress, md5sum, od, AES encryption, ubuntu 16.04
     ==> DIRECTORY: http://192.168.172.128/wordpress/
     ==> DIRECTORY: http://192.168.172.128/javascript/jquery/
                                                                 
-    + http://192.168.172.128/image.php (CODE:200|SIZE:147)                                                               
-    + http://192.168.172.128/index.php (CODE:200|SIZE:136)                                                               
+    + http://192.168.172.128/image.php (CODE:200|SIZE:147)
+    + http://192.168.172.128/index.php (CODE:200|SIZE:136)
     + http://192.168.172.128/secret.txt (CODE:200|SIZE:412) 
 
 ## Read informations

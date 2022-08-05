@@ -15,3 +15,11 @@ kali@kali:~$ echo "deb [arch=amd64 signed-by=/usr/share/keyrings/virtualbox-arch
 sudo apt update
 sudo apt install -y dkms
 sudo apt install -y virtualbox virtualbox-ext-pack
+
+# vmware Player
+
+```bash
+# uname -a                                                                               
+Linux kali 5.16.0-kali7-amd64 #1 SMP PREEMPT Debian 5.16.18-1kali1 (2022-04-01) x86_64 GNU/Linux
+CPATH=/usr/lib/gcc/x86_64-linux-gnu/11/include vmware-modconfig --console --install-all
+```
