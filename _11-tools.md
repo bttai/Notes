@@ -65,3 +65,15 @@
     wpscan --url http://192.168.110.54/wp --usernames users.txt --passwords passwords.txt --password-attack xmlrpc
     wpscan --url http://192.168.110.54/wp --plugins-version-detection aggressive --plugins-detection aggressive  --detection-mode aggressive
 
+
+
+#  ffmpeg
+
+ffmpeg -i input.mp4 -ss 00:00:05 -to $( echo "$( ffprobe -v 0 -show_entries format=duration -of compact=p=0:nk=1  input.mp4) - 4" | bc) -c copy trimed.mp4
+file input1.mp4
+file input2.mp4
+file input3.mp4
+ffmpeg -f concat -safe 0 -i list.txt -c copy all.mp4
+ffmpeg  -i all.mp4 -q:a 0 -map a all.mp3
+ffmpeg -i input.mp4 output.webm
+ffmpeg -i input.mp4 -vcodec libx264 -crf 20 output.mp4
